@@ -170,11 +170,12 @@ local int unzlocal_getShort (pzlib_filefunc_def,filestream,pX)
     int i;
     int err;
 
-    err = unzlocal_getByte(pzlib_filefunc_def,filestream,&i);
+    i = 0;
+    err = unzlocal_getByte(pzlib_filefunc_def, filestream, &i);
     x = (uLong)i;
     
     if (err==UNZ_OK)
-        err = unzlocal_getByte(pzlib_filefunc_def,filestream,&i);
+        err = unzlocal_getByte(pzlib_filefunc_def, filestream, &i);
     x += ((uLong)i)<<8;
    
     if (err==UNZ_OK)
@@ -198,19 +199,20 @@ local int unzlocal_getLong (pzlib_filefunc_def,filestream,pX)
     int i;
     int err;
 
-    err = unzlocal_getByte(pzlib_filefunc_def,filestream,&i);
+    i = 0;
+    err = unzlocal_getByte(pzlib_filefunc_def, filestream, &i);
     x = (uLong)i;
     
     if (err==UNZ_OK)
-        err = unzlocal_getByte(pzlib_filefunc_def,filestream,&i);
+        err = unzlocal_getByte(pzlib_filefunc_def, filestream, &i);
     x += ((uLong)i)<<8;
 
     if (err==UNZ_OK)
-        err = unzlocal_getByte(pzlib_filefunc_def,filestream,&i);
+        err = unzlocal_getByte(pzlib_filefunc_def, filestream, &i);
     x += ((uLong)i)<<16;
 
     if (err==UNZ_OK)
-        err = unzlocal_getByte(pzlib_filefunc_def,filestream,&i);
+        err = unzlocal_getByte(pzlib_filefunc_def, filestream, &i);
     x += ((uLong)i)<<24;
    
     if (err==UNZ_OK)
