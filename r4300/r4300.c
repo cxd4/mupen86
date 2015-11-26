@@ -1263,7 +1263,7 @@ void LDC1()
    if (check_cop1_unusable()) return;
    PC++;
    address = lslfaddr;
-   rdword = (long long*)reg_cop1_double[lslfft];
+   rdword = (unsigned long long*)reg_cop1_double[lslfft];
    read_dword_in_memory();
 }
 
