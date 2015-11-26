@@ -82,10 +82,10 @@ void search_languages()
         {
              memset(String,0,sizeof(String));
              GetPrivateProfileSectionNames( String, sizeof(String), name);
-             if ( String) 
-             {
+            if (String[0] != '\0')
+            {
                 insert_lang( lang_list, name, String );
-             }                     
+            }
         }
     }
 }
