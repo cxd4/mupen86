@@ -309,7 +309,7 @@ int rom_read(const char *argv)
 		ROM_HEADER->Country_code);
 	if ((entry = ini_search_by_CRC(mycrc)) == NULL)
 	  {
-	     strcpy(ROM_SETTINGS.goodname, ROM_HEADER->nom);
+	     strcpy(ROM_SETTINGS.goodname, (const char *)ROM_HEADER->nom);
 	     strcat(ROM_SETTINGS.goodname, " (unknown rom)");
 	     printf("%s\n", ROM_SETTINGS.goodname);
 	     ROM_SETTINGS.eeprom_16kb = 0;
