@@ -1334,7 +1334,7 @@ void SD()
 void NOTCOMPILED()
 {
    if ((PC->addr>>16) == 0xa400)
-     recompile_block(SP_DMEM, blocks[0xa4000000>>12], PC->addr);
+     recompile_block((long *)SP_DMEM, blocks[0xa4000000>>12], PC->addr);
    else
      {
 	unsigned long paddr = 0;
@@ -1343,15 +1343,25 @@ void NOTCOMPILED()
 	else paddr = virtual_to_physical_address(PC->addr, 2);
 	if (paddr)
 	  {
-	     if ((paddr & 0x1FFFFFFF) >= 0x10000000)
-	       {
+            if ((paddr & 0x1FFFFFFF) >= 0x10000000)
+            {
 		  //printf("not compiled rom:%x\n", paddr);
-		  recompile_block((unsigned long*)rom+((((paddr-(PC->addr-blocks[PC->addr>>12]->start)) & 0x1FFFFFFF) - 0x10000000)>>2),
-				  blocks[PC->addr>>12], PC->addr);
-	       }
-	     else
-	       recompile_block(rdram+(((paddr-(PC->addr-blocks[PC->addr>>12]->start)) & 0x1FFFFFFF)>>2),
-			       blocks[PC->addr>>12], PC->addr);
+                recompile_block(
+                    (long *)rom
+                  + ((((paddr - (PC->addr - blocks[PC->addr >> 12]->start)) & 0x1FFFFFFF) - 0x10000000)>>2),
+
+                    blocks[PC->addr >> 12],
+                    PC -> addr
+                );
+            }
+            else
+                recompile_block(
+                    (long *)rdram
+                  + (((paddr - (PC->addr - blocks[PC->addr >> 12]->start)) & 0x1FFFFFFF)>>2),
+
+                    blocks[PC->addr >> 12],
+                    PC -> addr
+                );
 	  }
 	else printf("not compiled exception\n");
      }
