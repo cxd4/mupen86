@@ -17,4 +17,8 @@
 
 #define GTK2_SUPPORT 1
 
+#if defined(_WIN32) && !defined(__WIN32__)
+#define __WIN32__
+#endif
+
 #endif /* CONFIG_H */
