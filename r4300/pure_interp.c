@@ -2958,7 +2958,7 @@ static void LDC1()
    if (check_cop1_unusable()) return;
    interp_addr+=4;
    address = lfoffset+reg[lfbase];
-   rdword = (long long*)reg_cop1_double[lfft];
+   rdword = (unsigned long long *)reg_cop1_double[lfft];
    read_dword_in_memory();
 }
 
