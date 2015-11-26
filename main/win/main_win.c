@@ -1690,7 +1690,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
      OPENFILENAME oifn;
      int ret;
      static PAINTSTRUCT	ps;
-     BOOL	minimize ;
      HMENU hMenu;
      hMenu = GetMenu(hwnd);
                      
@@ -1787,7 +1786,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
              }
              break;
         case WM_ACTIVATE:
-			minimize = (BOOL) HIWORD(wParam);
+		/*	BOOL minimize = (BOOL)HIWORD(wParam); */
 			
 			switch(LOWORD(wParam))
 			{
