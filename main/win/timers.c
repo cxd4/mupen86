@@ -73,8 +73,7 @@ void new_frame() {
    DWORD CurrentFPSTime;
    float FPS;
    char mes[100];
-   static DWORD LastFPSTime;
-   static DWORD CounterTime;
+   static DWORD CounterTime/*, LastFPSTime*/;
    static int Fps_Counter=0;
    
    if (!Config.showFPS) return;
@@ -90,7 +89,7 @@ void new_frame() {
       Fps_Counter = 0;
      }
    
-   LastFPSTime = CurrentFPSTime ;
+ /* LastFPSTime = CurrentFPSTime; */
 }
 
 void new_vi() {
