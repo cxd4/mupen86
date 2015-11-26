@@ -1,0 +1,53 @@
+# compiled C sources
+*.asm
+*.s
+
+# precompiled headers:  GCC and MSC
+*.gch
+*.pch
+
+# object files
+*.o
+*.ko
+*.obj
+*.elf
+
+# executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+
+# Debug files
+*.dSYM/
+
+# compiled resource objects
+*.aps
+*.res
+
+# Microsoft Visual Studio files:  cache
+*.bsc
+*.ilk
+*.opensdf
+*.sbr
+*.sdf
+*.suo
+
+# Visual Studio:  solutions
+*.sln
+*.user
+*.dsp
+
+# Visual Studio:  debugging
+*.idb
+*.ncb
+*.pdb
+
+# Visual Studio:  logging
+*.lastbuildstate
+*.log
+*.manifest
+*.plg
+*.tlog
