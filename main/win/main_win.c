@@ -882,7 +882,7 @@ int load_plugins()
       
    DEFAULT_ROM_SETTINGS TempRomSettings;
    
-   TempRomSettings = GetDefaultRomSettings( ROM_HEADER->nom) ;
+   TempRomSettings = GetDefaultRomSettings((char *)ROM_HEADER->nom);
    if (!Config.OverwritePluginSettings) 
    {
        handle_gfx = get_handle(liste_plugins, TempRomSettings.GfxPluginName);
