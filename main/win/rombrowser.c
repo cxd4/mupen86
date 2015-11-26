@@ -457,7 +457,11 @@ void AddRomToList (char * RomLocation) {
 	memset(&lvItem, 0, sizeof(lvItem));
 //Filling rombrowser info
 	strncpy(pRomInfo->szFullFileName, RomLocation, MAX_PATH);
-    strncpy(pRomInfo->InternalName, ROM_HEADER->nom, sizeof(ROM_HEADER->nom));
+    strncpy(
+        pRomInfo -> InternalName,
+        (const char *)(ROM_HEADER -> nom),
+        sizeof(ROM_HEADER -> nom)
+    );
     pRomInfo->Country = ROM_HEADER->Country_code;
     pRomInfo->RomSize = ROM_SIZE;
     pRomInfo->CRC1 = sl(ROM_HEADER->CRC1);
