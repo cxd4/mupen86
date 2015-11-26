@@ -1686,16 +1686,17 @@ LRESULT CALLBACK NoGuiWndProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPa
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
 {
-     char path_buffer[_MAX_PATH];
-     OPENFILENAME oifn;
-     int ret;
-     static PAINTSTRUCT	ps;
-     HMENU hMenu;
-     hMenu = GetMenu(hwnd);
-                     
-     switch(Message)
-     {
-       case WM_KEYDOWN:
+    char path_buffer[_MAX_PATH];
+    OPENFILENAME oifn;
+    INT_PTR ret;
+    static PAINTSTRUCT	ps;
+    HMENU hMenu;
+
+    ret = 1;
+    hMenu = GetMenu(hwnd);
+    switch (Message)
+    {
+        case WM_KEYDOWN:
                 switch (wParam)
                 {
                     case VK_TAB:
@@ -2205,6 +2206,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
        default:
             return DefWindowProc(hwnd, Message, wParam, lParam);
     }
+
+    if (ret <= 0)
+        MessageBox(NULL, "DialogBox failed.", NULL, MB_ICONERROR);
     return TRUE;	
 }
 
