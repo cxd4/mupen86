@@ -1429,8 +1429,12 @@ inline void jump_to_func()
 	  }
 	blocks[addr>>12]->start = addr & ~0xFFF;
 	blocks[addr>>12]->end = (addr & ~0xFFF) + 0x1000;
-	init_block(rdram+(((paddr-(addr-blocks[addr>>12]->start)) & 0x1FFFFFFF)>>2),
-		   blocks[addr>>12]);
+        init_block(
+            (long *)rdram
+          + (((paddr - (addr - blocks[addr >> 12]->start)) & 0x1FFFFFFF)>>2),
+
+            blocks[addr>>12]
+        );
      }
    PC=actual->block+((addr-actual->start)>>2);
    
