@@ -184,7 +184,7 @@ VCR_updateScreen()
 		len <<= 2;
 		buf = malloc( len );
 		memset( buf, 0, len );
-		VCRComp_addAudioData( (char *)buf, len );
+		VCRComp_addAudioData((unsigned char *)buf, len);
 		free( buf );
 		m_audioFrame += ((len/4)/44100.0)*fpsByCountrycode();
 	}
@@ -233,7 +233,7 @@ void VCR_aiLenChanged()
 	ret = VCR_resample( &buf, 44100, p, m_audioFreq, m_audioBitrate, len );
 	if (ret > 0)
 	{
-		VCRComp_addAudioData( (char *)buf, ret );
+		VCRComp_addAudioData((unsigned char *)buf, ret);
 		free( buf );
 		m_audioFrame += ((ret/4)/44100.0)*fpsByCountrycode();
 	}
