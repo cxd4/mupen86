@@ -437,7 +437,7 @@ BOOL romInList(char *RomLocation)
 void AddRomToList (char * RomLocation) {
 	LV_ITEM  lvItem;
 	ROM_INFO * pRomInfo;
-	int index;
+
     if  (romInList(RomLocation)) return;
 	if (ItemList.ListAlloc == 0) {
 		ItemList.List = (ROM_INFO *)malloc(100 * sizeof(ROM_INFO));
@@ -513,7 +513,7 @@ void AddRomToList (char * RomLocation) {
 	lvItem.lParam = (LPARAM)ItemList.ListCount;
 	lvItem.pszText = LPSTR_TEXTCALLBACK;
 	ItemList.ListCount += 1;
-	index = ListView_InsertItem(hRomList, &lvItem);
+	ListView_InsertItem(hRomList, &lvItem);
     TOTAL_ROMS_NUMBER = TOTAL_ROMS_NUMBER + 1;
     ShowTotalRoms();	
 }
