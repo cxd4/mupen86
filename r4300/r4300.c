@@ -1494,7 +1494,7 @@ void init_blocks()
    blocks[0xa4000000>>12]->start = 0xa4000000;
    blocks[0xa4000000>>12]->end = 0xa4001000;
    actual=blocks[0xa4000000>>12];
-   init_block(SP_DMEM, blocks[0xa4000000>>12]);
+    init_block((long *)SP_DMEM, blocks[0xA4000000 >> 12]);
    PC=actual->block+(0x40/4);
 #ifdef DBG
    if (debugger_mode) // debugger shows initial state (before 1st instruction).
