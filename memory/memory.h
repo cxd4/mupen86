@@ -233,7 +233,7 @@ typedef struct _SI_register
    unsigned long si_dram_addr;
    unsigned long si_pif_addr_rd64b;
    unsigned long si_pif_addr_wr64b;
-   unsigned long si_status;
+   unsigned long si_status_mask;
 } SI_register;
 
 extern RDRAM_register rdram_register;

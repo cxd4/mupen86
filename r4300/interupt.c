@@ -428,7 +428,7 @@ void gen_interupt()
 	PIF_RAMb[0x3F] = 0x0;
 	remove_interupt_event();
 	MI_register.mi_intr_reg |= 0x02;
-	si_register.si_status |= 0x1000;
+	si_register.si_status_mask |= 0x00001000;
 	if (MI_register.mi_intr_reg & MI_register.mi_intr_mask_reg)
 	  Cause = (Cause | 0x400) & 0xFFFFFF83;
 	else

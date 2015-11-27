@@ -833,13 +833,13 @@ int init_memory()
    si_register.si_dram_addr = 0;
    si_register.si_pif_addr_rd64b = 0;
    si_register.si_pif_addr_wr64b = 0;
-   si_register.si_status = 0;
+   si_register.si_status_mask = 0;
    readsi[0x0] = &si_register.si_dram_addr;
    readsi[0x4] = &si_register.si_pif_addr_rd64b;
    readsi[0x8] = &trash;
    readsi[0x10] = &si_register.si_pif_addr_wr64b;
    readsi[0x14] = &trash;
-   readsi[0x18] = &si_register.si_status;
+   readsi[0x18] = &si_register.si_status_mask;
    
    for (i=0x1c; i<0x10000; i++) readsi[i] = &trash;
    for (i=0x481; i<0x800; i++)
@@ -3306,7 +3306,7 @@ void write_si()
 	break;
       case 0x18:
 	MI_register.mi_intr_reg &= 0xFFFFFFFD;
-	si_register.si_status &= ~0x1000;
+	si_register.si_status_mask &= ~0x00001000;
 	check_interupt();
 	return;
 	break;
@@ -3348,7 +3348,7 @@ void write_sib()
       case 0x1a:
       case 0x1b:
 	MI_register.mi_intr_reg &= 0xFFFFFFFD;
-	si_register.si_status &= ~0x1000;
+	si_register.si_status_mask &= ~0x00001000;
 	check_interupt();
 	return;
 	break;
@@ -3382,7 +3382,7 @@ void write_sih()
       case 0x18:
       case 0x1a:
 	MI_register.mi_intr_reg &= 0xFFFFFFFD;
-	si_register.si_status &= ~0x1000;
+	si_register.si_status_mask &= ~0x00001000;
 	check_interupt();
 	return;
 	break;
@@ -3406,7 +3406,7 @@ void write_sid()
 	break;
       case 0x18:
 	MI_register.mi_intr_reg &= 0xFFFFFFFD;
-	si_register.si_status &= ~0x1000;
+	si_register.si_status_mask &= ~0x00001000;
 	check_interupt();
 	return;
 	break;
