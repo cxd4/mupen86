@@ -1,3 +1,9 @@
+/plugins/*
+/mupen64*
+/mupen64_nogui*
+/rombrowser.cache
+/spconfig*
+
 # compiled C sources
 *.asm
 *.s
@@ -11,6 +17,8 @@
 *.ko
 *.obj
 *.elf
+
+*.bin
 
 # executables
 *.exe
