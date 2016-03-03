@@ -8,6 +8,7 @@ AS=as
 
 #FLAGS_GTK=pkg-config gtk+-2.0 --cflags -D_GTK2
 FLAGS_ANSI="\
+ -I/usr/include/SDL \
  -S \
  -Os \
  -ansi \
@@ -16,8 +17,16 @@ FLAGS_ANSI="\
  -Wall \
  -pipe"
 FLAGS_x86_64="\
+ -I/usr/include/SDL \
+ -I/usr/include/gtk-1.2 \
+ -I/usr/include/glib-1.2 \
+ -I/usr/lib64/glib/include \
+ -fPIC \
  -S \
  -masm=att \
+ -w \
+ -Wno-sign-compare \
+ -Wno-pointer-to-int-cast \
  -DX86 \
  -DVCR_SUPPORT \
  -O3 \
@@ -35,7 +44,13 @@ mkdir -p $obj/memory
 mkdir -p $obj/r4300/x86
 
 echo Compiling Mupen64 core...
-$CC $C_FLAGS -o $obj/main/win/main_win.s $src/main/win/main_win.c
+$CC $C_FLAGS -o $obj/main/main.s $src/main/main.c
+$CC $C_FLAGS -o $obj/main/main_gtk.s $src/main/main_gtk.c
+$CC $C_FLAGS -o $obj/main/gtk_gui.s $src/main/gui_gtk/main_gtk.c
+#$CC $C_FLAGS -o $obj/main/win/main_win.s $src/main/win/main_win.c
+$CC $C_FLAGS -o $obj/main/config.s $src/main/gui_gtk/config.c
+$CC $C_FLAGS -o $obj/main/plugin.s $src/main/plugin.c
+
 $CC $C_FLAGS -o $obj/main/rom.s $src/main/rom.c
 $CC $C_FLAGS -o $obj/main/ioapi.s $src/main/ioapi.c
 $CC $C_FLAGS -o $obj/main/adler32.s $src/main/adler32.c
@@ -86,8 +101,8 @@ $CC $C_FLAGS -o $obj/r4300/x86/regcache.s $src/r4300/x86/regcache.c
 
 echo Compiling Mupen64 VCR support...
 $CC $C_FLAGS -o $obj/main/vcr.s $src/main/vcr.c
-$CC $C_FLAGS -o $obj/main/win/vcr_compress.s $src/main/win/vcr_compress.c
 $CC $C_FLAGS -o $obj/main/vcr_resample.s $src/main/vcr_resample.c
+#$CC $C_FLAGS -o $obj/main/win/vcr_compress.s $src/main/win/vcr_compress.c
 #$CC $C_FLAGS -o $obj/main/gui_gtk/vcrcomp_dialog.s $src/main/gui_gtk/vcrcomp_dialog.c
 
 #echo Compiling Mupen64 GTK GUI...
@@ -103,23 +118,28 @@ $CC $C_FLAGS -o $obj/main/vcr_resample.s $src/main/vcr_resample.c
 #$CC $C_FLAGS -o $obj/main/gui_gtk/dirbrowser.s $src/main/gui_gtk/dirbrowser.c
 
 echo Compiling Mupen64 GUI...
-$CC $C_FLAGS -o $obj/main/win/configdialog.s $src/main/win/configdialog.c
-$CC $C_FLAGS -o $obj/main/win/rombrowser.s $src/main/win/rombrowser.c
-$CC $C_FLAGS -o $obj/main/win/config.s $src/main/win/config.c
-$CC $C_FLAGS -o $obj/main/win/dumplist.s $src/main/win/dumplist.c
-$CC $C_FLAGS -o $obj/main/win/timers.s $src/main/win/timers.c
-$CC $C_FLAGS -o $obj/main/win/translation.s $src/main/win/translation.c
-$CC $C_FLAGS -o $obj/main/win/inifunctions.s $src/main/win/inifunctions.c
-$CC $C_FLAGS -o $obj/main/win/guifuncs.s $src/main/win/guifuncs.c
-$CC $C_FLAGS -o $obj/main/win/RomSettings.s $src/main/win/RomSettings.c
-$CC $C_FLAGS -o $obj/main/win/GUI_LogWindow.s $src/main/win/GUI_LogWindow.c
-$CC $C_FLAGS -o $obj/main/win/kaillera.s $src/main/win/kaillera.c
-$CC $C_FLAGS -o $obj/main/win/commandline.s $src/main/win/commandline.c
-windres -i $src/winproject/mupen64_private.rc --input-format=rc -o $obj/mupen64_private.res -O coff
-echo.
+#$CC $C_FLAGS -o $obj/main/win/configdialog.s $src/main/win/configdialog.c
+#$CC $C_FLAGS -o $obj/main/win/rombrowser.s $src/main/win/rombrowser.c
+#$CC $C_FLAGS -o $obj/main/win/config.s $src/main/win/config.c
+#$CC $C_FLAGS -o $obj/main/win/dumplist.s $src/main/win/dumplist.c
+#$CC $C_FLAGS -o $obj/main/win/timers.s $src/main/win/timers.c
+#$CC $C_FLAGS -o $obj/main/win/translation.s $src/main/win/translation.c
+#$CC $C_FLAGS -o $obj/main/win/inifunctions.s $src/main/win/inifunctions.c
+#$CC $C_FLAGS -o $obj/main/win/guifuncs.s $src/main/win/guifuncs.c
+#$CC $C_FLAGS -o $obj/main/win/RomSettings.s $src/main/win/RomSettings.c
+#$CC $C_FLAGS -o $obj/main/win/GUI_LogWindow.s $src/main/win/GUI_LogWindow.c
+#$CC $C_FLAGS -o $obj/main/win/kaillera.s $src/main/win/kaillera.c
+#$CC $C_FLAGS -o $obj/main/win/commandline.s $src/main/win/commandline.c
+
+#windres -i $src/winproject/mupen64_private.rc --input-format=rc -o $obj/mupen64_private.res -O coff
 
 echo Assembling compiled sources...
-$AS -o $obj/main/win/main_win.o $obj/main/win/main_win.s
+#$AS -o $obj/main/win/main_win.o $obj/main/win/main_win.s
+$AS -o $obj/main/gtk_gui.o $obj/main/gtk_gui.s
+$AS -o $obj/main/config.o $obj/main/config.s
+$AS -o $obj/main/plugin.o $obj/main/plugin.s
+$AS -o $obj/main/main_gtk.o $obj/main/main_gtk.s
+$AS -o $obj/main/main.o $obj/main/main.s
 $AS -o $obj/main/rom.o $obj/main/rom.s
 $AS -o $obj/main/ioapi.o $obj/main/ioapi.s
 $AS -o $obj/main/adler32.o $obj/main/adler32.s
@@ -163,27 +183,29 @@ $AS -o $obj/r4300/x86/rjump.o $obj/r4300/x86/rjump.s
 $AS -o $obj/r4300/x86/debug.o $obj/r4300/x86/debug.s
 $AS -o $obj/r4300/x86/regcache.o $obj/r4300/x86/regcache.s
 $AS -o $obj/main/vcr.o $obj/main/vcr.s
-$AS -o $obj/main/win/vcr_compress.o $obj/main/win/vcr_compress.s
 $AS -o $obj/main/vcr_resample.o $obj/main/vcr_resample.s
-$AS -o $obj/main/win/configdialog.o $obj/main/win/configdialog.s
-$AS -o $obj/main/win/rombrowser.o $obj/main/win/rombrowser.s
-$AS -o $obj/main/win/config.o $obj/main/win/config.s
-$AS -o $obj/main/win/dumplist.o $obj/main/win/dumplist.s
-$AS -o $obj/main/win/timers.o $obj/main/win/timers.s
-$AS -o $obj/main/win/translation.o $obj/main/win/translation.s
-$AS -o $obj/main/win/inifunctions.o $obj/main/win/inifunctions.s
-$AS -o $obj/main/win/guifuncs.o $obj/main/win/guifuncs.s
-$AS -o $obj/main/win/RomSettings.o $obj/main/win/RomSettings.s
-$AS -o $obj/main/win/GUI_LogWindow.o $obj/main/win/GUI_LogWindow.s
-$AS -o $obj/main/win/kaillera.o $obj/main/win/kaillera.s
-$AS -o $obj/main/win/commandline.o $obj/main/win/commandline.s
-echo.
+#$AS -o $obj/main/win/vcr_compress.o $obj/main/win/vcr_compress.s
+#$AS -o $obj/main/win/configdialog.o $obj/main/win/configdialog.s
+#$AS -o $obj/main/win/rombrowser.o $obj/main/win/rombrowser.s
+#$AS -o $obj/main/win/config.o $obj/main/win/config.s
+#$AS -o $obj/main/win/dumplist.o $obj/main/win/dumplist.s
+#$AS -o $obj/main/win/timers.o $obj/main/win/timers.s
+#$AS -o $obj/main/win/translation.o $obj/main/win/translation.s
+#$AS -o $obj/main/win/inifunctions.o $obj/main/win/inifunctions.s
+#$AS -o $obj/main/win/guifuncs.o $obj/main/win/guifuncs.s
+#$AS -o $obj/main/win/RomSettings.o $obj/main/win/RomSettings.s
+#$AS -o $obj/main/win/GUI_LogWindow.o $obj/main/win/GUI_LogWindow.s
+#$AS -o $obj/main/win/kaillera.o $obj/main/win/kaillera.s
+#$AS -o $obj/main/win/commandline.o $obj/main/win/commandline.s
 
+# to do:  Get GTK to work?  Or just remove it and let the Makefile build w/ GTK.
 OBJ_LIST="\
+ $obj/main/main.o \
+ $obj/main/plugin.o \
+ $obj/main/config.o \
  $obj/main/rom.o \
  $obj/memory/memory.o \
  $obj/r4300/x86/debug.o \
- $obj/main/win/configdialog.o \
  $obj/r4300/r4300.o \
  $obj/main/unzip.o \
  $obj/r4300/interupt.o \
@@ -220,25 +242,12 @@ OBJ_LIST="\
  $obj/memory/flashram.o \
  $obj/main/md5.o \
  $obj/main/mupenIniApi.o \
- $obj/main/win/dumplist.o \
- $obj/main/win/rombrowser.o \
- $obj/main/win/timers.o \
- $obj/main/win/translation.o \
- $obj/main/win/main_win.o \
- $obj/main/win/inifunctions.o \
  $obj/main/savestates.o \
- $obj/main/win/Config.o \
- $obj/main/win/guifuncs.o \
- $obj/main/win/RomSettings.o \
- $obj/main/win/GUI_LogWindow.o \
- $obj/main/win/kaillera.o \
- $obj/main/win/commandline.o \
  $obj/main/vcr.o \
  $obj/r4300/x86/regcache.o \
- $obj/main/win/vcr_compress.o \
  $obj/main/vcr_resample.o \
- $obj/main/adler32.o \
- $obj/mupen64_private.res"
+ $obj/main/adler32.o"
 
 echo Linking assembled object files...
-$CC -mwindows $OBJ_LIST -o $obj/mupen64 -s -lz -lcomctl32 -lwinmm -lvfw_avi32 -lvfw_ms32
+#$CC -mwindows $OBJ_LIST -o $obj/mupen64 -s -lz -lcomctl32 -lwinmm -lvfw_avi32 -lvfw_ms32
+$CC $OBJ_LIST -o $obj/mupen64 -s -lz -lSDL -ldl -lpthread -lgtk -lglib -lgdk
