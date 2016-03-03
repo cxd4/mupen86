@@ -1,6 +1,7 @@
 /plugins/*
 /mupen64*
 /mupen64_nogui*
+/compiled/*
 /rombrowser.cache
 /spconfig*
 
