@@ -2285,12 +2285,12 @@ void write_mih()
      {
       case 0x0:
       case 0x2:
-	*((u8*)((u8*)&MI_register.w_mi_init_mode_reg + ((*address_low & 3) ^ S16))) = hword;
+        *((u16*)((u8*)&MI_register.w_mi_init_mode_reg + ((*address_low & 3) ^ S16))) = hword;
 	update_MI_init_mode_reg();
 	break;
       case 0xc:
       case 0xe:
-	*((u8*)((u8*)&MI_register.w_mi_intr_mask_reg + ((*address_low & 3) ^ S16))) = hword;
+        *((u16*)((u8*)&MI_register.w_mi_intr_mask_reg + ((*address_low & 3) ^ S16))) = hword;
 	update_MI_intr_mask_reg();
 
 	check_interupt();
