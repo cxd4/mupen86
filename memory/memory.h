@@ -30,6 +30,78 @@
 #ifndef MEMORY_H
 #define MEMORY_H
 
+/*
+ * 2016.03.03 -- cxd4
+ * Deduce C standard type size limits for portable, flexible type names.
+ */
+#include <limits.h>
+
+/*
+ * fread() and fwrite() converting 9-bit chars into 8-bit MIPS byte arrays...
+ * Sounds interesting but unfortunately like something I have no way to test.
+ */
+#if (CHAR_BIT != 8) || (UCHAR_MAX != 0xFFu)
+#error Non-POSIX 'char' sizes?  Uh-oh...
+#endif
+
+typedef signed char             s8;
+typedef unsigned char           u8;
+
+/*
+ * smallest C data type that is greater than or equal to 16 bits
+ */
+#if (SHRT_MIN >= -32767 || SHRT_MAX < +32767 || USHRT_MAX < 0xFFFFu)
+#error Non-ANSI-compliant (short) data type.
+#else
+typedef signed short            s16;
+typedef unsigned short          u16;
+#endif
+
+/*
+ * smallest C data type that is greater than or equal to 32 bits
+ */
+#if (SHRT_MIN < -2147483647 && SHRT_MAX >= +2147483647)
+typedef signed short            s32;
+typedef unsigned short          u32;
+#elif (INT_MIN < -2147483647 && INT_MAX >= +2147483647)
+typedef signed int              s32;
+typedef unsigned int            u32;
+#else
+typedef signed long             s32;
+typedef unsigned long           u32;
+#endif
+
+/*
+ * smallest C data type that is greater than or equal to 64 bits
+ */
+#if (SHRT_MIN < -9223372036854775807 && SHRT_MAX >= +9223372036854775807)
+typedef signed short            s64;
+typedef unsigned short          u64;
+#elif (INT_MIN < -9223372036854775807 && INT_MAX >= +9223372036854775807)
+typedef signed int              s64;
+typedef unsigned int            u64;
+#elif (LONG_MIN < -9223372036854775807 && LONG_MAX >= +9223372036854775807)
+typedef signed long             s64;
+typedef unsigned long           u64;
+#elif defined(INT_LEAST64_MIN) || defined(INT_LEAST64_MAX)
+typedef int_least64_t           s64;
+typedef uint_least64_t          u64; /* POSIX's stdint.h, adopted in ISO C99 */
+#elif defined(_MSC_VER)
+typedef signed __int64          s64;
+typedef unsigned __int64        u64; /* Microsoft-specific LLP64 ABI rules */
+#else
+typedef signed long long        s64;
+typedef unsigned long long      u64; /* fallback to require C99 support */
+#endif
+
+/*
+ * just in case signedness does not matter at some point, for readability
+ */
+typedef char                    i8;
+typedef s16                     i16;
+typedef s32                     i32;
+typedef s64                     i64;
+
 #include "tlb.h"
 
 #ifdef __WIN32__
@@ -46,16 +118,16 @@ void free_memory();
 #define write_byte_in_memory() writememb[address >>16]()
 #define write_hword_in_memory() writememh[address >>16]()
 #define write_dword_in_memory() writememd[address >>16]()
-extern unsigned long SP_DMEM[0x1000/4*2];
-extern unsigned char *SP_DMEMb;
-extern unsigned long *SP_IMEM;
-extern unsigned long PIF_RAM[0x40/4];
-extern unsigned char *PIF_RAMb;
-extern unsigned long rdram[0x800000/4];
-extern unsigned long address, word;
-extern unsigned char byte;
-extern unsigned short hword;
-extern unsigned long long int dword, *rdword;
+extern u32 SP_DMEM[2 * 0x1000/sizeof(u32)];
+extern u8 *SP_DMEMb;
+extern u32 *SP_IMEM;
+extern u32 PIF_RAM[0x40/4];
+extern u8 *PIF_RAMb;
+extern u32 rdram[0x800000 / sizeof(u32)];
+extern u32 address, word;
+extern u8 byte;
+extern u16 hword;
+extern u64 dword, *rdword;
 
 extern void (*readmem[0xFFFF])();
 extern void (*readmemb[0xFFFF])();
@@ -68,26 +140,26 @@ extern void (*writememd[0xFFFF])();
 
 typedef struct _RDRAM_register
 {
-   unsigned long rdram_config;
-   unsigned long rdram_device_id;
-   unsigned long rdram_delay;
-   unsigned long rdram_mode;
-   unsigned long rdram_ref_interval;
-   unsigned long rdram_ref_row;
-   unsigned long rdram_ras_interval;
-   unsigned long rdram_min_interval;
-   unsigned long rdram_addr_select;
-   unsigned long rdram_device_manuf;
+   u32 rdram_config;
+   u32 rdram_device_id;
+   u32 rdram_delay;
+   u32 rdram_mode;
+   u32 rdram_ref_interval;
+   u32 rdram_ref_row;
+   u32 rdram_ras_interval;
+   u32 rdram_min_interval;
+   u32 rdram_addr_select;
+   u32 rdram_device_manuf;
 } RDRAM_register;
 
 typedef struct _SP_register
 {
-   unsigned long sp_mem_addr_reg;
-   unsigned long sp_dram_addr_reg;
-   unsigned long sp_rd_len_reg;
-   unsigned long sp_wr_len_reg;
-   unsigned long w_sp_status_reg;
-   unsigned long sp_status_reg;
+   u32 sp_mem_addr_reg;
+   u32 sp_dram_addr_reg;
+   u32 sp_rd_len_reg;
+   u32 sp_wr_len_reg;
+   u32 w_sp_status_reg;
+   u32 sp_status_reg;
    char halt;
    char broke;
    char dma_busy;
@@ -103,24 +175,24 @@ typedef struct _SP_register
    char signal5;
    char signal6;
    char signal7;
-   unsigned long sp_dma_full_reg;
-   unsigned long sp_dma_busy_reg;
-   unsigned long sp_semaphore_reg;
+   u32 sp_dma_full_reg;
+   u32 sp_dma_busy_reg;
+   u32 sp_semaphore_reg;
 } SP_register;
 
 typedef struct _RSP_register
 {
-   unsigned long rsp_pc;
-   unsigned long rsp_ibist;
+   u32 rsp_pc;
+   u32 rsp_ibist;
 } RSP_register;
 
 typedef struct _DPC_register
 {
-   unsigned long dpc_start;
-   unsigned long dpc_end;
-   unsigned long dpc_current;
-   unsigned long w_dpc_status;
-   unsigned long dpc_status;
+   u32 dpc_start;
+   u32 dpc_end;
+   u32 dpc_current;
+   u32 w_dpc_status;
+   u32 dpc_status;
    char xbus_dmem_dma;
    char freeze;
    char flush;
@@ -132,32 +204,32 @@ typedef struct _DPC_register
    char dma_busy;
    char end_valid;
    char start_valid;
-   unsigned long dpc_clock;
-   unsigned long dpc_bufbusy;
-   unsigned long dpc_pipebusy;
-   unsigned long dpc_tmem;
+   u32 dpc_clock;
+   u32 dpc_bufbusy;
+   u32 dpc_pipebusy;
+   u32 dpc_tmem;
 } DPC_register;
 
 typedef struct _DPS_register
 {
-   unsigned long dps_tbist;
-   unsigned long dps_test_mode;
-   unsigned long dps_buftest_addr;
-   unsigned long dps_buftest_data;
+   u32 dps_tbist;
+   u32 dps_test_mode;
+   u32 dps_buftest_addr;
+   u32 dps_buftest_data;
 } DPS_register;
 
 typedef struct _mips_register
 {
-   unsigned long w_mi_init_mode_reg;
-   unsigned long mi_init_mode_reg;
+   u32 w_mi_init_mode_reg;
+   u32 mi_init_mode_reg;
    char init_length;
    char init_mode;
    char ebus_test_mode;
    char RDRAM_reg_mode;
-   unsigned long mi_version_reg;
-   unsigned long mi_intr_reg;
-   unsigned long mi_intr_mask_reg;
-   unsigned long w_mi_intr_mask_reg;
+   u32 mi_version_reg;
+   u32 mi_intr_reg;
+   u32 mi_intr_mask_reg;
+   u32 w_mi_intr_mask_reg;
    char SP_intr_mask;
    char SI_intr_mask;
    char AI_intr_mask;
@@ -168,72 +240,72 @@ typedef struct _mips_register
 
 typedef struct _VI_register
 {
-   unsigned long vi_status;
-   unsigned long vi_origin;
-   unsigned long vi_width;
-   unsigned long vi_v_intr;
-   unsigned long vi_current;
-   unsigned long vi_burst;
-   unsigned long vi_v_sync;
-   unsigned long vi_h_sync;
-   unsigned long vi_leap;
-   unsigned long vi_h_start;
-   unsigned long vi_v_start;
-   unsigned long vi_v_burst;
-   unsigned long vi_x_scale;
-   unsigned long vi_y_scale;
-   unsigned long vi_delay;
+   u32 vi_status;
+   u32 vi_origin;
+   u32 vi_width;
+   u32 vi_v_intr;
+   u32 vi_current;
+   u32 vi_burst;
+   u32 vi_v_sync;
+   u32 vi_h_sync;
+   u32 vi_leap;
+   u32 vi_h_start;
+   u32 vi_v_start;
+   u32 vi_v_burst;
+   u32 vi_x_scale;
+   u32 vi_y_scale;
+   u32 vi_delay;
 } VI_register;
 
 typedef struct _AI_register
 {
-   unsigned long ai_dram_addr;
-   unsigned long ai_len;
-   unsigned long ai_control;
-   unsigned long ai_status;
-   unsigned long ai_dacrate;
-   unsigned long ai_bitrate;
-   unsigned long next_delay;
-   unsigned long next_len;
-   unsigned long current_delay;
-   unsigned long current_len;
+   u32 ai_dram_addr;
+   u32 ai_len;
+   u32 ai_control;
+   u32 ai_status;
+   u32 ai_dacrate;
+   u32 ai_bitrate;
+   u32 next_delay;
+   u32 next_len;
+   u32 current_delay;
+   u32 current_len;
 } AI_register;
 
 typedef struct _PI_register
 {
-   unsigned long pi_dram_addr_reg;
-   unsigned long pi_cart_addr_reg;
-   unsigned long pi_rd_len_reg;
-   unsigned long pi_wr_len_reg;
-   unsigned long read_pi_status_reg;
-   unsigned long pi_bsd_dom1_lat_reg;
-   unsigned long pi_bsd_dom1_pwd_reg;
-   unsigned long pi_bsd_dom1_pgs_reg;
-   unsigned long pi_bsd_dom1_rls_reg;
-   unsigned long pi_bsd_dom2_lat_reg;
-   unsigned long pi_bsd_dom2_pwd_reg;
-   unsigned long pi_bsd_dom2_pgs_reg;
-   unsigned long pi_bsd_dom2_rls_reg;
+   u32 pi_dram_addr_reg;
+   u32 pi_cart_addr_reg;
+   u32 pi_rd_len_reg;
+   u32 pi_wr_len_reg;
+   u32 read_pi_status_reg;
+   u32 pi_bsd_dom1_lat_reg;
+   u32 pi_bsd_dom1_pwd_reg;
+   u32 pi_bsd_dom1_pgs_reg;
+   u32 pi_bsd_dom1_rls_reg;
+   u32 pi_bsd_dom2_lat_reg;
+   u32 pi_bsd_dom2_pwd_reg;
+   u32 pi_bsd_dom2_pgs_reg;
+   u32 pi_bsd_dom2_rls_reg;
 } PI_register;
 
 typedef struct _RI_register
 {
-   unsigned long ri_mode;
-   unsigned long ri_config;
-   unsigned long ri_current_load;
-   unsigned long ri_select;
-   unsigned long ri_refresh;
-   unsigned long ri_latency;
-   unsigned long ri_error;
-   unsigned long ri_werror;
+   u32 ri_mode;
+   u32 ri_config;
+   u32 ri_current_load;
+   u32 ri_select;
+   u32 ri_refresh;
+   u32 ri_latency;
+   u32 ri_error;
+   u32 ri_werror;
 } RI_register;
 
 typedef struct _SI_register
 {
-   unsigned long si_dram_addr;
-   unsigned long si_pif_addr_rd64b;
-   unsigned long si_pif_addr_wr64b;
-   unsigned long si_status_mask;
+   u32 si_dram_addr;
+   u32 si_pif_addr_rd64b;
+   u32 si_pif_addr_wr64b;
+   u32 si_status_mask;
 } SI_register;
 
 extern RDRAM_register rdram_register;
