@@ -1,5 +1,7 @@
 #Makefile MUPEN64 for Linux
 
+# 2016.03.03 modified from official Mupen64 package to build only the core image
+
 CC		=gcc
 CXX		=g++
 
@@ -168,9 +170,7 @@ endif
 PREFIX		=$(shell grep WITH_HOME config.h | cut -d '"' -f 2)
 SHARE		="$(PREFIX)share/mupen64/"
 
-PLUGINS		=plugins/mupen64_input.so plugins/blight_input.so plugins/mupen64_hle_rsp_azimer.so plugins/dummyaudio.so plugins/mupen64_audio.so plugins/jttl_audio.so plugins/mupen64_soft_gfx.so plugins/glN64.so
-
-all:	mupen64 mupen64_nogui $(PLUGINS)
+all:	mupen64 mupen64_nogui
 
 r4300/interupt.o:	r4300/interupt.c
 			$(CC) $(CFLAGS) `sdl-config --cflags` -c -o $@ $<
@@ -216,130 +216,6 @@ main/gui_gtk/vcrcomp_dialog.o:	main/gui_gtk/vcrcomp_dialog.c
 
 main/vcr_compress.o:		main/vcr_compress.cpp
 				$(CXX) $(CXXFLAGS) -c -o $@ $< `avifile-config --cflags`
-
-mupen64_input/main.o:		mupen64_input/main.c
-				$(CC) $(CFLAGS) -DUSE_GTK -c -o $@ $< $(GTK_FLAGS) `sdl-config --cflags`
-
-blight_input/plugin.o:		blight_input/plugin.c
-				$(CC) $(CFLAGS) "-DPACKAGE=\"$(shell grep PACKAGE blight_input/package | cut -d "=" -f 2)\"" "-DVERSION=\"$(shell grep VERSION blight_input/package | cut -d "=" -f 2)\"" `sdl-config --cflags` -DGUI_SDL -c -o $@ $<
-
-blight_input/SDL_ttf.o:		blight_input/SDL_ttf.c
-				$(CC) $(CFLAGS) `freetype-config --cflags` `sdl-config --cflags` -c -o $@ $<
-
-blight_input/arial.ttf.o:	blight_input/arial.ttf.c
-
-blight_input/arial.ttf.c:	blight_input/ttftoh
-				blight_input/ttftoh blight_input/font/arial.ttf
-				mv blight_input/font/arial.ttf.h blight_input/arial.ttf.c
-
-blight_input/ttftoh:		blight_input/ttftoh.o
-				$(CC) $^ -o $@
-				strip --strip-all $@
-
-blight_input/configdialog_sdl.o: blight_input/configdialog_sdl.c
-				$(CC) $(CFLAGS) "-DPACKAGE=\"$(shell grep PACKAGE blight_input/package | cut -d "=" -f 2)\"" "-DVERSION=\"$(shell grep VERSION blight_input/package | cut -d "=" -f 2)\"" -DGUI_SDL `sdl-config --cflags` -c -o $@ $<
-
-blight_input/pad.o:		blight_input/pad.c
-				$(CC) $(CFLAGS) -DGUI_SDL -c -o $@ $<
-
-rsp_hle/main.o:			rsp_hle/main.c
-				$(CC) $(CFLAGS) $(GTK_FLAGS) -DUSE_GTK -c -o $@ $<
-
-mupen64_audio/main.o:		mupen64_audio/main.c
-				$(CC) $(CFLAGS) $(GTK_FLAGS) -DUSE_GTK -c -o $@ $<
-
-jttl_audio/main.o:		jttl_audio/main.c
-				$(CC) $(CFLAGS) $(GTK_FLAGS) -DUSE_GTK `sdl-config --cflags` -c -o $@ $<
-
-mupen64_soft_gfx/main.o:	mupen64_soft_gfx/main.cpp
-				$(CXX) $(CFLAGS) `sdl-config --cflags` -c -o $@ $<
-
-mupen64_soft_gfx/vi_SDL.o:	mupen64_soft_gfx/vi_SDL.cpp
-				$(CXX) $(CFLAGS) `sdl-config --cflags` -c -o $@ $<
-
-glN64/glN64.o:			glN64/glN64.cpp
-				$(CXX) $(CFLAGS) -DMAINDEF -D__LINUX__ -DX86_ASM `sdl-config --cflags` -c -o $@ $<
-
-glN64/Config_linux.o:		glN64/Config_linux.cpp
-				$(CXX) $(CFLAGS) $(GTK_FLAGS) -D__LINUX__ -DX86_ASM `sdl-config --cflags` -c -o $@ $<
-
-glN64/OpenGL.o:			glN64/OpenGL.cpp
-				$(CXX) $(CFLAGS) -D__LINUX__ -DX86_ASM `sdl-config --cflags` -c -o $@ $<
-
-glN64/N64.o:			glN64/N64.cpp
-				$(CXX) $(CFLAGS) -D__LINUX__ -DX86_ASM -c -o $@ $<
-
-glN64/RSP.o:			glN64/RSP.cpp
-				$(CXX) $(CFLAGS) -D__LINUX__ -DX86_ASM `sdl-config --cflags` -c -o $@ $<
-
-glN64/VI.o:			glN64/VI.cpp
-				$(CXX) $(CFLAGS) -D__LINUX__ -DX86_ASM `sdl-config --cflags` -c -o $@ $<
-
-glN64/Textures.o:		glN64/Textures.cpp
-				$(CXX) $(CFLAGS) -D__LINUX__ -DX86_ASM `sdl-config --cflags` -c -o $@ $<
-
-glN64/FrameBuffer.o:		glN64/FrameBuffer.cpp
-				$(CXX) $(CFLAGS) -D__LINUX__ -DX86_ASM `sdl-config --cflags` -c -o $@ $<
-
-glN64/Combiner.o:		glN64/Combiner.cpp
-				$(CXX) $(CFLAGS) -D__LINUX__ -DX86_ASM `sdl-config --cflags` -c -o $@ $<
-
-glN64/gDP.o:			glN64/gDP.cpp
-				$(CXX) $(CFLAGS) -D__LINUX__ -DX86_ASM `sdl-config --cflags` -c -o $@ $<
-
-glN64/gSP.o:			glN64/gSP.cpp
-				$(CXX) $(CFLAGS) -D__LINUX__ -DX86_ASM `sdl-config --cflags` -c -o $@ $<
-
-glN64/GBI.o:			glN64/GBI.cpp
-				$(CXX) $(CFLAGS) $(GTK_FLAGS) -D__LINUX__ -DX86_ASM `sdl-config --cflags` -c -o $@ $<
-
-glN64/CRC.o:			glN64/CRC.cpp
-				$(CXX) $(CFLAGS) -D__LINUX__ -DX86_ASM -c -o $@ $<
-
-glN64/NV_register_combiners.o:	glN64/NV_register_combiners.cpp
-				$(CXX) $(CFLAGS) -D__LINUX__ -DX86_ASM `sdl-config --cflags` -c -o $@ $<
-
-glN64/texture_env.o:		glN64/texture_env.cpp
-				$(CXX) $(CFLAGS) -D__LINUX__ -DX86_ASM `sdl-config --cflags` -c -o $@ $<
-
-glN64/texture_env_combine.o:	glN64/texture_env_combine.cpp
-				$(CXX) $(CFLAGS) -D__LINUX__ -DX86_ASM `sdl-config --cflags` -c -o $@ $<
-
-glN64/RDP.o:			glN64/RDP.cpp
-				$(CXX) $(CFLAGS) -D__LINUX__ -DX86_ASM `sdl-config --cflags` -c -o $@ $<
-
-glN64/F3D.o:			glN64/F3D.cpp
-				$(CXX) $(CFLAGS) -D__LINUX__ -DX86_ASM `sdl-config --cflags` -c -o $@ $<
-
-glN64/F3DEX.o:			glN64/F3DEX.cpp
-				$(CXX) $(CFLAGS) -D__LINUX__ -DX86_ASM `sdl-config --cflags` -c -o $@ $<
-
-glN64/F3DEX2.o:			glN64/F3DEX2.cpp
-				$(CXX) $(CFLAGS) -D__LINUX__ -DX86_ASM `sdl-config --cflags` -c -o $@ $<
-
-glN64/L3D.o:			glN64/L3D.cpp
-				$(CXX) $(CFLAGS) -D__LINUX__ -DX86_ASM `sdl-config --cflags` -c -o $@ $<
-
-glN64/L3DEX.o:			glN64/L3DEX.cpp
-				$(CXX) $(CFLAGS) -D__LINUX__ -DX86_ASM `sdl-config --cflags` -c -o $@ $<
-
-glN64/L3DEX2.o:			glN64/L3DEX2.cpp
-				$(CXX) $(CFLAGS) -D__LINUX__ -DX86_ASM `sdl-config --cflags` -c -o $@ $<
-
-glN64/S2DEX.o:			glN64/S2DEX.cpp
-				$(CXX) $(CFLAGS) -D__LINUX__ -DX86_ASM `sdl-config --cflags` -c -o $@ $<
-
-glN64/S2DEX2.o:			glN64/S2DEX2.cpp
-				$(CXX) $(CFLAGS) -D__LINUX__ -DX86_ASM `sdl-config --cflags` -c -o $@ $<
-
-glN64/F3DPD.o:			glN64/F3DPD.cpp
-				$(CXX) $(CFLAGS) -D__LINUX__ -DX86_ASM `sdl-config --cflags` -c -o $@ $<
-
-glN64/F3DDKR.o:			glN64/F3DDKR.cpp
-				$(CXX) $(CFLAGS) -D__LINUX__ -DX86_ASM `sdl-config --cflags` -c -o $@ $<
-
-glN64/F3DWRUS.o:		glN64/F3DWRUS.cpp
-				$(CXX) $(CFLAGS) -D__LINUX__ -DX86_ASM `sdl-config --cflags` -c -o $@ $<
 
 mupen64_nogui:	$(OBJ) $(OBJ_X86) main/main.o main/gui_gtk/config.o
 		$(CC) $^ $(LIB) -Wl,-export-dynamic -L/usr/X11R6/lib `sdl-config --libs` -lGL -lpthread -ldl -o $@
@@ -405,7 +281,7 @@ install:
 	
 clean:
 	find . -name '*.o' -print0 | xargs -0r rm -f
-	rm mupen64 mupen64_nogui mupen64_dbg plugins/mupen64_input.so blight_input/arial.ttf.c blight_input/ttftoh plugins/blight_input.so plugins/mupen64_hle_rsp_azimer.so plugins/dummyaudio.so plugins/mupen64_audio.so plugins/jttl_audio.so plugins/mupen64_soft_gfx.so plugins/glN64.so
+	rm mupen64 mupen64_nogui mupen64_dbg
 
 clean_o:
 	find . -name '*.o' -print0 | xargs -0r rm -f
