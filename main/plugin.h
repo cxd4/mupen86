@@ -65,45 +65,45 @@ void  plugin_exec_about(const char *name);
 
 /***** Structures *****/
 typedef struct {
-	WORD Version;
-	WORD Type;
+	u16 Version;
+	u16 Type;
 	char Name[100];       /* Name of the DLL */
 
 	/* If DLL supports memory these memory options then set them to TRUE or FALSE
 	   if it does not support it */
-	BOOL NormalMemory;    /* a normal BYTE array */ 
-	BOOL MemoryBswaped;   /* a normal BYTE array where the memory has been pre
+	Boolean NormalMemory;    /* a normal BYTE array */ 
+	Boolean MemoryBswaped;   /* a normal BYTE array where the memory has been pre
 	                         bswap on a dword (32 bits) boundry */
 } PLUGIN_INFO;
 
 typedef struct {
 	HINSTANCE hInst;
-	BOOL MemoryBswaped;    /* If this is set to TRUE, then the memory has been pre
+	Boolean MemoryBswaped;    /* If this is set to TRUE, then the memory has been pre
 	                          bswap on a dword (32 bits) boundry */
-	BYTE * RDRAM;
-	BYTE * DMEM;
-	BYTE * IMEM;
+	u8 * RDRAM;
+	u8 * DMEM;
+	u8 * IMEM;
 
-	DWORD * MI_INTR_REG;
+	u32 * MI_INTR_REG;
 
-	DWORD * SP_MEM_ADDR_REG;
-	DWORD * SP_DRAM_ADDR_REG;
-	DWORD * SP_RD_LEN_REG;
-	DWORD * SP_WR_LEN_REG;
-	DWORD * SP_STATUS_REG;
-	DWORD * SP_DMA_FULL_REG;
-	DWORD * SP_DMA_BUSY_REG;
-	DWORD * SP_PC_REG;
-	DWORD * SP_SEMAPHORE_REG;
+	u32 * SP_MEM_ADDR_REG;
+	u32 * SP_DRAM_ADDR_REG;
+	u32 * SP_RD_LEN_REG;
+	u32 * SP_WR_LEN_REG;
+	u32 * SP_STATUS_REG;
+	u32 * SP_DMA_FULL_REG;
+	u32 * SP_DMA_BUSY_REG;
+	u32 * SP_PC_REG;
+	u32 * SP_SEMAPHORE_REG;
 
-	DWORD * DPC_START_REG;
-	DWORD * DPC_END_REG;
-	DWORD * DPC_CURRENT_REG;
-	DWORD * DPC_STATUS_REG;
-	DWORD * DPC_CLOCK_REG;
-	DWORD * DPC_BUFBUSY_REG;
-	DWORD * DPC_PIPEBUSY_REG;
-	DWORD * DPC_TMEM_REG;
+	u32 * DPC_START_REG;
+	u32 * DPC_END_REG;
+	u32 * DPC_CURRENT_REG;
+	u32 * DPC_STATUS_REG;
+	u32 * DPC_CLOCK_REG;
+	u32 * DPC_BUFBUSY_REG;
+	u32 * DPC_PIPEBUSY_REG;
+	u32 * DPC_TMEM_REG;
 
 	void (*CheckInterrupts)( void );
 	void (*ProcessDlistList)( void );
@@ -116,42 +116,42 @@ typedef struct {
 	HWND hWnd;	       /* Render window */
 	HWND hStatusBar;       /* if render window does not have a status bar then this is NULL */
 
-	BOOL MemoryBswaped;    // If this is set to TRUE, then the memory has been pre
+	Boolean MemoryBswaped;    // If this is set to TRUE, then the memory has been pre
 	                       //   bswap on a dword (32 bits) boundry 
 						   //	eg. the first 8 bytes are stored like this:
 	                       //        4 3 2 1   8 7 6 5
 
-	BYTE * HEADER;	       // This is the rom header (first 40h bytes of the rom
+	u8 * HEADER;	       // This is the rom header (first 40h bytes of the rom
 			       // This will be in the same memory format as the rest of the memory.
-	BYTE * RDRAM;
-	BYTE * DMEM;
-	BYTE * IMEM;
+	u8 * RDRAM;
+	u8 * DMEM;
+	u8 * IMEM;
 
-	DWORD * MI_INTR_REG;
+	u32 * MI_INTR_REG;
 
-	DWORD * DPC_START_REG;
-	DWORD * DPC_END_REG;
-	DWORD * DPC_CURRENT_REG;
-	DWORD * DPC_STATUS_REG;
-	DWORD * DPC_CLOCK_REG;
-	DWORD * DPC_BUFBUSY_REG;
-	DWORD * DPC_PIPEBUSY_REG;
-	DWORD * DPC_TMEM_REG;
+	u32 * DPC_START_REG;
+	u32 * DPC_END_REG;
+	u32 * DPC_CURRENT_REG;
+	u32 * DPC_STATUS_REG;
+	u32 * DPC_CLOCK_REG;
+	u32 * DPC_BUFBUSY_REG;
+	u32 * DPC_PIPEBUSY_REG;
+	u32 * DPC_TMEM_REG;
 
-	DWORD * VI_STATUS_REG;
-	DWORD * VI_ORIGIN_REG;
-	DWORD * VI_WIDTH_REG;
-	DWORD * VI_INTR_REG;
-	DWORD * VI_V_CURRENT_LINE_REG;
-	DWORD * VI_TIMING_REG;
-	DWORD * VI_V_SYNC_REG;
-	DWORD * VI_H_SYNC_REG;
-	DWORD * VI_LEAP_REG;
-	DWORD * VI_H_START_REG;
-	DWORD * VI_V_START_REG;
-	DWORD * VI_V_BURST_REG;
-	DWORD * VI_X_SCALE_REG;
-	DWORD * VI_Y_SCALE_REG;
+	u32 * VI_STATUS_REG;
+	u32 * VI_ORIGIN_REG;
+	u32 * VI_WIDTH_REG;
+	u32 * VI_INTR_REG;
+	u32 * VI_V_CURRENT_LINE_REG;
+	u32 * VI_TIMING_REG;
+	u32 * VI_V_SYNC_REG;
+	u32 * VI_H_SYNC_REG;
+	u32 * VI_LEAP_REG;
+	u32 * VI_H_START_REG;
+	u32 * VI_V_START_REG;
+	u32 * VI_V_BURST_REG;
+	u32 * VI_X_SCALE_REG;
+	u32 * VI_Y_SCALE_REG;
 
 	void (*CheckInterrupts)( void );
 } GFX_INFO;
@@ -160,36 +160,36 @@ typedef struct {
 	HWND hwnd;
 	HINSTANCE hinst;
 
-	BOOL MemoryBswaped;    // If this is set to TRUE, then the memory has been pre
+	Boolean MemoryBswaped;    // If this is set to TRUE, then the memory has been pre
 	                       //   bswap on a dword (32 bits) boundry 
 						   //	eg. the first 8 bytes are stored like this:
 	                       //        4 3 2 1   8 7 6 5
-	BYTE * HEADER;	// This is the rom header (first 40h bytes of the rom
+	u8 * HEADER;	// This is the rom header (first 40h bytes of the rom
 					// This will be in the same memory format as the rest of the memory.
-	BYTE * RDRAM;
-	BYTE * DMEM;
-	BYTE * IMEM;
+	u8 * RDRAM;
+	u8 * DMEM;
+	u8 * IMEM;
 
-	DWORD * MI_INTR_REG;
+	u32 * MI_INTR_REG;
 
-	DWORD * AI_DRAM_ADDR_REG;
-	DWORD * AI_LEN_REG;
-	DWORD * AI_CONTROL_REG;
-	DWORD * AI_STATUS_REG;
-	DWORD * AI_DACRATE_REG;
-	DWORD * AI_BITRATE_REG;
+	u32 * AI_DRAM_ADDR_REG;
+	u32 * AI_LEN_REG;
+	u32 * AI_CONTROL_REG;
+	u32 * AI_STATUS_REG;
+	u32 * AI_DACRATE_REG;
+	u32 * AI_BITRATE_REG;
 
 	void (*CheckInterrupts)( void );
 } AUDIO_INFO;
 
 typedef struct {
-	BOOL Present;
-	BOOL RawData;
+	Boolean Present;
+	Boolean RawData;
 	int  Plugin;
 } CONTROL;
 
 typedef union {
-	DWORD Value;
+	u32 Value;
 	struct {
 		unsigned R_DPAD       : 1;
 		unsigned L_DPAD       : 1;
@@ -219,11 +219,11 @@ typedef struct {
 	HWND hMainWindow;
 	HINSTANCE hinst;
 
-	BOOL MemoryBswaped;		// If this is set to TRUE, then the memory has been pre
+	Boolean MemoryBswaped;		// If this is set to TRUE, then the memory has been pre
 							//   bswap on a dword (32 bits) boundry, only effects header. 
 							//	eg. the first 8 bytes are stored like this:
 							//        4 3 2 1   8 7 6 5
-	BYTE * HEADER;			// This is the rom header (first 40h bytes of the rom)
+	u8 * HEADER;			// This is the rom header (first 40h bytes of the rom)
 	CONTROL *Controls;		// A pointer to an array of 4 controllers .. eg:
 							// CONTROL Controls[4];
 } CONTROL_INFO;
@@ -237,7 +237,7 @@ extern void (*dllAbout)(HWND hParent);
 
 extern void (*changeWindow)();
 extern void (*closeDLL_gfx)();
-extern BOOL (*initiateGFX)(GFX_INFO Gfx_Info);
+extern Boolean (*initiateGFX)(GFX_INFO Gfx_Info);
 extern void (*processDList)();
 extern void (*processRDPList)();
 extern void (*romClosed_gfx)();
@@ -250,41 +250,41 @@ extern void (*readScreen)(void **dest, long *width, long *height);
 
 extern void (*aiDacrateChanged)(int SystemType);
 extern void (*aiLenChanged)();
-extern DWORD (*aiReadLength)();
-//extern void (*aiUpdate)(BOOL Wait);
+extern u32 (*aiReadLength)();
+//extern void (*aiUpdate)(Boolean Wait);
 extern void (*closeDLL_audio)();
-extern BOOL (*initiateAudio)(AUDIO_INFO Audio_Info);
+extern Boolean (*initiateAudio)(AUDIO_INFO Audio_Info);
 extern void (*processAList)();
 extern void (*romClosed_audio)();
 extern void (*romOpen_audio)();
 
 extern void (*closeDLL_input)();
-extern void (*controllerCommand)(int Control, BYTE * Command);
+extern void (*controllerCommand)(int Control, u8 * Command);
 extern void (*getKeys)(int Control, BUTTONS *Keys);
 extern void (*initiateControllers)(CONTROL_INFO ControlInfo);
-extern void (*readController)(int Control, BYTE *Command);
+extern void (*readController)(int Control, u8 *Command);
 extern void (*romClosed_input)();
 extern void (*romOpen_input)();
 extern void (*keyDown)(WPARAM wParam, LPARAM lParam);
 extern void (*keyUp)(WPARAM wParam, LPARAM lParam);
 
 extern void (*closeDLL_RSP)();
-extern DWORD (*doRspCycles)(DWORD Cycles);
-extern void (*initiateRSP)(RSP_INFO Rsp_Info, DWORD * CycleCount);
+extern u32 (*doRspCycles)(u32 Cycles);
+extern void (*initiateRSP)(RSP_INFO Rsp_Info, u32 * CycleCount);
 extern void (*romClosed_RSP)();
 
 // frame buffer plugin spec extension
 
 typedef struct
 {
-   DWORD addr;
-   DWORD size;
-   DWORD width;
-   DWORD height;
+   u32 addr;
+   u32 size;
+   u32 width;
+   u32 height;
 } FrameBufferInfo;
 
-extern void (*fBRead)(DWORD addr);
-extern void (*fBWrite)(DWORD addr, DWORD size);
+extern void (*fBRead)(u32 addr);
+extern void (*fBWrite)(u32 addr, u32 size);
 extern void (*fBGetFrameBufferInfo)(void *p);
 
 #endif

@@ -64,7 +64,7 @@ void print_pif()
 }
 #endif
 
-void EepromCommand(BYTE *Command)
+void EepromCommand(u8 *Command)
 {
    switch (Command[2])
      {
@@ -138,7 +138,7 @@ void EepromCommand(BYTE *Command)
 
 void format_mempacks()
 {
-   unsigned char init[] =
+   u8 init[] =
      {
 	0x81,0x01,0x02,0x03, 0x04,0x05,0x06,0x07, 0x08,0x09,0x0a,0x0b, 0x0c,0x0d,0x0e,0x0f,
 	0x10,0x11,0x12,0x13, 0x14,0x15,0x16,0x17, 0x18,0x19,0x1a,0x1b, 0x1c,0x1d,0x1e,0x1f,
@@ -159,6 +159,7 @@ void format_mempacks()
 	0x00,0x71,0x00,0x03, 0x00,0x03,0x00,0x03, 0x00,0x03,0x00,0x03, 0x00,0x03,0x00,0x03
      };
    int i,j;
+
    for (i=0; i<4; i++)
      {
 	for (j=0; j<0x8000; j+=2)
@@ -173,7 +174,8 @@ void format_mempacks()
 unsigned char mempack_crc(unsigned char *data)
 {
    int i;
-   unsigned char CRC = 0;
+   u8 CRC = 0;
+
    for (i=0; i<=0x20; i++)
      {
 	int mask;
@@ -188,7 +190,7 @@ unsigned char mempack_crc(unsigned char *data)
    return CRC;
 }
 
-void internal_ReadController(int Control, BYTE *Command)
+void internal_ReadController(int Control, u8 *Command)
 {
    switch (Command[2])
      {
@@ -201,7 +203,7 @@ void internal_ReadController(int Control, BYTE *Command)
 #else
 	     getKeys(Control, &Keys);
 #endif
-	     *((unsigned long *)(Command + 3)) = Keys.Value;
+	     *((u32 *)(Command + 3)) = Keys.Value;
 #ifdef COMPARE_CORE
 	     check_input_sync(Command+3);
 #endif
@@ -224,7 +226,7 @@ void internal_ReadController(int Control, BYTE *Command)
      }
 }
 
-void internal_ControllerCommand(int Control, BYTE *Command)
+void internal_ControllerCommand(int Control, u8 *Command)
 {
    switch (Command[2])
      {

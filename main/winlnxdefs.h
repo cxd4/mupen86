@@ -30,22 +30,13 @@
 #ifndef WINLNXDEFS_H
 #define WINLNXDEFS_H
 
-typedef unsigned int BOOL;
-typedef unsigned long DWORD;
-typedef unsigned short WORD;
-typedef unsigned char BYTE;
-typedef unsigned int UINT;
-typedef unsigned long long DWORD64;
-
-typedef short SHORT;
-
-typedef long __int32;
+/* cxd4 -- To do--possibly delete tihs to replace with the below? */
+#include "../memory/memory.h"
 
 typedef int HINSTANCE;
 typedef int HWND;
 typedef int WPARAM;
 typedef int LPARAM;
-typedef void* LPVOID;
 
 #define __declspec(dllexport)
 #define _cdecl
@@ -59,5 +50,7 @@ typedef void* LPVOID;
 #ifndef TRUE
 #define TRUE 1
 #endif
+
+typedef int Boolean;
 
 #endif

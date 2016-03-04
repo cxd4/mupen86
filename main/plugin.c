@@ -56,27 +56,27 @@ void (*dllAbout)(HWND hParent);
 
 /* dummy functions to prevent mupen from crashing if a plugin is missing */
 static void dummy_void() {}
-static BOOL dummy_initiateGFX(GFX_INFO Gfx_Info) { return TRUE; }
-static BOOL dummy_initiateAudio(AUDIO_INFO Audio_Info) { return TRUE; }
+static Boolean dummy_initiateGFX(GFX_INFO Gfx_Info) { return TRUE; }
+static Boolean dummy_initiateAudio(AUDIO_INFO Audio_Info) { return TRUE; }
 static void dummy_initiateControllers(CONTROL_INFO Control_Info) {}
 static void dummy_aiDacrateChanged(int SystemType) {}
-static DWORD dummy_aiReadLength() { return 0; }
+static u32 dummy_aiReadLength() { return 0; }
 //static void dummy_aiUpdate(BOOL Wait) {}
-static void dummy_controllerCommand(int Control, BYTE * Command) {}
+static void dummy_controllerCommand(int Control, u8 * Command) {}
 static void dummy_getKeys(int Control, BUTTONS *Keys) {}
-static void dummy_readController(int Control, BYTE *Command) {}
+static void dummy_readController(int Control, u8 *Command) {}
 static void dummy_keyDown(WPARAM wParam, LPARAM lParam) {}
 static void dummy_keyUp(WPARAM wParam, LPARAM lParam) {}
-static unsigned long dummy;
-static DWORD dummy_doRspCycles(DWORD Cycles) { return Cycles; };
-static void dummy_initiateRSP(RSP_INFO Rsp_Info, DWORD * CycleCount) {};
-static void dummy_fBRead(DWORD addr) {};
-static void dummy_fBWrite(DWORD addr, DWORD size) {};
+static u32 dummy;
+static u32 dummy_doRspCycles(u32 Cycles) { return Cycles; };
+static void dummy_initiateRSP(RSP_INFO Rsp_Info, u32 * CycleCount) {};
+static void dummy_fBRead(u32 addr) {};
+static void dummy_fBWrite(u32 addr, u32 size) {};
 static void dummy_fBGetFrameBufferInfo(void *p) {};
 
 void (*changeWindow)() = dummy_void;
 void (*closeDLL_gfx)() = dummy_void;
-BOOL (*initiateGFX)(GFX_INFO Gfx_Info) = dummy_initiateGFX;
+Boolean (*initiateGFX)(GFX_INFO Gfx_Info) = dummy_initiateGFX;
 void (*processDList)() = dummy_void;
 void (*processRDPList)() = dummy_void;
 void (*romClosed_gfx)() = dummy_void;
@@ -89,31 +89,31 @@ void (*readScreen)(void **dest, long *width, long *height) = 0;
 
 void (*aiDacrateChanged)(int SystemType) = dummy_aiDacrateChanged;
 void (*aiLenChanged)() = dummy_void;
-DWORD (*aiReadLength)() = dummy_aiReadLength;
-//void (*aiUpdate)(BOOL Wait) = dummy_aiUpdate;
+u32 (*aiReadLength)() = dummy_aiReadLength;
+//void (*aiUpdate)(Boolean Wait) = dummy_aiUpdate;
 void (*closeDLL_audio)() = dummy_void;
-BOOL (*initiateAudio)(AUDIO_INFO Audio_Info) = dummy_initiateAudio;
+Boolean (*initiateAudio)(AUDIO_INFO Audio_Info) = dummy_initiateAudio;
 void (*processAList)() = dummy_void;
 void (*romClosed_audio)() = dummy_void;
 void (*romOpen_audio)() = dummy_void;
 
 void (*closeDLL_input)() = dummy_void;
-void (*controllerCommand)(int Control, BYTE * Command) = dummy_controllerCommand;
+void (*controllerCommand)(int Control, u8 * Command) = dummy_controllerCommand;
 void (*getKeys)(int Control, BUTTONS *Keys) = dummy_getKeys;
 void (*initiateControllers)(CONTROL_INFO ControlInfo) = dummy_initiateControllers;
-void (*readController)(int Control, BYTE *Command) = dummy_readController;
+void (*readController)(int Control, u8 *Command) = dummy_readController;
 void (*romClosed_input)() = dummy_void;
 void (*romOpen_input)() = dummy_void;
 void (*keyDown)(WPARAM wParam, LPARAM lParam) = dummy_keyDown;
 void (*keyUp)(WPARAM wParam, LPARAM lParam) = dummy_keyUp;
 
 void (*closeDLL_RSP)() = dummy_void;
-DWORD (*doRspCycles)(DWORD Cycles) = dummy_doRspCycles;
-void (*initiateRSP)(RSP_INFO Rsp_Info, DWORD * CycleCount) = dummy_initiateRSP;
+u32 (*doRspCycles)(u32 Cycles) = dummy_doRspCycles;
+void (*initiateRSP)(RSP_INFO Rsp_Info, u32 * CycleCount) = dummy_initiateRSP;
 void (*romClosed_RSP)() = dummy_void;
 
-void (*fBRead)(DWORD addr) = dummy_fBRead;
-void (*fBWrite)(DWORD addr, DWORD size) = dummy_fBWrite;
+void (*fBRead)(u32 addr) = dummy_fBRead;
+void (*fBWrite)(u32 addr, u32 size) = dummy_fBWrite;
 void (*fBGetFrameBufferInfo)(void *p) = dummy_fBGetFrameBufferInfo;
 
 //--------------------- plugin storage type ----------------
@@ -345,9 +345,9 @@ void plugin_load_plugins(const char *gfx_name,
 
 	gfx_info.MemoryBswaped = TRUE;
 	gfx_info.HEADER = rom;
-	gfx_info.RDRAM = (BYTE*)rdram;
-	gfx_info.DMEM = (BYTE*)SP_DMEM;
-	gfx_info.IMEM = (BYTE*)SP_IMEM;
+	gfx_info.RDRAM = (u8*)rdram;
+	gfx_info.DMEM = (u8*)SP_DMEM;
+	gfx_info.IMEM = (u8*)SP_IMEM;
 	gfx_info.MI_INTR_REG = &(MI_register.mi_intr_reg);
 	gfx_info.DPC_START_REG = &(dpc_register.dpc_start);
 	gfx_info.DPC_END_REG = &(dpc_register.dpc_end);
@@ -414,9 +414,9 @@ void plugin_load_plugins(const char *gfx_name,
 	
 	audio_info.MemoryBswaped = TRUE;
 	audio_info.HEADER = rom;
-	audio_info.RDRAM = (BYTE*)rdram;
-	audio_info.DMEM = (BYTE*)SP_DMEM;
-	audio_info.IMEM = (BYTE*)SP_IMEM;
+	audio_info.RDRAM = (u8*)rdram;
+	audio_info.DMEM = (u8*)SP_DMEM;
+	audio_info.IMEM = (u8*)SP_IMEM;
 	audio_info.MI_INTR_REG = &(MI_register.mi_intr_reg);
 	audio_info.AI_DRAM_ADDR_REG = &(ai_register.ai_dram_addr);
 	audio_info.AI_LEN_REG = &(ai_register.ai_len);
@@ -501,9 +501,9 @@ void plugin_load_plugins(const char *gfx_name,
 	if (romClosed_RSP == NULL) romClosed_RSP = dummy_void;
 	
 	rsp_info.MemoryBswaped = TRUE;
-	rsp_info.RDRAM = (BYTE*)rdram;
-	rsp_info.DMEM = (BYTE*)SP_DMEM;
-	rsp_info.IMEM = (BYTE*)SP_IMEM;
+	rsp_info.RDRAM = (u8*)rdram;
+	rsp_info.DMEM = (u8*)SP_DMEM;
+	rsp_info.IMEM = (u8*)SP_IMEM;
 	rsp_info.MI_INTR_REG = &MI_register.mi_intr_reg;
 	rsp_info.SP_MEM_ADDR_REG = &sp_register.sp_mem_addr_reg;
 	rsp_info.SP_DRAM_ADDR_REG = &sp_register.sp_dram_addr_reg;
@@ -527,7 +527,7 @@ void plugin_load_plugins(const char *gfx_name,
 	rsp_info.ProcessAlistList = processAList;
 	rsp_info.ProcessRdpList = processRDPList;
 	rsp_info.ShowCFB = showCFB;
-	initiateRSP(rsp_info,(DWORD*)&i);
+	initiateRSP(rsp_info, (u32*)&i);
      }
    else
      {
