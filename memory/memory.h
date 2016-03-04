@@ -121,7 +121,7 @@ void free_memory();
 extern u32 SP_DMEM[2 * 0x1000/sizeof(u32)];
 extern u8 *SP_DMEMb;
 extern u32 *SP_IMEM;
-extern u32 PIF_RAM[0x40/4];
+extern u32 PIF_RAM[0x40 / sizeof(u32)];
 extern u8 *PIF_RAMb;
 extern u32 rdram[0x800000 / sizeof(u32)];
 extern u32 address, word;
