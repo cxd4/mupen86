@@ -34,7 +34,7 @@
 
 typedef struct _tlb
 {
-   u16 mask;
+   s16 mask;
    s32 vpn2;
    char g;
    unsigned char asid;

@@ -117,7 +117,7 @@ void compare_core()
 	/*if(wait == 1 && reg_cop0[9] > 0x35000000) wait=0;
 	if(wait) return;*/
 	
-	fread(comp_reg, 4, sizeof(i64), f);
+	fread(comp_reg, 4, sizeof(i32), f);
 	if (interpcore)
 	  {
 	     if (memcmp(&interp_addr, comp_reg, 4))

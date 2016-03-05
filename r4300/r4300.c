@@ -81,12 +81,12 @@ void (*code)();
 
 void NI()
 {
-   printf("NI() @ %x\n", (u32)PC->addr);
+   printf("NI() @ %x\n", (s32)PC->addr);
    printf("opcode not implemented : ");
    if (PC->addr >= 0xa4000000 && PC->addr < 0xa4001000)
-     printf("%x:%x\n", (u32)PC->addr, (u32)SP_DMEM[(PC->addr-0xa4000000)/4]);
+     printf("%x:%x\n", (s32)PC->addr, (s32)SP_DMEM[(PC->addr-0xa4000000)/4]);
    else
-     printf("%x:%x\n", (u32)PC->addr, (u32)rdram[(PC->addr-0x80000000)/4]);
+     printf("%x:%x\n", (s32)PC->addr, (s32)rdram[(PC->addr-0x80000000)/4]);
    stop=1;
 }
 
@@ -94,9 +94,9 @@ void RESERVED()
 {
    printf("reserved opcode : ");
    if (PC->addr >= 0xa4000000 && PC->addr < 0xa4001000)
-     printf("%x:%x\n", (u32)PC->addr, (u32)SP_DMEM[(PC->addr-0xa4000000)/4]);
+     printf("%x:%x\n", (s32)PC->addr, (s32)SP_DMEM[(PC->addr-0xa4000000)/4]);
    else
-     printf("%x:%x\n", (u32)PC->addr, (u32)rdram[(PC->addr-0x80000000)/4]);
+     printf("%x:%x\n", (s32)PC->addr, (s32)rdram[(PC->addr-0x80000000)/4]);
    stop=1;
 }
 
@@ -411,7 +411,7 @@ void SLTI()
 
 void SLTIU()
 {
-   if ((u64)irs < (u64)((s32)iimmediate))
+   if ((u64)irs < (u64)((s64)iimmediate))
      irt = 1;
    else irt = 0;
    PC++;
