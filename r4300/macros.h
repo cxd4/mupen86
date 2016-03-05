@@ -30,9 +30,11 @@
 #ifndef MACROS_H
 #define MACROS_H
 
-#define sign_extended(a) a = (long long)((long)a)
-#define sign_extendedb(a) a = (long long)((char)a)
-#define sign_extendedh(a) a = (long long)((short)a)
+#include "../main/winlnxdefs.h"
+
+#define sign_extended(a)        a = (s64)((s32)a)
+#define sign_extendedb(a)       a = (s64)((s8)a)
+#define sign_extendedh(a)       a = (s64)((s16)a)
 
 #define rrt *PC->f.r.rt
 #define rrd *PC->f.r.rd
@@ -58,17 +60,17 @@
 
 // 32 bits macros
 #ifndef _BIG_ENDIAN
-#define rrt32 *((long*)PC->f.r.rt)
-#define rrd32 *((long*)PC->f.r.rd)
-#define rrs32 *((long*)PC->f.r.rs)
-#define irs32 *((long*)PC->f.i.rs)
-#define irt32 *((long*)PC->f.i.rt)
+#define rrt32 *((s32 *)PC->f.r.rt)
+#define rrd32 *((s32 *)PC->f.r.rd)
+#define rrs32 *((s32 *)PC->f.r.rs)
+#define irs32 *((s32 *)PC->f.i.rs)
+#define irt32 *((s32 *)PC->f.i.rt)
 #else
-#define rrt32 *((long*)PC->f.r.rt+1)
-#define rrd32 *((long*)PC->f.r.rd+1)
-#define rrs32 *((long*)PC->f.r.rs+1)
-#define irs32 *((long*)PC->f.i.rs+1)
-#define irt32 *((long*)PC->f.i.rt+1)
+#define rrt32 *((s32 *)PC->f.r.rt+1)
+#define rrd32 *((s32 *)PC->f.r.rd+1)
+#define rrs32 *((s32 *)PC->f.r.rs+1)
+#define irs32 *((s32 *)PC->f.i.rs+1)
+#define irt32 *((s32 *)PC->f.i.rt+1)
 #endif
 
 #define check_PC \
