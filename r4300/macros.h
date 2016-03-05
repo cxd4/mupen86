@@ -32,9 +32,9 @@
 
 #include "../main/winlnxdefs.h"
 
-#define sign_extended(a)        a = (s64)((s32)a)
-#define sign_extendedb(a)       a = (s64)((s8)a)
-#define sign_extendedh(a)       a = (s64)((s16)a)
+#define sign_extended(a)        a = (s64)((s32)(a))
+#define sign_extendedb(a)       a = (s64)((s8)(a))
+#define sign_extendedh(a)       a = (s64)((s16)(a))
 
 #define rrt *PC->f.r.rt
 #define rrd *PC->f.r.rd
@@ -82,31 +82,31 @@ stop=1; \
 
 
 //cop0 macros
-#define Index reg_cop0[0]
-#define Random reg_cop0[1]
-#define EntryLo0 reg_cop0[2]
-#define EntryLo1 reg_cop0[3]
-#define Context reg_cop0[4]
-#define PageMask reg_cop0[5]
-#define Wired reg_cop0[6]
-#define BadVAddr reg_cop0[8]
-#define Count reg_cop0[9]
-#define EntryHi reg_cop0[10]
-#define Compare reg_cop0[11]
-#define Status reg_cop0[12]
-#define Cause reg_cop0[13]
-#define EPC reg_cop0[14]
-#define PRevID reg_cop0[15]
-#define Config reg_cop0[16]
-#define LLAddr reg_cop0[17]
-#define WatchLo reg_cop0[18]
-#define WatchHi reg_cop0[19]
-#define XContext reg_cop0[20]
-#define PErr reg_cop0[26]
-#define CacheErr reg_cop0[27]
-#define TagLo reg_cop0[28]
-#define TagHi reg_cop0[29]
-#define ErrorEPC reg_cop0[30]
+#define Index           reg_cop0[ 0]
+#define Random          reg_cop0[ 1]
+#define EntryLo0        reg_cop0[ 2]
+#define EntryLo1        reg_cop0[ 3]
+#define Context         reg_cop0[ 4]
+#define PageMask        reg_cop0[ 5]
+#define Wired           reg_cop0[ 6]
+#define BadVAddr        reg_cop0[ 8]
+#define Count           reg_cop0[ 9]
+#define EntryHi         reg_cop0[10]
+#define Compare         reg_cop0[11]
+#define Status          reg_cop0[12]
+#define Cause           reg_cop0[13]
+#define EPC             reg_cop0[14]
+#define PRevID          reg_cop0[15]
+#define Config          reg_cop0[16]
+#define LLAddr          reg_cop0[17]
+#define WatchLo         reg_cop0[18]
+#define WatchHi         reg_cop0[19]
+#define XContext        reg_cop0[20]
+#define PErr            reg_cop0[26]
+#define CacheErr        reg_cop0[27]
+#define TagLo           reg_cop0[28]
+#define TagHi           reg_cop0[29]
+#define ErrorEPC        reg_cop0[30]
 
 #ifdef X86
 #define set_rounding() __asm__ __volatile__("fldcw %0" : : "m" (rounding_mode))
