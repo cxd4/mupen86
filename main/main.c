@@ -150,7 +150,7 @@ static int filter(const SDL_Event *event)
     {
     case SDL_QUIT:
         stop_it();
-        break; 
+        return 1;
     case SDL_KEYDOWN:
 	switch (event->key.keysym.sym)
 	  {
@@ -204,7 +204,6 @@ static int filter(const SDL_Event *event)
 	       }
 	  }
 	return 0;
-	break;
       case SDL_KEYUP:
 	switch (event->key.keysym.sym)
 	  {
@@ -216,7 +215,6 @@ static int filter(const SDL_Event *event)
 	     keyUp(0, event->key.keysym.sym);
 	  }
 	return 0;
-	break;
       default:
 	return 1;
      }
@@ -684,19 +682,22 @@ int main(int argc, char *argv[])
    romOpen_input();
    // ------------------------------------------------------------
    SDL_SetEventFilter(filter);
-   
-   if(p_fullscreen)
+
+   if (p_fullscreen)
      changeWindow();
-   
+
    go();
+
    romClosed_RSP();
    romClosed_input();
    romClosed_audio();
    romClosed_gfx();
+
    closeDLL_RSP();
    closeDLL_input();
    closeDLL_audio();
    closeDLL_gfx();
+
    free(rom);
    free(ROM_HEADER);
    free_memory();
