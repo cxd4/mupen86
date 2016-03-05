@@ -559,7 +559,7 @@ int main(int argc, char *argv[])
      dynacore = 1;
 
    SDL_Init(SDL_INIT_VIDEO);
-   SDL_SetVideoMode(10, 10, 16, 0);
+   SDL_SetVideoMode(640, 480, 16, 0);
    SDL_ShowCursor(0);
    SDL_EnableKeyRepeat(0, 0);
    SDL_EnableUNICODE(1);
