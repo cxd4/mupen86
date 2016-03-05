@@ -87,9 +87,9 @@ void dma_pi_read()
 
 void dma_pi_write()
 {
-   unsigned long longueur;
+   u32 longueur;
    int i;
-   
+
    if (pi_register.pi_cart_addr_reg < 0x10000000)
      {
 	if (pi_register.pi_cart_addr_reg >= 0x08000000 &&
@@ -162,8 +162,8 @@ void dma_pi_write()
      {
 	for (i=0; i<longueur; i++)
 	  {
-	     unsigned long rdram_address1 = pi_register.pi_dram_addr_reg+i+0x80000000;
-	     unsigned long rdram_address2 = pi_register.pi_dram_addr_reg+i+0xa0000000;
+	     u32 rdram_address1 = pi_register.pi_dram_addr_reg+i+0x80000000;
+	     u32 rdram_address2 = pi_register.pi_dram_addr_reg+i+0xa0000000;
 	     
 	     ((unsigned char*)rdram)[(pi_register.pi_dram_addr_reg+i)^S8]=
 	       rom[(((pi_register.pi_cart_addr_reg-0x10000000)&0x3FFFFFF)+i)^S8];

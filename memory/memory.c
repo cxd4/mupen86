@@ -1421,7 +1421,7 @@ void write_nomemd()
 
 void read_rdram()
 {;
-   *rdword = *((unsigned long *)(rdramb + (address & 0xFFFFFF)));
+   *rdword = *((u32 *)(rdramb + (address & 0xFFFFFF)));
 }
 
 void read_rdramb()
@@ -3479,7 +3479,7 @@ void write_flashram_commandd()
    printf("write_flashram_commandd\n");
 }
 
-static unsigned long lastwrite = 0;
+static u32 lastwrite = 0;
 
 void read_rom()
 {

@@ -1384,7 +1384,7 @@ void NOTCOMPILED()
    PC->ops();
    if (dynacore)
      dyna_jump();
-     //*return_address = (unsigned long)(blocks[PC->addr>>12]->code + PC->local_addr);
+     //*return_address = (u32)(blocks[PC->addr>>12]->code + PC->local_addr);
    //else
    //PC->ops();
 }
@@ -1410,10 +1410,12 @@ static inline u32 update_invalid_addr(u32 addr)
      }
    else
      {
-	unsigned long paddr = virtual_to_physical_address(addr, 2);
+	u32 paddr = virtual_to_physical_address(addr, 2);
+
 	if (paddr)
 	  {
-	     unsigned long beg_paddr = paddr - (addr - (addr&~0xFFF));
+	     u32 beg_paddr = paddr - (addr - (addr & ~0xFFF));
+
 	     update_invalid_addr(paddr);
 	     if (invalid_code[(beg_paddr+0x000)>>12]) invalid_code[addr>>12] = 1;
 	     if (invalid_code[(beg_paddr+0xFFC)>>12]) invalid_code[addr>>12] = 1;
@@ -1510,7 +1512,7 @@ void init_blocks()
    blocks[0xa4000000>>12]->start = 0xa4000000;
    blocks[0xa4000000>>12]->end = 0xa4001000;
    actual=blocks[0xa4000000>>12];
-    init_block((long *)SP_DMEM, blocks[0xA4000000 >> 12]);
+    init_block((i32 *)SP_DMEM, blocks[0xA4000000 >> 12]);
    PC=actual->block+(0x40/4);
 #ifdef DBG
    if (debugger_mode) // debugger shows initial state (before 1st instruction).

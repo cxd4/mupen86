@@ -39,19 +39,19 @@ typedef struct _precomp_instr
      {
 	struct
 	  {
-	     long long int *rs;
-	     long long int *rt;
+	     s64 *rs;
+	     s64 *rt;
 	     short immediate;
 	  } i;
 	struct
 	  {
-	     unsigned long inst_index;
+	     u32 inst_index;
 	  } j;
 	struct
 	  {
-	     long long int *rs;
-	     long long int *rt;
-	     long long int *rd;
+	     s64 *rs;
+	     s64 *rt;
+	     s64 *rd;
 	     unsigned char sa;
 	     unsigned char nrd;
 	  } r;
@@ -68,8 +68,8 @@ typedef struct _precomp_instr
 	     unsigned char fd;
 	  } cf;
      } f;
-   unsigned long addr;
-   unsigned long local_addr;
+   u32 addr;
+   u32 local_addr;
    reg_cache_struct reg_cache_infos;
 } precomp_instr;
 
@@ -84,13 +84,13 @@ typedef struct _precomp_block
    void *jumps_table;
    int jumps_number;
    //unsigned char md5[16];
-   unsigned long adler32;
+   u32 adler32;
 } precomp_block;
 
-void recompile_block(long *source, precomp_block *block, unsigned long func);
-void init_block(long *source, precomp_block *block);
+void recompile_block(s32 *source, precomp_block *block, u32 func);
+void init_block(s32 *source, precomp_block *block);
 void recompile_opcode();
-void prefetch_opcode(unsigned long op);
+void prefetch_opcode(u32 op);
 void dyna_jump();
 void dyna_start();
 void dyna_stop();

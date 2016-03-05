@@ -42,13 +42,13 @@ int code_length; // current real recompiled code length
 int max_code_length; // current recompiled code's buffer length
 unsigned char **inst_pointer; // output buffer for recompiled code
 precomp_block *dst_block; // the current block that we are recompiling
-long src; // the current recompiled instruction
+s32 src; // the current recompiled instruction
 int fast_memory;
 
-unsigned long *return_address; // that's where the dynarec will restart when
+u32 *return_address; // that's where the dynarec will restart when
                                // going back from a C function
 
-static long *SRC; // currently recompiled instruction in the input stream
+static s32 *SRC; // currently recompiled instruction in the input stream
 static int check_nop; // next instruction is nop ?
 static int delay_slot_compiled = 0;
 
@@ -520,7 +520,7 @@ static void (*recomp_special[64])(void) =
 
 static void RBLTZ()
 {
-   unsigned long target;
+   u32 target;
    dst->ops = BLTZ;
    recompile_standard_i_type();
    target = dst->addr + dst->f.i.immediate*4 + 4;
@@ -543,7 +543,7 @@ static void RBLTZ()
 
 static void RBGEZ()
 {
-   unsigned long target;
+   u32 target;
    dst->ops = BGEZ;
    recompile_standard_i_type();
    target = dst->addr + dst->f.i.immediate*4 + 4;
@@ -566,7 +566,7 @@ static void RBGEZ()
 
 static void RBLTZL()
 {
-   unsigned long target;
+   u32 target;
    dst->ops = BLTZL;
    recompile_standard_i_type();
    target = dst->addr + dst->f.i.immediate*4 + 4;
@@ -589,7 +589,7 @@ static void RBLTZL()
 
 static void RBGEZL()
 {
-   unsigned long target;
+   u32 target;
    dst->ops = BGEZL;
    recompile_standard_i_type();
    target = dst->addr + dst->f.i.immediate*4 + 4;
@@ -648,7 +648,7 @@ static void RTNEI()
 
 static void RBLTZAL()
 {
-   unsigned long target;
+   u32 target;
    dst->ops = BLTZAL;
    recompile_standard_i_type();
    target = dst->addr + dst->f.i.immediate*4 + 4;
@@ -671,7 +671,7 @@ static void RBLTZAL()
 
 static void RBGEZAL()
 {
-   unsigned long target;
+   u32 target;
    dst->ops = BGEZAL;
    recompile_standard_i_type();
    target = dst->addr + dst->f.i.immediate*4 + 4;
@@ -694,7 +694,7 @@ static void RBGEZAL()
 
 static void RBLTZALL()
 {
-   unsigned long target;
+   u32 target;
    dst->ops = BLTZALL;
    recompile_standard_i_type();
    target = dst->addr + dst->f.i.immediate*4 + 4;
@@ -717,7 +717,7 @@ static void RBLTZALL()
 
 static void RBGEZALL()
 {
-   unsigned long target;
+   u32 target;
    dst->ops = BGEZALL;
    recompile_standard_i_type();
    target = dst->addr + dst->f.i.immediate*4 + 4;
@@ -800,7 +800,7 @@ static void RMFC0()
 {
    dst->ops = MFC0;
    recompile_standard_r_type();
-   dst->f.r.rd = (long long*)(reg_cop0 + ((src >> 11) & 0x1F));
+   dst->f.r.rd = (s64*)(reg_cop0 + ((src >> 11) & 0x1F));
    dst->f.r.nrd = (src >> 11) & 0x1F;
    if (dst->f.r.rt == reg) RNOP();
    else if (dynacore) genmfc0();
@@ -833,7 +833,7 @@ static void (*recomp_cop0[32])(void) =
 
 static void RBC1F()
 {
-   unsigned long target;
+   u32 target;
    dst->ops = BC1F;
    recompile_standard_i_type();
    target = dst->addr + dst->f.i.immediate*4 + 4;
@@ -856,7 +856,7 @@ static void RBC1F()
 
 static void RBC1T()
 {
-   unsigned long target;
+   u32 target;
    dst->ops = BC1T;
    recompile_standard_i_type();
    target = dst->addr + dst->f.i.immediate*4 + 4;
@@ -879,7 +879,7 @@ static void RBC1T()
 
 static void RBC1FL()
 {
-   unsigned long target;
+   u32 target;
    dst->ops = BC1FL;
    recompile_standard_i_type();
    target = dst->addr + dst->f.i.immediate*4 + 4;
@@ -902,7 +902,7 @@ static void RBC1FL()
 
 static void RBC1TL()
 {
-   unsigned long target;
+   u32 target;
    dst->ops = BC1TL;
    recompile_standard_i_type();
    target = dst->addr + dst->f.i.immediate*4 + 4;
@@ -1615,7 +1615,7 @@ static void RREGIMM()
 
 static void RJ()
 {
-   unsigned long target;
+   u32 target;
    dst->ops = J_OUT;
    recompile_standard_j_type();
    target = (dst->f.j.inst_index<<2) | (dst->addr & 0xF0000000);
@@ -1638,7 +1638,7 @@ static void RJ()
 
 static void RJAL()
 {
-   unsigned long target;
+   u32 target;
    dst->ops = JAL_OUT;
    recompile_standard_j_type();
    target = (dst->f.j.inst_index<<2) | (dst->addr & 0xF0000000);
@@ -1661,7 +1661,7 @@ static void RJAL()
 
 static void RBEQ()
 {
-   unsigned long target;
+   u32 target;
    dst->ops = BEQ;
    recompile_standard_i_type();
    target = dst->addr + dst->f.i.immediate*4 + 4;
@@ -1684,7 +1684,7 @@ static void RBEQ()
 
 static void RBNE()
 {
-   unsigned long target;
+   u32 target;
    dst->ops = BNE;
    recompile_standard_i_type();
    target = dst->addr + dst->f.i.immediate*4 + 4;
@@ -1707,7 +1707,7 @@ static void RBNE()
 
 static void RBLEZ()
 {
-   unsigned long target;
+   u32 target;
    dst->ops = BLEZ;
    recompile_standard_i_type();
    target = dst->addr + dst->f.i.immediate*4 + 4;
@@ -1730,7 +1730,7 @@ static void RBLEZ()
 
 static void RBGTZ()
 {
-   unsigned long target;
+   u32 target;
    dst->ops = BGTZ;
    recompile_standard_i_type();
    target = dst->addr + dst->f.i.immediate*4 + 4;
@@ -1827,7 +1827,7 @@ static void RCOP1()
 
 static void RBEQL()
 {
-   unsigned long target;
+   u32 target;
    dst->ops = BEQL;
    recompile_standard_i_type();
    target = dst->addr + dst->f.i.immediate*4 + 4;
@@ -1850,7 +1850,7 @@ static void RBEQL()
 
 static void RBNEL()
 {
-   unsigned long target;
+   u32 target;
    dst->ops = BNEL;
    recompile_standard_i_type();
    target = dst->addr + dst->f.i.immediate*4 + 4;
@@ -1873,7 +1873,7 @@ static void RBNEL()
 
 static void RBLEZL()
 {
-   unsigned long target;
+   u32 target;
    dst->ops = BLEZL;
    recompile_standard_i_type();
    target = dst->addr + dst->f.i.immediate*4 + 4;
@@ -1896,7 +1896,7 @@ static void RBLEZL()
 
 static void RBGTZL()
 {
-   unsigned long target;
+   u32 target;
    dst->ops = BGTZL;
    recompile_standard_i_type();
    target = dst->addr + dst->f.i.immediate*4 + 4;
@@ -2156,7 +2156,7 @@ static void (*recomp_ops[64])(void) =
 /**********************************************************************
  ******************** initialize an empty block ***********************
  **********************************************************************/
-void init_block(long *source, precomp_block *block)
+void init_block(s32 *source, precomp_block *block)
 {
    int i, length, already_exist = 1;
    static int init_length;
@@ -2233,7 +2233,7 @@ void init_block(long *source, precomp_block *block)
    invalid_code[block->start>>12] = 0;
    if (block->end < 0x80000000 || block->start >= 0xc0000000)
      {	
-	unsigned long paddr;
+	u32 paddr;
 	
 	paddr = virtual_to_physical_address(block->start, 2);
 	invalid_code[paddr>>12] = 0;
@@ -2298,7 +2298,7 @@ void init_block(long *source, precomp_block *block)
 /**********************************************************************
  ********************* recompile a block of code **********************
  **********************************************************************/
-void recompile_block(long *source, precomp_block *block, unsigned long func)
+void recompile_block(s32 *source, precomp_block *block, u32 func)
 {
    int i, length, finished=0;
    start_section(COMPILER_SECTION);
@@ -2321,7 +2321,7 @@ void recompile_block(long *source, precomp_block *block, unsigned long func)
      {
 	if(block->start < 0x80000000 || block->start >= 0xc0000000)
 	  {
-	     unsigned long address2 = 
+	     u32 address2 = 
 	       virtual_to_physical_address(block->start + i*4, 0);
 	     if(blocks[address2>>12]->block[(address2&0xFFF)/4].ops == NOTCOMPILED)
 	       blocks[address2>>12]->block[(address2&0xFFF)/4].ops = NOTCOMPILED2;
@@ -2500,7 +2500,7 @@ void recompile_opcode()
 /**********************************************************************
  ************** decode one opcode (for the interpreter) ***************
  **********************************************************************/
-void prefetch_opcode(unsigned long op)
+void prefetch_opcode(u32 op)
 {
    dst = PC;
    src = op;

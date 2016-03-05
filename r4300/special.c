@@ -41,42 +41,42 @@ void NOP()
 
 void SLL()
 {
-   rrd32 = (unsigned long)(rrt32) << rsa;
+   rrd32 = (u32)(rrt32) << rsa;
    sign_extended(rrd);
    PC++;
 }
 
 void SRL()
 {
-   rrd32 = (unsigned long)rrt32 >> rsa;
+   rrd32 = (u32)rrt32 >> rsa;
    sign_extended(rrd);
    PC++;
 }
 
 void SRA()
 {
-   rrd32 = (signed long)rrt32 >> rsa;
+   rrd32 = (s32)rrt32 >> rsa;
    sign_extended(rrd);
    PC++;
 }
 
 void SLLV()
 {
-   rrd32 = (unsigned long)(rrt32) << (rrs32&0x1F);
+   rrd32 = (u32)(rrt32) << (rrs32&0x1F);
    sign_extended(rrd);
    PC++;
 }
 
 void SRLV()
 {
-   rrd32 = (unsigned long)rrt32 >> (rrs32 & 0x1F);
+   rrd32 = (u32)rrt32 >> (rrs32 & 0x1F);
    sign_extended(rrd);
    PC++;
 }
 
 void SRAV()
 {
-   rrd32 = (signed long)rrt32 >> (rrs32 & 0x1F);
+   rrd32 = (s32)rrt32 >> (rrs32 & 0x1F);
    sign_extended(rrd);
    PC++;
 }
@@ -96,7 +96,7 @@ void JR()
 
 void JALR()
 {
-   unsigned long long int *dest = PC->f.r.rd;
+   u64 *dest = PC->f.r.rd;
    local_rs32 = rrs32;
    PC++;
    delay_slot=1;
@@ -157,19 +157,19 @@ void DSLLV()
 
 void DSRLV()
 {
-   rrd = (unsigned long long)rrt >> (rrs32 & 0x3F);
+   rrd = (u64)rrt >> (rrs32 & 0x3F);
    PC++;
 }
 
 void DSRAV()
 {
-   rrd = (long long)rrt >> (rrs32 & 0x3F);
+   rrd = (s64)rrt >> (rrs32 & 0x3F);
    PC++;
 }
 
 void MULT()
 {
-   long long int temp;
+   s64 temp;
    temp = rrs * rrt;
    hi = temp >> 32;
    lo = temp;
@@ -179,9 +179,9 @@ void MULT()
 
 void MULTU()
 {
-   unsigned long long int temp;
-   temp = (unsigned long)rrs * (unsigned long long)((unsigned long)rrt);
-   hi = (long long)temp >> 32;
+   u64 temp;
+   temp = (u32)rrs * (u64)((u32)rrt);
+   hi = (s64)temp >> 32;
    lo = temp;
    sign_extended(lo);
    PC++;
@@ -204,8 +204,8 @@ void DIVU()
 {
    if (rrt32)
      {
-	lo = (unsigned long)rrs32 / (unsigned long)rrt32;
-	hi = (unsigned long)rrs32 % (unsigned long)rrt32;
+	lo = (u32)rrs32 / (u32)rrt32;
+	hi = (u32)rrs32 % (u32)rrt32;
 	sign_extended(lo);
 	sign_extended(hi);
      }
@@ -215,9 +215,9 @@ void DIVU()
 
 void DMULT()
 {
-   unsigned long long int op1, op2, op3, op4;
-   unsigned long long int result1, result2, result3, result4;
-   unsigned long long int temp1, temp2, temp3, temp4;
+   u64 op1, op2, op3, op4;
+   u64 result1, result2, result3, result4;
+   u64 temp1, temp2, temp3, temp4;
    int sign = 0;
    
    if (rrs < 0)
@@ -261,9 +261,9 @@ void DMULT()
 
 void DMULTU()
 {
-   unsigned long long int op1, op2, op3, op4;
-   unsigned long long int result1, result2, result3, result4;
-   unsigned long long int temp1, temp2, temp3, temp4;
+   u64 op1, op2, op3, op4;
+   u64 result1, result2, result3, result4;
+   u64 temp1, temp2, temp3, temp4;
    
    op1 = rrs & 0xFFFFFFFF;
    op2 = (rrs >> 32) & 0xFFFFFFFF;
@@ -290,8 +290,8 @@ void DDIV()
 {
    if (rrt)
      {
-	lo = (long long int)rrs / (long long int)rrt;
-	hi = (long long int)rrs % (long long int)rrt;
+	lo = (s64)rrs / (s64)rrt;
+	hi = (s64)rrs % (s64)rrt;
      }
 //   else printf("ddiv\n");
    PC++;
@@ -301,8 +301,8 @@ void DDIVU()
 {
    if (rrt)
      {
-	lo = (unsigned long long int)rrs / (unsigned long long int)rrt;
-	hi = (unsigned long long int)rrs % (unsigned long long int)rrt;
+	lo = (u64)rrs / (u64)rrt;
+	hi = (u64)rrs % (u64)rrt;
      }
 //   else printf("ddivu\n");
    PC++;
@@ -369,7 +369,7 @@ void SLT()
 
 void SLTU()
 {
-   if ((unsigned long long)rrs < (unsigned long long)rrt) 
+   if ((u64)rrs < (u64)rrt) 
      rrd = 1;
    else rrd = 0;
    PC++;
@@ -417,7 +417,7 @@ void DSLL()
 
 void DSRL()
 {
-   rrd = (unsigned long long)rrt >> rsa;
+   rrd = (u64)rrt >> rsa;
    PC++;
 }
 
@@ -435,12 +435,12 @@ void DSLL32()
 
 void DSRL32()
 {
-   rrd = (unsigned long long int)rrt >> (32+rsa);
+   rrd = (u64)rrt >> (32+rsa);
    PC++;
 }
 
 void DSRA32()
 {
-   rrd = (signed long long int)rrt >> (32+rsa);
+   rrd = (s64)rrt >> (32+rsa);
    PC++;
 }

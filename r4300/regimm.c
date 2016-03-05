@@ -50,7 +50,7 @@ void BLTZ()
 void BLTZ_OUT()
 {
    local_rs = irs;
-   jump_target = (long)PC->f.i.immediate;
+   jump_target = (s32)PC->f.i.immediate;
    PC++;
    delay_slot=1;
    PC->ops();
@@ -64,7 +64,7 @@ void BLTZ_OUT()
 
 void BLTZ_IDLE()
 {
-   long skip;
+   s32 skip;
    if (irs < 0)
      {
 	update_count();
@@ -92,7 +92,7 @@ void BGEZ()
 void BGEZ_OUT()
 {
    local_rs = irs;
-   jump_target = (long)PC->f.i.immediate;
+   jump_target = (s32)PC->f.i.immediate;
    PC++;
    delay_slot=1;
    PC->ops();
@@ -106,7 +106,7 @@ void BGEZ_OUT()
 
 void BGEZ_IDLE()
 {
-   long skip;
+   s32 skip;
    if (irs >= 0)
      {
 	update_count();
@@ -139,7 +139,7 @@ void BLTZL_OUT()
 {
    if (irs < 0)
      {
-	jump_target = (long)PC->f.i.immediate;
+	jump_target = (s32)PC->f.i.immediate;
 	PC++;
 	delay_slot=1;
 	PC->ops();
@@ -156,7 +156,7 @@ void BLTZL_OUT()
 
 void BLTZL_IDLE()
 {
-   long skip;
+   s32 skip;
    if (irs < 0)
      {
 	update_count();
@@ -189,7 +189,7 @@ void BGEZL_OUT()
 {
    if (irs >= 0)
      {
-	jump_target = (long)PC->f.i.immediate;
+	jump_target = (s32)PC->f.i.immediate;
 	PC++;
 	delay_slot=1;
 	PC->ops();
@@ -206,7 +206,7 @@ void BGEZL_OUT()
 
 void BGEZL_IDLE()
 {
-   long skip;
+   s32 skip;
    if (irs >= 0)
      {
 	update_count();
@@ -242,7 +242,7 @@ void BLTZAL_OUT()
    reg[31]=PC->addr+8;
    if((&irs)!=(reg+31))
      {
-	jump_target = (long)PC->f.i.immediate;
+	jump_target = (s32)PC->f.i.immediate;
 	PC++;
 	delay_slot=1;
 	PC->ops();
@@ -258,7 +258,7 @@ void BLTZAL_OUT()
 
 void BLTZAL_IDLE()
 {
-   long skip;
+   s32 skip;
    if (irs < 0)
      {
 	update_count();
@@ -294,7 +294,7 @@ void BGEZAL_OUT()
    reg[31]=PC->addr+8;
    if((&irs)!=(reg+31))
      {
-	jump_target = (long)PC->f.i.immediate;
+	jump_target = (s32)PC->f.i.immediate;
 	PC++;
 	delay_slot=1;
 	PC->ops();
@@ -310,7 +310,7 @@ void BGEZAL_OUT()
 
 void BGEZAL_IDLE()
 {
-   long skip;
+   s32 skip;
    if (irs >=0)
      {
 	update_count();
@@ -353,7 +353,7 @@ void BLTZALL_OUT()
      {
 	if (local_rs < 0)
 	  {
-	     jump_target = (long)PC->f.i.immediate;
+	     jump_target = (s32)PC->f.i.immediate;
 	     PC++;
 	     delay_slot=1;
 	     PC->ops();
@@ -372,7 +372,7 @@ void BLTZALL_OUT()
 
 void BLTZALL_IDLE()
 {
-   long skip;
+   s32 skip;
    if (irs < 0)
      {
 	update_count();
@@ -415,7 +415,7 @@ void BGEZALL_OUT()
      {
 	if (local_rs >= 0)
 	  {
-	     jump_target = (long)PC->f.i.immediate;
+	     jump_target = (s32)PC->f.i.immediate;
 	     PC++;
 	     delay_slot=1;
 	     PC->ops();
@@ -434,7 +434,7 @@ void BGEZALL_OUT()
 
 void BGEZALL_IDLE()
 {
-   long skip;
+   s32 skip;
    if (irs >= 0)
      {
 	update_count();

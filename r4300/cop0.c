@@ -92,7 +92,7 @@ void MTC0()
       case 11:   // Compare
 	update_count();
 	remove_event(COMPARE_INT);
-	add_interupt_event_count(COMPARE_INT, (unsigned long)rrt);
+	add_interupt_event_count(COMPARE_INT, (u32)rrt);
 	Compare = rrt;
 	Cause = Cause & 0xFFFF7FFF; //Timer interupt is clear
 	break;

@@ -2984,7 +2984,7 @@ static void LWC1()
    address = lfoffset+reg[lfbase];
    rdword = &temp;
    read_word_in_memory();
-   *((long*)reg_cop1_simple[lfft]) = *rdword;
+   *((s32*)reg_cop1_simple[lfft]) = *rdword;
 }
 
 static void LDC1()
@@ -3143,7 +3143,7 @@ void pure_interpreter()
 	//if ((Count+debug_count) > 0xabaa2c) stop=1;
 	interp_ops[((op >> 26) & 0x3F)]();
 
-	//Count = (unsigned long)Count + 2;
+	//Count = (u32)Count + 2;
 	//if (interp_addr == 0x80000180) last_addr = interp_addr;
 #ifdef DBG
 	PC->addr = interp_addr;

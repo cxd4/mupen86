@@ -46,9 +46,9 @@ typedef enum flashram_mode
 } Flashram_mode;
 
 static int mode;
-static unsigned long long status;
+static u64 status;
 static unsigned char flashram[0x20000];
-static unsigned long erase_offset, write_pointer;
+static u32 erase_offset, write_pointer;
 
 void save_flashram_infos(char *buf)
 {
@@ -74,12 +74,12 @@ void init_flashram()
    status = 0;
 }
 
-unsigned long flashram_status()
+u32 flashram_status()
 {
    return (status >> 32);
 }
 
-void flashram_command(unsigned long command)
+void flashram_command(u32 command)
 {
    switch(command & 0xff000000)
      {
@@ -184,8 +184,8 @@ void dma_read_flashram()
    switch(mode)
      {
       case STATUS_MODE:
-	rdram[pi_register.pi_dram_addr_reg/4] = (unsigned long)(status >> 32);
-	rdram[pi_register.pi_dram_addr_reg/4+1] = (unsigned long)(status);
+	rdram[pi_register.pi_dram_addr_reg/4 + 0] = (u32)(status >> 32);
+	rdram[pi_register.pi_dram_addr_reg/4 + 1] = (u32)(status >>  0);
 	break;
       case READ_MODE:
 	filename = malloc(strlen(get_savespath())+

@@ -38,8 +38,8 @@
 #include "../exception.h"
 #include "interpret.h"
 
-extern unsigned long op;
-extern unsigned long src;
+extern u32 op;
+extern u32 src;
 
 precomp_instr fake_instr;
 static int eax, ebx, ecx, edx, esp, ebp, esi, edi;
@@ -53,11 +53,11 @@ void gennotcompiled()
    
    if (dst->addr == 0xa4000040)
      {
-	mov_m32_reg32((unsigned long*)(&return_address), ESP);
-	sub_m32_imm32((unsigned long*)(&return_address), 4);
+	mov_m32_reg32((u32*)(&return_address), ESP);
+	sub_m32_imm32((u32*)(&return_address), 4);
      }
-   mov_m32_imm32((unsigned long*)(&PC), (unsigned long)(dst));
-   mov_reg32_imm32(EAX, (unsigned long)NOTCOMPILED);
+   mov_m32_imm32((u32*)(&PC), (u32)(dst));
+   mov_reg32_imm32(EAX, (u32)NOTCOMPILED);
    call_reg32(EAX);
 }
 
@@ -70,63 +70,63 @@ void genlink_subblock()
 void gendebug()
 {
    //free_all_registers();
-   mov_m32_reg32((unsigned long*)&eax, EAX);
-   mov_m32_reg32((unsigned long*)&ebx, EBX);
-   mov_m32_reg32((unsigned long*)&ecx, ECX);
-   mov_m32_reg32((unsigned long*)&edx, EDX);
-   mov_m32_reg32((unsigned long*)&esp, ESP);
-   mov_m32_reg32((unsigned long*)&ebp, EBP);
-   mov_m32_reg32((unsigned long*)&esi, ESI);
-   mov_m32_reg32((unsigned long*)&edi, EDI);
+   mov_m32_reg32((u32*)&eax, EAX);
+   mov_m32_reg32((u32*)&ebx, EBX);
+   mov_m32_reg32((u32*)&ecx, ECX);
+   mov_m32_reg32((u32*)&edx, EDX);
+   mov_m32_reg32((u32*)&esp, ESP);
+   mov_m32_reg32((u32*)&ebp, EBP);
+   mov_m32_reg32((u32*)&esi, ESI);
+   mov_m32_reg32((u32*)&edi, EDI);
    
-   mov_m32_imm32((unsigned long*)(&PC), (unsigned long)(dst));
-   mov_m32_imm32((unsigned long*)(&op), (unsigned long)(src));
-   mov_reg32_imm32(EAX, (unsigned long)debug);
+   mov_m32_imm32((u32*)(&PC), (u32)(dst));
+   mov_m32_imm32((u32*)(&op), (u32)(src));
+   mov_reg32_imm32(EAX, (u32)debug);
    call_reg32(EAX);
    
-   mov_reg32_m32(EAX, (unsigned long*)&eax);
-   mov_reg32_m32(EBX, (unsigned long*)&ebx);
-   mov_reg32_m32(ECX, (unsigned long*)&ecx);
-   mov_reg32_m32(EDX, (unsigned long*)&edx);
-   mov_reg32_m32(ESP, (unsigned long*)&esp);
-   mov_reg32_m32(EBP, (unsigned long*)&ebp);
-   mov_reg32_m32(ESI, (unsigned long*)&esi);
-   mov_reg32_m32(EDI, (unsigned long*)&edi);
+   mov_reg32_m32(EAX, (u32*)&eax);
+   mov_reg32_m32(EBX, (u32*)&ebx);
+   mov_reg32_m32(ECX, (u32*)&ecx);
+   mov_reg32_m32(EDX, (u32*)&edx);
+   mov_reg32_m32(ESP, (u32*)&esp);
+   mov_reg32_m32(EBP, (u32*)&ebp);
+   mov_reg32_m32(ESI, (u32*)&esi);
+   mov_reg32_m32(EDI, (u32*)&edi);
 }
 
-void gencallinterp(unsigned long addr, int jump)
+void gencallinterp(u32 addr, int jump)
 {
    free_all_registers();
    simplify_access();
    if (jump)
-     mov_m32_imm32((unsigned long*)(&dyna_interp), 1);
-   mov_m32_imm32((unsigned long*)(&PC), (unsigned long)(dst));
+     mov_m32_imm32((u32*)(&dyna_interp), 1);
+   mov_m32_imm32((u32*)(&PC), (u32)(dst));
    mov_reg32_imm32(EAX, addr);
    call_reg32(EAX);
    if (jump)
      {
-	mov_m32_imm32((unsigned long*)(&dyna_interp), 0);
-	mov_reg32_imm32(EAX, (unsigned long)dyna_jump);
+	mov_m32_imm32((u32*)(&dyna_interp), 0);
+	mov_reg32_imm32(EAX, (u32)dyna_jump);
 	call_reg32(EAX);
      }
 }
 
-void genupdate_count(unsigned long addr)
+void genupdate_count(u32 addr)
 {
 #ifndef COMPARE_CORE
 #ifndef DBG
    mov_reg32_imm32(EAX, addr);
-   sub_reg32_m32(EAX, (unsigned long*)(&last_addr));
+   sub_reg32_m32(EAX, (u32*)(&last_addr));
    shr_reg32_imm8(EAX, 1);
-   add_m32_reg32((unsigned long*)(&Count), EAX);
+   add_m32_reg32((u32*)(&Count), EAX);
 #else
-   mov_m32_imm32((unsigned long*)(&PC), (unsigned long)(dst+1));
-   mov_reg32_imm32(EAX, (unsigned long)update_count);
+   mov_m32_imm32((u32*)(&PC), (u32)(dst+1));
+   mov_reg32_imm32(EAX, (u32)update_count);
    call_reg32(EAX);
 #endif
 #else
-   mov_m32_imm32((unsigned long*)(&PC), (unsigned long)(dst+1));
-   mov_reg32_imm32(EAX, (unsigned long)update_count);
+   mov_m32_imm32((u32*)(&PC), (u32)(dst+1));
+   mov_reg32_imm32(EAX, (u32)update_count);
    call_reg32(EAX);
 #endif
 }
@@ -145,40 +145,40 @@ void gendelayslot()
 void genni()
 {
 #ifdef EMU64_DEBUG
-   gencallinterp((unsigned long)NI, 0);
+   gencallinterp((u32)NI, 0);
 #endif
 }
 
 void genreserved()
 {
 #ifdef EMU64_DEBUG
-   gencallinterp((unsigned long)RESERVED, 0);
+   gencallinterp((u32)RESERVED, 0);
 #endif
 }
 
 void genfin_block()
 {
-   gencallinterp((unsigned long)FIN_BLOCK, 0);
+   gencallinterp((u32)FIN_BLOCK, 0);
 }
 
-void gencheck_interupt(unsigned long instr_structure)
+void gencheck_interupt(u32 instr_structure)
 {
    mov_eax_memoffs32((void*)(&next_interupt));
    cmp_reg32_m32(EAX, (void*)&Count);
    ja_rj(17);
-   mov_m32_imm32((unsigned long*)(&PC), instr_structure); // 10
-   mov_reg32_imm32(EAX, (unsigned long)gen_interupt); // 5
+   mov_m32_imm32((u32*)(&PC), instr_structure); // 10
+   mov_reg32_imm32(EAX, (u32)gen_interupt); // 5
    call_reg32(EAX); // 2
 }
 
-void gencheck_interupt_out(unsigned long addr)
+void gencheck_interupt_out(u32 addr)
 {
    mov_eax_memoffs32((void*)(&next_interupt));
    cmp_reg32_m32(EAX, (void*)&Count);
    ja_rj(27);
-   mov_m32_imm32((unsigned long*)(&fake_instr.addr), addr);
-   mov_m32_imm32((unsigned long*)(&PC), (unsigned long)(&fake_instr));
-   mov_reg32_imm32(EAX, (unsigned long)gen_interupt);
+   mov_m32_imm32((u32*)(&fake_instr.addr), addr);
+   mov_m32_imm32((u32*)(&PC), (u32)(&fake_instr));
+   mov_reg32_imm32(EAX, (u32)gen_interupt);
    call_reg32(EAX);
 }
 
@@ -187,9 +187,9 @@ void gencheck_interupt_reg() // addr is in EAX
    mov_reg32_m32(EBX, (void*)&next_interupt);
    cmp_reg32_m32(EBX, (void*)&Count);
    ja_rj(22);
-   mov_memoffs32_eax((unsigned long*)(&fake_instr.addr)); // 5
-   mov_m32_imm32((unsigned long*)(&PC), (unsigned long)(&fake_instr)); // 10
-   mov_reg32_imm32(EAX, (unsigned long)gen_interupt); // 5
+   mov_memoffs32_eax((u32*)(&fake_instr.addr)); // 5
+   mov_m32_imm32((u32*)(&PC), (u32)(&fake_instr)); // 10
+   mov_reg32_imm32(EAX, (u32)gen_interupt); // 5
    call_reg32(EAX); // 2
 }
 
@@ -200,14 +200,14 @@ void gennop()
 void genj()
 {
 #ifdef INTERPRET_J
-   gencallinterp((unsigned long)J, 1);
+   gencallinterp((u32)J, 1);
 #else
-   unsigned long naddr;
+   u32 naddr;
    
    if (((dst->addr & 0xFFF) == 0xFFC && 
        (dst->addr < 0x80000000 || dst->addr >= 0xC0000000))||no_compiled_jump)
      {
-	gencallinterp((unsigned long)J, 1);
+	gencallinterp((u32)J, 1);
 	return;
      }
    
@@ -215,7 +215,7 @@ void genj()
    naddr = ((dst-1)->f.j.inst_index<<2) | (dst->addr & 0xF0000000);
    
    mov_m32_imm32((void*)(&last_addr), naddr);
-   gencheck_interupt((unsigned long)&actual->block[(naddr-actual->start)/4]);
+   gencheck_interupt((u32)&actual->block[(naddr-actual->start)/4]);
    jmp(naddr);
 #endif
 }
@@ -223,14 +223,14 @@ void genj()
 void genj_out()
 {
 #ifdef INTERPRET_J_OUT
-   gencallinterp((unsigned long)J_OUT, 1);
+   gencallinterp((u32)J_OUT, 1);
 #else
-   unsigned long naddr;
+   u32 naddr;
    
    if (((dst->addr & 0xFFF) == 0xFFC && 
        (dst->addr < 0x80000000 || dst->addr >= 0xC0000000))||no_compiled_jump)
      {
-	gencallinterp((unsigned long)J_OUT, 1);
+	gencallinterp((u32)J_OUT, 1);
 	return;
      }
    
@@ -240,8 +240,8 @@ void genj_out()
    mov_m32_imm32((void*)(&last_addr), naddr);
    gencheck_interupt_out(naddr);
    mov_m32_imm32(&jump_to_address, naddr);
-   mov_m32_imm32((unsigned long*)(&PC), (unsigned long)(dst+1));
-   mov_reg32_imm32(EAX, (unsigned long)jump_to_func);
+   mov_m32_imm32((u32*)(&PC), (u32)(dst+1));
+   mov_reg32_imm32(EAX, (u32)jump_to_func);
    call_reg32(EAX);
 #endif
 }
@@ -249,22 +249,22 @@ void genj_out()
 void genj_idle()
 {
 #ifdef INTERPRET_J_IDLE
-   gencallinterp((unsigned long)J_IDLE, 1);
+   gencallinterp((u32)J_IDLE, 1);
 #else
    if (((dst->addr & 0xFFF) == 0xFFC && 
        (dst->addr < 0x80000000 || dst->addr >= 0xC0000000))||no_compiled_jump)
      {
-	gencallinterp((unsigned long)J_IDLE, 1);
+	gencallinterp((u32)J_IDLE, 1);
 	return;
      }
    
-   mov_eax_memoffs32((unsigned long *)(&next_interupt));
-   sub_reg32_m32(EAX, (unsigned long *)(&Count));
+   mov_eax_memoffs32((u32 *)(&next_interupt));
+   sub_reg32_m32(EAX, (u32 *)(&Count));
    cmp_reg32_imm8(EAX, 3);
    jbe_rj(11);
    
    and_eax_imm32(0xFFFFFFFC);
-   add_m32_reg32((unsigned long *)(&Count), EAX);
+   add_m32_reg32((u32 *)(&Count), EAX);
   
    genj();
 #endif
@@ -273,29 +273,29 @@ void genj_idle()
 void genjal()
 {
 #ifdef INTERPRET_JAL
-   gencallinterp((unsigned long)JAL, 1);
+   gencallinterp((u32)JAL, 1);
 #else
-   unsigned long naddr;
+   u32 naddr;
    
    if (((dst->addr & 0xFFF) == 0xFFC && 
        (dst->addr < 0x80000000 || dst->addr >= 0xC0000000))||no_compiled_jump)
      {
-	gencallinterp((unsigned long)JAL, 1);
+	gencallinterp((u32)JAL, 1);
 	return;
      }
    
    gendelayslot();
    
-   mov_m32_imm32((unsigned long *)(reg + 31), dst->addr + 4);
+   mov_m32_imm32((u32 *)(reg + 31), dst->addr + 4);
    if (((dst->addr + 4) & 0x80000000))
-     mov_m32_imm32((unsigned long *)(&reg[31])+1, 0xFFFFFFFF);
+     mov_m32_imm32((u32 *)(&reg[31])+1, 0xFFFFFFFF);
    else
-     mov_m32_imm32((unsigned long *)(&reg[31])+1, 0);
+     mov_m32_imm32((u32 *)(&reg[31])+1, 0);
    
    naddr = ((dst-1)->f.j.inst_index<<2) | (dst->addr & 0xF0000000);
    
    mov_m32_imm32((void*)(&last_addr), naddr);
-   gencheck_interupt((unsigned long)&actual->block[(naddr-actual->start)/4]);
+   gencheck_interupt((u32)&actual->block[(naddr-actual->start)/4]);
    jmp(naddr);
 #endif
 }
@@ -303,32 +303,32 @@ void genjal()
 void genjal_out()
 {
 #ifdef INTERPRET_JAL_OUT
-   gencallinterp((unsigned long)JAL_OUT, 1);
+   gencallinterp((u32)JAL_OUT, 1);
 #else
-   unsigned long naddr;
+   u32 naddr;
    
    if (((dst->addr & 0xFFF) == 0xFFC && 
        (dst->addr < 0x80000000 || dst->addr >= 0xC0000000))||no_compiled_jump)
      {
-	gencallinterp((unsigned long)JAL_OUT, 1);
+	gencallinterp((u32)JAL_OUT, 1);
 	return;
      }
    
    gendelayslot();
    
-   mov_m32_imm32((unsigned long *)(reg + 31), dst->addr + 4);
+   mov_m32_imm32((u32 *)(reg + 31), dst->addr + 4);
    if (((dst->addr + 4) & 0x80000000))
-     mov_m32_imm32((unsigned long *)(&reg[31])+1, 0xFFFFFFFF);
+     mov_m32_imm32((u32 *)(&reg[31])+1, 0xFFFFFFFF);
    else
-     mov_m32_imm32((unsigned long *)(&reg[31])+1, 0);
+     mov_m32_imm32((u32 *)(&reg[31])+1, 0);
    
    naddr = ((dst-1)->f.j.inst_index<<2) | (dst->addr & 0xF0000000);
    
    mov_m32_imm32((void*)(&last_addr), naddr);
    gencheck_interupt_out(naddr);
    mov_m32_imm32(&jump_to_address, naddr);
-   mov_m32_imm32((unsigned long*)(&PC), (unsigned long)(dst+1));
-   mov_reg32_imm32(EAX, (unsigned long)jump_to_func);
+   mov_m32_imm32((u32*)(&PC), (u32)(dst+1));
+   mov_reg32_imm32(EAX, (u32)jump_to_func);
    call_reg32(EAX);
 #endif
 }
@@ -336,22 +336,22 @@ void genjal_out()
 void genjal_idle()
 {
 #ifdef INTERPRET_JAL_IDLE
-   gencallinterp((unsigned long)JAL_IDLE, 1);
+   gencallinterp((u32)JAL_IDLE, 1);
 #else
    if (((dst->addr & 0xFFF) == 0xFFC && 
        (dst->addr < 0x80000000 || dst->addr >= 0xC0000000))||no_compiled_jump)
      {
-	gencallinterp((unsigned long)JAL_IDLE, 1);
+	gencallinterp((u32)JAL_IDLE, 1);
 	return;
      }
    
-   mov_eax_memoffs32((unsigned long *)(&next_interupt));
-   sub_reg32_m32(EAX, (unsigned long *)(&Count));
+   mov_eax_memoffs32((u32 *)(&next_interupt));
+   sub_reg32_m32(EAX, (u32 *)(&Count));
    cmp_reg32_imm8(EAX, 3);
    jbe_rj(11);
    
    and_eax_imm32(0xFFFFFFFC);
-   add_m32_reg32((unsigned long *)(&Count), EAX);
+   add_m32_reg32((u32 *)(&Count), EAX);
   
    genjal();
 #endif
@@ -359,82 +359,82 @@ void genjal_idle()
 
 void genbeq_test()
 {
-   int rs_64bit = is64((unsigned long *)dst->f.i.rs);
-   int rt_64bit = is64((unsigned long *)dst->f.i.rt);
+   int rs_64bit = is64((u32 *)dst->f.i.rs);
+   int rt_64bit = is64((u32 *)dst->f.i.rt);
    
    if (!rs_64bit && !rt_64bit)
      {
-	int rs = allocate_register((unsigned long *)dst->f.i.rs);
-	int rt = allocate_register((unsigned long *)dst->f.i.rt);
+	int rs = allocate_register((u32 *)dst->f.i.rs);
+	int rt = allocate_register((u32 *)dst->f.i.rt);
 	
 	cmp_reg32_reg32(rs, rt);
 	jne_rj(12);
-	mov_m32_imm32((unsigned long *)(&branch_taken), 1); // 10
+	mov_m32_imm32((u32 *)(&branch_taken), 1); // 10
 	jmp_imm_short(10); // 2
-	mov_m32_imm32((unsigned long *)(&branch_taken), 0); // 10
+	mov_m32_imm32((u32 *)(&branch_taken), 0); // 10
      }
    else if (rs_64bit == -1)
      {
-	int rt1 = allocate_64_register1((unsigned long *)dst->f.i.rt);
-	int rt2 = allocate_64_register2((unsigned long *)dst->f.i.rt);
+	int rt1 = allocate_64_register1((u32 *)dst->f.i.rt);
+	int rt2 = allocate_64_register2((u32 *)dst->f.i.rt);
 	
-	cmp_reg32_m32(rt1, (unsigned long *)dst->f.i.rs);
+	cmp_reg32_m32(rt1, (u32 *)dst->f.i.rs);
 	jne_rj(20);
-	cmp_reg32_m32(rt2, ((unsigned long *)dst->f.i.rs)+1); // 6
+	cmp_reg32_m32(rt2, ((u32 *)dst->f.i.rs)+1); // 6
 	jne_rj(12); // 2
-	mov_m32_imm32((unsigned long *)(&branch_taken), 1); // 10
+	mov_m32_imm32((u32 *)(&branch_taken), 1); // 10
 	jmp_imm_short(10); // 2
-	mov_m32_imm32((unsigned long *)(&branch_taken), 0); // 10
+	mov_m32_imm32((u32 *)(&branch_taken), 0); // 10
      }
    else if (rt_64bit == -1)
      {
-	int rs1 = allocate_64_register1((unsigned long *)dst->f.i.rs);
-	int rs2 = allocate_64_register2((unsigned long *)dst->f.i.rs);
+	int rs1 = allocate_64_register1((u32 *)dst->f.i.rs);
+	int rs2 = allocate_64_register2((u32 *)dst->f.i.rs);
 	
-	cmp_reg32_m32(rs1, (unsigned long *)dst->f.i.rt);
+	cmp_reg32_m32(rs1, (u32 *)dst->f.i.rt);
 	jne_rj(20);
-	cmp_reg32_m32(rs2, ((unsigned long *)dst->f.i.rt)+1); // 6
+	cmp_reg32_m32(rs2, ((u32 *)dst->f.i.rt)+1); // 6
 	jne_rj(12); // 2
-	mov_m32_imm32((unsigned long *)(&branch_taken), 1); // 10
+	mov_m32_imm32((u32 *)(&branch_taken), 1); // 10
 	jmp_imm_short(10); // 2
-	mov_m32_imm32((unsigned long *)(&branch_taken), 0); // 10
+	mov_m32_imm32((u32 *)(&branch_taken), 0); // 10
      }
    else
      {
 	int rs1, rs2, rt1, rt2;
 	if (!rs_64bit)
 	  {
-	     rt1 = allocate_64_register1((unsigned long *)dst->f.i.rt);
-	     rt2 = allocate_64_register2((unsigned long *)dst->f.i.rt);
-	     rs1 = allocate_64_register1((unsigned long *)dst->f.i.rs);
-	     rs2 = allocate_64_register2((unsigned long *)dst->f.i.rs);
+	     rt1 = allocate_64_register1((u32 *)dst->f.i.rt);
+	     rt2 = allocate_64_register2((u32 *)dst->f.i.rt);
+	     rs1 = allocate_64_register1((u32 *)dst->f.i.rs);
+	     rs2 = allocate_64_register2((u32 *)dst->f.i.rs);
 	  }
 	else
 	  {
-	     rs1 = allocate_64_register1((unsigned long *)dst->f.i.rs);
-	     rs2 = allocate_64_register2((unsigned long *)dst->f.i.rs);
-	     rt1 = allocate_64_register1((unsigned long *)dst->f.i.rt);
-	     rt2 = allocate_64_register2((unsigned long *)dst->f.i.rt);
+	     rs1 = allocate_64_register1((u32 *)dst->f.i.rs);
+	     rs2 = allocate_64_register2((u32 *)dst->f.i.rs);
+	     rt1 = allocate_64_register1((u32 *)dst->f.i.rt);
+	     rt2 = allocate_64_register2((u32 *)dst->f.i.rt);
 	  }
 	cmp_reg32_reg32(rs1, rt1);
 	jne_rj(16);
 	cmp_reg32_reg32(rs2, rt2); // 2
 	jne_rj(12); // 2
-	mov_m32_imm32((unsigned long *)(&branch_taken), 1); // 10
+	mov_m32_imm32((u32 *)(&branch_taken), 1); // 10
 	jmp_imm_short(10); // 2
-	mov_m32_imm32((unsigned long *)(&branch_taken), 0); // 10
+	mov_m32_imm32((u32 *)(&branch_taken), 0); // 10
      }
 }
 
 void gentest()
 {
-   unsigned long temp, temp2;
+   u32 temp, temp2;
    
-   cmp_m32_imm32((unsigned long *)(&branch_taken), 0);
+   cmp_m32_imm32((u32 *)(&branch_taken), 0);
    je_near_rj(0);
    temp = code_length;
    mov_m32_imm32((void*)(&last_addr), dst->addr + (dst-1)->f.i.immediate*4);
-   gencheck_interupt((unsigned long)(dst + (dst-1)->f.i.immediate));
+   gencheck_interupt((u32)(dst + (dst-1)->f.i.immediate));
    jmp(dst->addr + (dst-1)->f.i.immediate*4);
    
    temp2 = code_length;
@@ -442,19 +442,19 @@ void gentest()
    put32(temp2 - temp);
    code_length = temp2;
    mov_m32_imm32((void*)(&last_addr), dst->addr + 4);
-   gencheck_interupt((unsigned long)(dst + 1));
+   gencheck_interupt((u32)(dst + 1));
    jmp(dst->addr + 4);
 }
 
 void genbeq()
 {
 #ifdef INTERPRET_BEQ
-   gencallinterp((unsigned long)BEQ, 1);
+   gencallinterp((u32)BEQ, 1);
 #else
    if (((dst->addr & 0xFFF) == 0xFFC && 
        (dst->addr < 0x80000000 || dst->addr >= 0xC0000000))||no_compiled_jump)
      {
-	gencallinterp((unsigned long)BEQ, 1);
+	gencallinterp((u32)BEQ, 1);
 	return;
      }
    
@@ -466,16 +466,16 @@ void genbeq()
 
 void gentest_out()
 {
-   unsigned long temp, temp2;
+   u32 temp, temp2;
    
-   cmp_m32_imm32((unsigned long *)(&branch_taken), 0);
+   cmp_m32_imm32((u32 *)(&branch_taken), 0);
    je_near_rj(0);
    temp = code_length;
    mov_m32_imm32((void*)(&last_addr), dst->addr + (dst-1)->f.i.immediate*4);
    gencheck_interupt_out(dst->addr + (dst-1)->f.i.immediate*4);
    mov_m32_imm32(&jump_to_address, dst->addr + (dst-1)->f.i.immediate*4);
-   mov_m32_imm32((unsigned long*)(&PC), (unsigned long)(dst+1));
-   mov_reg32_imm32(EAX, (unsigned long)jump_to_func);
+   mov_m32_imm32((u32*)(&PC), (u32)(dst+1));
+   mov_reg32_imm32(EAX, (u32)jump_to_func);
    call_reg32(EAX);
    
    temp2 = code_length;
@@ -483,19 +483,19 @@ void gentest_out()
    put32(temp2 - temp);
    code_length = temp2;
    mov_m32_imm32((void*)(&last_addr), dst->addr + 4);
-   gencheck_interupt((unsigned long)(dst + 1));
+   gencheck_interupt((u32)(dst + 1));
    jmp(dst->addr + 4);
 }
 
 void genbeq_out()
 {
 #ifdef INTERPRET_BEQ_OUT
-   gencallinterp((unsigned long)BEQ_OUT, 1);
+   gencallinterp((u32)BEQ_OUT, 1);
 #else
    if (((dst->addr & 0xFFF) == 0xFFC && 
        (dst->addr < 0x80000000 || dst->addr >= 0xC0000000))||no_compiled_jump)
      {
-	gencallinterp((unsigned long)BEQ_OUT, 1);
+	gencallinterp((u32)BEQ_OUT, 1);
 	return;
      }
    
@@ -507,23 +507,23 @@ void genbeq_out()
 
 void gentest_idle()
 {
-   unsigned long temp, temp2;
+   u32 temp, temp2;
    int reg;
    
    reg = lru_register();
    free_register(reg);
    
-   cmp_m32_imm32((unsigned long *)(&branch_taken), 0);
+   cmp_m32_imm32((u32 *)(&branch_taken), 0);
    je_near_rj(0);
    temp = code_length;
    
-   mov_reg32_m32(reg, (unsigned long *)(&next_interupt));
-   sub_reg32_m32(reg, (unsigned long *)(&Count));
+   mov_reg32_m32(reg, (u32 *)(&next_interupt));
+   sub_reg32_m32(reg, (u32 *)(&Count));
    cmp_reg32_imm8(reg, 3);
    jbe_rj(12);
    
    and_reg32_imm32(reg, 0xFFFFFFFC); // 6
-   add_m32_reg32((unsigned long *)(&Count), reg); // 6
+   add_m32_reg32((u32 *)(&Count), reg); // 6
    
    temp2 = code_length;
    code_length = temp-4;
@@ -534,12 +534,12 @@ void gentest_idle()
 void genbeq_idle()
 {
 #ifdef INTERPRET_BEQ_IDLE
-   gencallinterp((unsigned long)BEQ_IDLE, 1);
+   gencallinterp((u32)BEQ_IDLE, 1);
 #else
    if (((dst->addr & 0xFFF) == 0xFFC && 
        (dst->addr < 0x80000000 || dst->addr >= 0xC0000000))||no_compiled_jump)
      {
-	gencallinterp((unsigned long)BEQ_IDLE, 1);
+	gencallinterp((u32)BEQ_IDLE, 1);
 	return;
      }
    
@@ -551,82 +551,82 @@ void genbeq_idle()
 
 void genbne_test()
 {
-   int rs_64bit = is64((unsigned long *)dst->f.i.rs);
-   int rt_64bit = is64((unsigned long *)dst->f.i.rt);
+   int rs_64bit = is64((u32 *)dst->f.i.rs);
+   int rt_64bit = is64((u32 *)dst->f.i.rt);
    
    if (!rs_64bit && !rt_64bit)
      {
-	int rs = allocate_register((unsigned long *)dst->f.i.rs);
-	int rt = allocate_register((unsigned long *)dst->f.i.rt);
+	int rs = allocate_register((u32 *)dst->f.i.rs);
+	int rt = allocate_register((u32 *)dst->f.i.rt);
 	
 	cmp_reg32_reg32(rs, rt);
 	je_rj(12);
-	mov_m32_imm32((unsigned long *)(&branch_taken), 1); // 10
+	mov_m32_imm32((u32 *)(&branch_taken), 1); // 10
 	jmp_imm_short(10); // 2
-	mov_m32_imm32((unsigned long *)(&branch_taken), 0); // 10
+	mov_m32_imm32((u32 *)(&branch_taken), 0); // 10
      }
    else if (rs_64bit == -1)
      {
-	int rt1 = allocate_64_register1((unsigned long *)dst->f.i.rt);
-	int rt2 = allocate_64_register2((unsigned long *)dst->f.i.rt);
+	int rt1 = allocate_64_register1((u32 *)dst->f.i.rt);
+	int rt2 = allocate_64_register2((u32 *)dst->f.i.rt);
 	
-	cmp_reg32_m32(rt1, (unsigned long *)dst->f.i.rs);
+	cmp_reg32_m32(rt1, (u32 *)dst->f.i.rs);
 	jne_rj(20);
-	cmp_reg32_m32(rt2, ((unsigned long *)dst->f.i.rs)+1); // 6
+	cmp_reg32_m32(rt2, ((u32 *)dst->f.i.rs)+1); // 6
 	jne_rj(12); // 2
-	mov_m32_imm32((unsigned long *)(&branch_taken), 0); // 10
+	mov_m32_imm32((u32 *)(&branch_taken), 0); // 10
 	jmp_imm_short(10); // 2
-	mov_m32_imm32((unsigned long *)(&branch_taken), 1); // 10
+	mov_m32_imm32((u32 *)(&branch_taken), 1); // 10
      }
    else if (rt_64bit == -1)
      {
-	int rs1 = allocate_64_register1((unsigned long *)dst->f.i.rs);
-	int rs2 = allocate_64_register2((unsigned long *)dst->f.i.rs);
+	int rs1 = allocate_64_register1((u32 *)dst->f.i.rs);
+	int rs2 = allocate_64_register2((u32 *)dst->f.i.rs);
 	
-	cmp_reg32_m32(rs1, (unsigned long *)dst->f.i.rt);
+	cmp_reg32_m32(rs1, (u32 *)dst->f.i.rt);
 	jne_rj(20);
-	cmp_reg32_m32(rs2, ((unsigned long *)dst->f.i.rt)+1); // 6
+	cmp_reg32_m32(rs2, ((u32 *)dst->f.i.rt)+1); // 6
 	jne_rj(12); // 2
-	mov_m32_imm32((unsigned long *)(&branch_taken), 0); // 10
+	mov_m32_imm32((u32 *)(&branch_taken), 0); // 10
 	jmp_imm_short(10); // 2
-	mov_m32_imm32((unsigned long *)(&branch_taken), 1); // 10
+	mov_m32_imm32((u32 *)(&branch_taken), 1); // 10
      }
    else
      {
 	int rs1, rs2, rt1, rt2;
 	if (!rs_64bit)
 	  {
-	     rt1 = allocate_64_register1((unsigned long *)dst->f.i.rt);
-	     rt2 = allocate_64_register2((unsigned long *)dst->f.i.rt);
-	     rs1 = allocate_64_register1((unsigned long *)dst->f.i.rs);
-	     rs2 = allocate_64_register2((unsigned long *)dst->f.i.rs);
+	     rt1 = allocate_64_register1((u32 *)dst->f.i.rt);
+	     rt2 = allocate_64_register2((u32 *)dst->f.i.rt);
+	     rs1 = allocate_64_register1((u32 *)dst->f.i.rs);
+	     rs2 = allocate_64_register2((u32 *)dst->f.i.rs);
 	  }
 	else
 	  {
-	     rs1 = allocate_64_register1((unsigned long *)dst->f.i.rs);
-	     rs2 = allocate_64_register2((unsigned long *)dst->f.i.rs);
-	     rt1 = allocate_64_register1((unsigned long *)dst->f.i.rt);
-	     rt2 = allocate_64_register2((unsigned long *)dst->f.i.rt);
+	     rs1 = allocate_64_register1((u32 *)dst->f.i.rs);
+	     rs2 = allocate_64_register2((u32 *)dst->f.i.rs);
+	     rt1 = allocate_64_register1((u32 *)dst->f.i.rt);
+	     rt2 = allocate_64_register2((u32 *)dst->f.i.rt);
 	  }
 	cmp_reg32_reg32(rs1, rt1);
 	jne_rj(16);
 	cmp_reg32_reg32(rs2, rt2); // 2
 	jne_rj(12); // 2
-	mov_m32_imm32((unsigned long *)(&branch_taken), 0); // 10
+	mov_m32_imm32((u32 *)(&branch_taken), 0); // 10
 	jmp_imm_short(10); // 2
-	mov_m32_imm32((unsigned long *)(&branch_taken), 1); // 10
+	mov_m32_imm32((u32 *)(&branch_taken), 1); // 10
      }
 }
 
 void genbne()
 {
 #ifdef INTERPRET_BNE
-   gencallinterp((unsigned long)BNE, 1);
+   gencallinterp((u32)BNE, 1);
 #else
    if (((dst->addr & 0xFFF) == 0xFFC && 
        (dst->addr < 0x80000000 || dst->addr >= 0xC0000000))||no_compiled_jump)
      {
-	gencallinterp((unsigned long)BNE, 1);
+	gencallinterp((u32)BNE, 1);
 	return;
      }
    
@@ -639,12 +639,12 @@ void genbne()
 void genbne_out()
 {
 #ifdef INTERPRET_BNE_OUT
-   gencallinterp((unsigned long)BNE_OUT, 1);
+   gencallinterp((u32)BNE_OUT, 1);
 #else
    if (((dst->addr & 0xFFF) == 0xFFC && 
        (dst->addr < 0x80000000 || dst->addr >= 0xC0000000))||no_compiled_jump)
      {
-	gencallinterp((unsigned long)BNE_OUT, 1);
+	gencallinterp((u32)BNE_OUT, 1);
 	return;
      }
    
@@ -657,12 +657,12 @@ void genbne_out()
 void genbne_idle()
 {
 #ifdef INTERPRET_BNE_IDLE
-   gencallinterp((unsigned long)BNE_IDLE, 1);
+   gencallinterp((u32)BNE_IDLE, 1);
 #else
    if (((dst->addr & 0xFFF) == 0xFFC && 
        (dst->addr < 0x80000000 || dst->addr >= 0xC0000000))||no_compiled_jump)
      {
-	gencallinterp((unsigned long)BNE_IDLE, 1);
+	gencallinterp((u32)BNE_IDLE, 1);
 	return;
      }
    
@@ -674,54 +674,54 @@ void genbne_idle()
 
 void genblez_test()
 {
-   int rs_64bit = is64((unsigned long *)dst->f.i.rs);
+   int rs_64bit = is64((u32 *)dst->f.i.rs);
    
    if (!rs_64bit)
      {
-	int rs = allocate_register((unsigned long *)dst->f.i.rs);
+	int rs = allocate_register((u32 *)dst->f.i.rs);
 	
 	cmp_reg32_imm32(rs, 0);
 	jg_rj(12);
-	mov_m32_imm32((unsigned long *)(&branch_taken), 1); // 10
+	mov_m32_imm32((u32 *)(&branch_taken), 1); // 10
 	jmp_imm_short(10); // 2
-	mov_m32_imm32((unsigned long *)(&branch_taken), 0); // 10
+	mov_m32_imm32((u32 *)(&branch_taken), 0); // 10
      }
    else if (rs_64bit == -1)
      {
-	cmp_m32_imm32(((unsigned long *)dst->f.i.rs)+1, 0);
+	cmp_m32_imm32(((u32 *)dst->f.i.rs)+1, 0);
 	jg_rj(14);
 	jne_rj(24); // 2
-	cmp_m32_imm32((unsigned long *)dst->f.i.rs, 0); // 10
+	cmp_m32_imm32((u32 *)dst->f.i.rs, 0); // 10
 	je_rj(12); // 2
-	mov_m32_imm32((unsigned long *)(&branch_taken), 0); // 10
+	mov_m32_imm32((u32 *)(&branch_taken), 0); // 10
 	jmp_imm_short(10); // 2
-	mov_m32_imm32((unsigned long *)(&branch_taken), 1); // 10
+	mov_m32_imm32((u32 *)(&branch_taken), 1); // 10
      }
    else
      {
-	int rs1 = allocate_64_register1((unsigned long *)dst->f.i.rs);
-	int rs2 = allocate_64_register2((unsigned long *)dst->f.i.rs);
+	int rs1 = allocate_64_register1((u32 *)dst->f.i.rs);
+	int rs2 = allocate_64_register2((u32 *)dst->f.i.rs);
 	
 	cmp_reg32_imm32(rs2, 0);
 	jg_rj(10);
 	jne_rj(20); // 2
 	cmp_reg32_imm32(rs1, 0); // 6
 	je_rj(12); // 2
-	mov_m32_imm32((unsigned long *)(&branch_taken), 0); // 10
+	mov_m32_imm32((u32 *)(&branch_taken), 0); // 10
 	jmp_imm_short(10); // 2
-	mov_m32_imm32((unsigned long *)(&branch_taken), 1); // 10
+	mov_m32_imm32((u32 *)(&branch_taken), 1); // 10
      }
 }
 
 void genblez()
 {
 #ifdef INTERPRET_BLEZ
-   gencallinterp((unsigned long)BLEZ, 1);
+   gencallinterp((u32)BLEZ, 1);
 #else
    if (((dst->addr & 0xFFF) == 0xFFC && 
        (dst->addr < 0x80000000 || dst->addr >= 0xC0000000))||no_compiled_jump)
      {
-	gencallinterp((unsigned long)BLEZ, 1);
+	gencallinterp((u32)BLEZ, 1);
 	return;
      }
    
@@ -734,12 +734,12 @@ void genblez()
 void genblez_out()
 {
 #ifdef INTERPRET_BLEZ_OUT
-   gencallinterp((unsigned long)BLEZ_OUT, 1);
+   gencallinterp((u32)BLEZ_OUT, 1);
 #else
    if (((dst->addr & 0xFFF) == 0xFFC && 
        (dst->addr < 0x80000000 || dst->addr >= 0xC0000000))||no_compiled_jump)
      {
-	gencallinterp((unsigned long)BLEZ_OUT, 1);
+	gencallinterp((u32)BLEZ_OUT, 1);
 	return;
      }
    
@@ -752,12 +752,12 @@ void genblez_out()
 void genblez_idle()
 {
 #ifdef INTERPRET_BLEZ_IDLE
-   gencallinterp((unsigned long)BLEZ_IDLE, 1);
+   gencallinterp((u32)BLEZ_IDLE, 1);
 #else
    if (((dst->addr & 0xFFF) == 0xFFC && 
        (dst->addr < 0x80000000 || dst->addr >= 0xC0000000))||no_compiled_jump)
      {
-	gencallinterp((unsigned long)BLEZ_IDLE, 1);
+	gencallinterp((u32)BLEZ_IDLE, 1);
 	return;
      }
    
@@ -769,54 +769,54 @@ void genblez_idle()
 
 void genbgtz_test()
 {
-   int rs_64bit = is64((unsigned long *)dst->f.i.rs);
+   int rs_64bit = is64((u32 *)dst->f.i.rs);
    
    if (!rs_64bit)
      {
-	int rs = allocate_register((unsigned long *)dst->f.i.rs);
+	int rs = allocate_register((u32 *)dst->f.i.rs);
 	
 	cmp_reg32_imm32(rs, 0);
 	jle_rj(12);
-	mov_m32_imm32((unsigned long *)(&branch_taken), 1); // 10
+	mov_m32_imm32((u32 *)(&branch_taken), 1); // 10
 	jmp_imm_short(10); // 2
-	mov_m32_imm32((unsigned long *)(&branch_taken), 0); // 10
+	mov_m32_imm32((u32 *)(&branch_taken), 0); // 10
      }
    else if (rs_64bit == -1)
      {
-	cmp_m32_imm32(((unsigned long *)dst->f.i.rs)+1, 0);
+	cmp_m32_imm32(((u32 *)dst->f.i.rs)+1, 0);
 	jl_rj(14);
 	jne_rj(24); // 2
-	cmp_m32_imm32((unsigned long *)dst->f.i.rs, 0); // 10
+	cmp_m32_imm32((u32 *)dst->f.i.rs, 0); // 10
 	jne_rj(12); // 2
-	mov_m32_imm32((unsigned long *)(&branch_taken), 0); // 10
+	mov_m32_imm32((u32 *)(&branch_taken), 0); // 10
 	jmp_imm_short(10); // 2
-	mov_m32_imm32((unsigned long *)(&branch_taken), 1); // 10
+	mov_m32_imm32((u32 *)(&branch_taken), 1); // 10
      }
    else
      {
-	int rs1 = allocate_64_register1((unsigned long *)dst->f.i.rs);
-	int rs2 = allocate_64_register2((unsigned long *)dst->f.i.rs);
+	int rs1 = allocate_64_register1((u32 *)dst->f.i.rs);
+	int rs2 = allocate_64_register2((u32 *)dst->f.i.rs);
 	
 	cmp_reg32_imm32(rs2, 0);
 	jl_rj(10);
 	jne_rj(20); // 2
 	cmp_reg32_imm32(rs1, 0); // 6
 	jne_rj(12); // 2
-	mov_m32_imm32((unsigned long *)(&branch_taken), 0); // 10
+	mov_m32_imm32((u32 *)(&branch_taken), 0); // 10
 	jmp_imm_short(10); // 2
-	mov_m32_imm32((unsigned long *)(&branch_taken), 1); // 10
+	mov_m32_imm32((u32 *)(&branch_taken), 1); // 10
      }
 }
 
 void genbgtz()
 {
 #ifdef INTERPRET_BGTZ
-   gencallinterp((unsigned long)BGTZ, 1);
+   gencallinterp((u32)BGTZ, 1);
 #else
    if (((dst->addr & 0xFFF) == 0xFFC && 
        (dst->addr < 0x80000000 || dst->addr >= 0xC0000000))||no_compiled_jump)
      {
-	gencallinterp((unsigned long)BGTZ, 1);
+	gencallinterp((u32)BGTZ, 1);
 	return;
      }
    
@@ -829,12 +829,12 @@ void genbgtz()
 void genbgtz_out()
 {
 #ifdef INTERPRET_BGTZ_OUT
-   gencallinterp((unsigned long)BGTZ_OUT, 1);
+   gencallinterp((u32)BGTZ_OUT, 1);
 #else
    if (((dst->addr & 0xFFF) == 0xFFC && 
        (dst->addr < 0x80000000 || dst->addr >= 0xC0000000))||no_compiled_jump)
      {
-	gencallinterp((unsigned long)BGTZ_OUT, 1);
+	gencallinterp((u32)BGTZ_OUT, 1);
 	return;
      }
    
@@ -847,12 +847,12 @@ void genbgtz_out()
 void genbgtz_idle()
 {
 #ifdef INTERPRET_BGTZ_IDLE
-   gencallinterp((unsigned long)BGTZ_IDLE, 1);
+   gencallinterp((u32)BGTZ_IDLE, 1);
 #else
    if (((dst->addr & 0xFFF) == 0xFFC && 
        (dst->addr < 0x80000000 || dst->addr >= 0xC0000000))||no_compiled_jump)
      {
-	gencallinterp((unsigned long)BGTZ_IDLE, 1);
+	gencallinterp((u32)BGTZ_IDLE, 1);
 	return;
      }
    
@@ -865,43 +865,43 @@ void genbgtz_idle()
 void genaddi()
 {
 #ifdef INTERPRET_ADDI
-   gencallinterp((unsigned long)ADDI, 0);
+   gencallinterp((u32)ADDI, 0);
 #else
-   int rs = allocate_register((unsigned long *)dst->f.i.rs);
-   int rt = allocate_register_w((unsigned long *)dst->f.i.rt);
+   int rs = allocate_register((u32 *)dst->f.i.rs);
+   int rt = allocate_register_w((u32 *)dst->f.i.rt);
    
    mov_reg32_reg32(rt, rs);
-   add_reg32_imm32(rt,(long)dst->f.i.immediate);
+   add_reg32_imm32(rt,(s32)dst->f.i.immediate);
 #endif
 }
 
 void genaddiu()
 {
 #ifdef INTERPRET_ADDIU
-   gencallinterp((unsigned long)ADDIU, 0);
+   gencallinterp((u32)ADDIU, 0);
 #else
-   int rs = allocate_register((unsigned long *)dst->f.i.rs);
-   int rt = allocate_register_w((unsigned long *)dst->f.i.rt);
+   int rs = allocate_register((u32 *)dst->f.i.rs);
+   int rt = allocate_register_w((u32 *)dst->f.i.rt);
    
    mov_reg32_reg32(rt, rs);
-   add_reg32_imm32(rt,(long)dst->f.i.immediate);
+   add_reg32_imm32(rt,(s32)dst->f.i.immediate);
 #endif
 }
 
 void genslti()
 {
 #ifdef INTERPRET_SLTI
-   gencallinterp((unsigned long)SLTI, 0);
+   gencallinterp((u32)SLTI, 0);
 #else
-   int rs1 = allocate_64_register1((unsigned long *)dst->f.i.rs);
-   int rs2 = allocate_64_register2((unsigned long *)dst->f.i.rs);
-   int rt = allocate_register_w((unsigned long *)dst->f.i.rt);
-   long long imm = (long long)dst->f.i.immediate;
+   int rs1 = allocate_64_register1((u32 *)dst->f.i.rs);
+   int rs2 = allocate_64_register2((u32 *)dst->f.i.rs);
+   int rt = allocate_register_w((u32 *)dst->f.i.rt);
+   s64 imm = (s64)dst->f.i.immediate;
    
-   cmp_reg32_imm32(rs2, (unsigned long)(imm >> 32));
+   cmp_reg32_imm32(rs2, (u32)(imm >> 32));
    jl_rj(17);
    jne_rj(8); // 2
-   cmp_reg32_imm32(rs1, (unsigned long)imm); // 6
+   cmp_reg32_imm32(rs1, (u32)imm); // 6
    jl_rj(7); // 2
    mov_reg32_imm32(rt, 0); // 5
    jmp_imm_short(5); // 2
@@ -912,17 +912,17 @@ void genslti()
 void gensltiu()
 {
 #ifdef INTERPRET_SLTIU
-   gencallinterp((unsigned long)SLTIU, 0);
+   gencallinterp((u32)SLTIU, 0);
 #else
-   int rs1 = allocate_64_register1((unsigned long *)dst->f.i.rs);
-   int rs2 = allocate_64_register2((unsigned long *)dst->f.i.rs);
-   int rt = allocate_register_w((unsigned long *)dst->f.i.rt);
-   long long imm = (long long)dst->f.i.immediate;
+   int rs1 = allocate_64_register1((u32 *)dst->f.i.rs);
+   int rs2 = allocate_64_register2((u32 *)dst->f.i.rs);
+   int rt = allocate_register_w((u32 *)dst->f.i.rt);
+   s64 imm = (s64)dst->f.i.immediate;
    
-   cmp_reg32_imm32(rs2, (unsigned long)(imm >> 32));
+   cmp_reg32_imm32(rs2, (u32)(imm >> 32));
    jb_rj(17);
    jne_rj(8); // 2
-   cmp_reg32_imm32(rs1, (unsigned long)imm); // 6
+   cmp_reg32_imm32(rs1, (u32)imm); // 6
    jb_rj(7); // 2
    mov_reg32_imm32(rt, 0); // 5
    jmp_imm_short(5); // 2
@@ -933,10 +933,10 @@ void gensltiu()
 void genandi()
 {
 #ifdef INTERPRET_ANDI
-   gencallinterp((unsigned long)ANDI, 0);
+   gencallinterp((u32)ANDI, 0);
 #else
-   int rs = allocate_register((unsigned long *)dst->f.i.rs);
-   int rt = allocate_register_w((unsigned long *)dst->f.i.rt);
+   int rs = allocate_register((u32 *)dst->f.i.rs);
+   int rt = allocate_register_w((u32 *)dst->f.i.rt);
    
    mov_reg32_reg32(rt, rs);
    and_reg32_imm32(rt, (unsigned short)dst->f.i.immediate);
@@ -946,12 +946,12 @@ void genandi()
 void genori()
 {
 #ifdef INTERPRET_ORI
-   gencallinterp((unsigned long)ORI, 0);
+   gencallinterp((u32)ORI, 0);
 #else
-   int rs1 = allocate_64_register1((unsigned long *)dst->f.i.rs);
-   int rs2 = allocate_64_register2((unsigned long *)dst->f.i.rs);
-   int rt1 = allocate_64_register1_w((unsigned long *)dst->f.i.rt);
-   int rt2 = allocate_64_register2_w((unsigned long *)dst->f.i.rt);
+   int rs1 = allocate_64_register1((u32 *)dst->f.i.rs);
+   int rs2 = allocate_64_register2((u32 *)dst->f.i.rs);
+   int rt1 = allocate_64_register1_w((u32 *)dst->f.i.rt);
+   int rt2 = allocate_64_register2_w((u32 *)dst->f.i.rt);
    
    mov_reg32_reg32(rt1, rs1);
    mov_reg32_reg32(rt2, rs2);
@@ -962,12 +962,12 @@ void genori()
 void genxori()
 {
 #ifdef INTERPRET_XORI
-   gencallinterp((unsigned long)XORI, 0);
+   gencallinterp((u32)XORI, 0);
 #else
-   int rs1 = allocate_64_register1((unsigned long *)dst->f.i.rs);
-   int rs2 = allocate_64_register2((unsigned long *)dst->f.i.rs);
-   int rt1 = allocate_64_register1_w((unsigned long *)dst->f.i.rt);
-   int rt2 = allocate_64_register2_w((unsigned long *)dst->f.i.rt);
+   int rs1 = allocate_64_register1((u32 *)dst->f.i.rs);
+   int rs2 = allocate_64_register2((u32 *)dst->f.i.rs);
+   int rt1 = allocate_64_register1_w((u32 *)dst->f.i.rt);
+   int rt2 = allocate_64_register2_w((u32 *)dst->f.i.rt);
    
    mov_reg32_reg32(rt1, rs1);
    mov_reg32_reg32(rt2, rs2);
@@ -978,24 +978,24 @@ void genxori()
 void genlui()
 {
 #ifdef INTERPRET_LUI
-   gencallinterp((unsigned long)LUI, 0);
+   gencallinterp((u32)LUI, 0);
 #else
-   int rt = allocate_register_w((unsigned long *)dst->f.i.rt);
+   int rt = allocate_register_w((u32 *)dst->f.i.rt);
    
-   mov_reg32_imm32(rt, (unsigned long)dst->f.i.immediate << 16);
+   mov_reg32_imm32(rt, (u32)dst->f.i.immediate << 16);
 #endif
 }
 
 void gentestl()
 {
-   unsigned long temp, temp2;
+   u32 temp, temp2;
    
-   cmp_m32_imm32((unsigned long *)(&branch_taken), 0);
+   cmp_m32_imm32((u32 *)(&branch_taken), 0);
    je_near_rj(0);
    temp = code_length;
    gendelayslot();
    mov_m32_imm32((void*)(&last_addr), dst->addr + (dst-1)->f.i.immediate*4);
-   gencheck_interupt((unsigned long)(dst + (dst-1)->f.i.immediate));
+   gencheck_interupt((u32)(dst + (dst-1)->f.i.immediate));
    jmp(dst->addr + (dst-1)->f.i.immediate*4);
    
    temp2 = code_length;
@@ -1004,19 +1004,19 @@ void gentestl()
    code_length = temp2;
    genupdate_count(dst->addr-4);
    mov_m32_imm32((void*)(&last_addr), dst->addr + 4);
-   gencheck_interupt((unsigned long)(dst + 1));
+   gencheck_interupt((u32)(dst + 1));
    jmp(dst->addr + 4);
 }
 
 void genbeql()
 {
 #ifdef INTERPRET_BEQL
-   gencallinterp((unsigned long)BEQL, 1);
+   gencallinterp((u32)BEQL, 1);
 #else
    if (((dst->addr & 0xFFF) == 0xFFC && 
        (dst->addr < 0x80000000 || dst->addr >= 0xC0000000))||no_compiled_jump)
      {
-	gencallinterp((unsigned long)BEQL, 1);
+	gencallinterp((u32)BEQL, 1);
 	return;
      }
    
@@ -1028,17 +1028,17 @@ void genbeql()
 
 void gentestl_out()
 {
-   unsigned long temp, temp2;
+   u32 temp, temp2;
    
-   cmp_m32_imm32((unsigned long *)(&branch_taken), 0);
+   cmp_m32_imm32((u32 *)(&branch_taken), 0);
    je_near_rj(0);
    temp = code_length;
    gendelayslot();
    mov_m32_imm32((void*)(&last_addr), dst->addr + (dst-1)->f.i.immediate*4);
    gencheck_interupt_out(dst->addr + (dst-1)->f.i.immediate*4);
    mov_m32_imm32(&jump_to_address, dst->addr + (dst-1)->f.i.immediate*4);
-   mov_m32_imm32((unsigned long*)(&PC), (unsigned long)(dst+1));
-   mov_reg32_imm32(EAX, (unsigned long)jump_to_func);
+   mov_m32_imm32((u32*)(&PC), (u32)(dst+1));
+   mov_reg32_imm32(EAX, (u32)jump_to_func);
    call_reg32(EAX);
    
    temp2 = code_length;
@@ -1047,19 +1047,19 @@ void gentestl_out()
    code_length = temp2;
    genupdate_count(dst->addr-4);
    mov_m32_imm32((void*)(&last_addr), dst->addr + 4);
-   gencheck_interupt((unsigned long)(dst + 1));
+   gencheck_interupt((u32)(dst + 1));
    jmp(dst->addr + 4);
 }
 
 void genbeql_out()
 {
 #ifdef INTERPRET_BEQL_OUT
-   gencallinterp((unsigned long)BEQL_OUT, 1);
+   gencallinterp((u32)BEQL_OUT, 1);
 #else
    if (((dst->addr & 0xFFF) == 0xFFC && 
        (dst->addr < 0x80000000 || dst->addr >= 0xC0000000))||no_compiled_jump)
      {
-	gencallinterp((unsigned long)BEQL_OUT, 1);
+	gencallinterp((u32)BEQL_OUT, 1);
 	return;
      }
    
@@ -1072,12 +1072,12 @@ void genbeql_out()
 void genbeql_idle()
 {
 #ifdef INTERPRET_BEQL_IDLE
-   gencallinterp((unsigned long)BEQL_IDLE, 1);
+   gencallinterp((u32)BEQL_IDLE, 1);
 #else
    if (((dst->addr & 0xFFF) == 0xFFC && 
        (dst->addr < 0x80000000 || dst->addr >= 0xC0000000))||no_compiled_jump)
      {
-	gencallinterp((unsigned long)BEQL_IDLE, 1);
+	gencallinterp((u32)BEQL_IDLE, 1);
 	return;
      }
    
@@ -1090,12 +1090,12 @@ void genbeql_idle()
 void genbnel()
 {
 #ifdef INTERPRET_BNEL
-   gencallinterp((unsigned long)BNEL, 1);
+   gencallinterp((u32)BNEL, 1);
 #else
    if (((dst->addr & 0xFFF) == 0xFFC && 
        (dst->addr < 0x80000000 || dst->addr >= 0xC0000000))||no_compiled_jump)
      {
-	gencallinterp((unsigned long)BNEL, 1);
+	gencallinterp((u32)BNEL, 1);
 	return;
      }
    
@@ -1108,12 +1108,12 @@ void genbnel()
 void genbnel_out()
 {
 #ifdef INTERPRET_BNEL_OUT
-   gencallinterp((unsigned long)BNEL_OUT, 1);
+   gencallinterp((u32)BNEL_OUT, 1);
 #else
    if (((dst->addr & 0xFFF) == 0xFFC && 
        (dst->addr < 0x80000000 || dst->addr >= 0xC0000000))||no_compiled_jump)
      {
-	gencallinterp((unsigned long)BNEL_OUT, 1);
+	gencallinterp((u32)BNEL_OUT, 1);
 	return;
      }
    
@@ -1126,12 +1126,12 @@ void genbnel_out()
 void genbnel_idle()
 {
 #ifdef INTERPRET_BNEL_IDLE
-   gencallinterp((unsigned long)BNEL_IDLE, 1);
+   gencallinterp((u32)BNEL_IDLE, 1);
 #else
    if (((dst->addr & 0xFFF) == 0xFFC && 
        (dst->addr < 0x80000000 || dst->addr >= 0xC0000000))||no_compiled_jump)
      {
-	gencallinterp((unsigned long)BNEL_IDLE, 1);
+	gencallinterp((u32)BNEL_IDLE, 1);
 	return;
      }
    
@@ -1144,12 +1144,12 @@ void genbnel_idle()
 void genblezl()
 {
 #ifdef INTERPRET_BLEZL
-   gencallinterp((unsigned long)BLEZL, 1);
+   gencallinterp((u32)BLEZL, 1);
 #else
    if (((dst->addr & 0xFFF) == 0xFFC && 
        (dst->addr < 0x80000000 || dst->addr >= 0xC0000000))||no_compiled_jump)
      {
-	gencallinterp((unsigned long)BLEZL, 1);
+	gencallinterp((u32)BLEZL, 1);
 	return;
      }
    
@@ -1162,12 +1162,12 @@ void genblezl()
 void genblezl_out()
 {
 #ifdef INTERPRET_BLEZL_OUT
-   gencallinterp((unsigned long)BLEZL_OUT, 1);
+   gencallinterp((u32)BLEZL_OUT, 1);
 #else
    if (((dst->addr & 0xFFF) == 0xFFC && 
        (dst->addr < 0x80000000 || dst->addr >= 0xC0000000))||no_compiled_jump)
      {
-	gencallinterp((unsigned long)BLEZL_OUT, 1);
+	gencallinterp((u32)BLEZL_OUT, 1);
 	return;
      }
    
@@ -1180,12 +1180,12 @@ void genblezl_out()
 void genblezl_idle()
 {
 #ifdef INTERPRET_BLEZL_IDLE
-   gencallinterp((unsigned long)BLEZL_IDLE, 1);
+   gencallinterp((u32)BLEZL_IDLE, 1);
 #else
    if (((dst->addr & 0xFFF) == 0xFFC && 
        (dst->addr < 0x80000000 || dst->addr >= 0xC0000000))||no_compiled_jump)
      {
-	gencallinterp((unsigned long)BLEZL_IDLE, 1);
+	gencallinterp((u32)BLEZL_IDLE, 1);
 	return;
      }
    
@@ -1198,12 +1198,12 @@ void genblezl_idle()
 void genbgtzl()
 {
 #ifdef INTERPRET_BGTZL
-   gencallinterp((unsigned long)BGTZL, 1);
+   gencallinterp((u32)BGTZL, 1);
 #else
    if (((dst->addr & 0xFFF) == 0xFFC && 
        (dst->addr < 0x80000000 || dst->addr >= 0xC0000000))||no_compiled_jump)
      {
-	gencallinterp((unsigned long)BGTZL, 1);
+	gencallinterp((u32)BGTZL, 1);
 	return;
      }
    
@@ -1216,12 +1216,12 @@ void genbgtzl()
 void genbgtzl_out()
 {
 #ifdef INTERPRET_BGTZL_OUT
-   gencallinterp((unsigned long)BGTZL_OUT, 1);
+   gencallinterp((u32)BGTZL_OUT, 1);
 #else
    if (((dst->addr & 0xFFF) == 0xFFC && 
        (dst->addr < 0x80000000 || dst->addr >= 0xC0000000))||no_compiled_jump)
      {
-	gencallinterp((unsigned long)BGTZL_OUT, 1);
+	gencallinterp((u32)BGTZL_OUT, 1);
 	return;
      }
    
@@ -1234,12 +1234,12 @@ void genbgtzl_out()
 void genbgtzl_idle()
 {
 #ifdef INTERPRET_BGTZL_IDLE
-   gencallinterp((unsigned long)BGTZL_IDLE, 1);
+   gencallinterp((u32)BGTZL_IDLE, 1);
 #else
    if (((dst->addr & 0xFFF) == 0xFFC && 
        (dst->addr < 0x80000000 || dst->addr >= 0xC0000000))||no_compiled_jump)
      {
-	gencallinterp((unsigned long)BGTZL_IDLE, 1);
+	gencallinterp((u32)BGTZL_IDLE, 1);
 	return;
      }
    
@@ -1252,12 +1252,12 @@ void genbgtzl_idle()
 void gendaddi()
 {
 #ifdef INTERPRET_DADDI
-   gencallinterp((unsigned long)DADDI, 0);
+   gencallinterp((u32)DADDI, 0);
 #else
-   int rs1 = allocate_64_register1((unsigned long *)dst->f.i.rs);
-   int rs2 = allocate_64_register2((unsigned long *)dst->f.i.rs);
-   int rt1 = allocate_64_register1_w((unsigned long *)dst->f.i.rt);
-   int rt2 = allocate_64_register2_w((unsigned long *)dst->f.i.rt);
+   int rs1 = allocate_64_register1((u32 *)dst->f.i.rs);
+   int rs2 = allocate_64_register2((u32 *)dst->f.i.rs);
+   int rt1 = allocate_64_register1_w((u32 *)dst->f.i.rt);
+   int rt2 = allocate_64_register2_w((u32 *)dst->f.i.rt);
    
    mov_reg32_reg32(rt1, rs1);
    mov_reg32_reg32(rt2, rs2);
@@ -1269,12 +1269,12 @@ void gendaddi()
 void gendaddiu()
 {
 #ifdef INTERPRET_DADDIU
-   gencallinterp((unsigned long)DADDIU, 0);
+   gencallinterp((u32)DADDIU, 0);
 #else
-   int rs1 = allocate_64_register1((unsigned long *)dst->f.i.rs);
-   int rs2 = allocate_64_register2((unsigned long *)dst->f.i.rs);
-   int rt1 = allocate_64_register1_w((unsigned long *)dst->f.i.rt);
-   int rt2 = allocate_64_register2_w((unsigned long *)dst->f.i.rt);
+   int rs1 = allocate_64_register1((u32 *)dst->f.i.rs);
+   int rs2 = allocate_64_register2((u32 *)dst->f.i.rs);
+   int rt1 = allocate_64_register1_w((u32 *)dst->f.i.rt);
+   int rt2 = allocate_64_register2_w((u32 *)dst->f.i.rt);
    
    mov_reg32_reg32(rt1, rs1);
    mov_reg32_reg32(rt2, rs2);
@@ -1285,23 +1285,23 @@ void gendaddiu()
 
 void genldl()
 {
-   gencallinterp((unsigned long)LDL, 0);
+   gencallinterp((u32)LDL, 0);
 }
 
 void genldr()
 {
-   gencallinterp((unsigned long)LDR, 0);
+   gencallinterp((u32)LDR, 0);
 }
 
 void genlb()
 {
 #ifdef INTERPRET_LB
-   gencallinterp((unsigned long)LB, 0);
+   gencallinterp((u32)LB, 0);
 #else
    free_all_registers();
    simplify_access();
-   mov_eax_memoffs32((unsigned long *)dst->f.i.rs);
-   add_eax_imm32((long)dst->f.i.immediate);
+   mov_eax_memoffs32((u32 *)dst->f.i.rs);
+   add_eax_imm32((s32)dst->f.i.immediate);
    mov_reg32_reg32(EBX, EAX);
    if(fast_memory)
      {
@@ -1311,37 +1311,37 @@ void genlb()
    else
      {
 	shr_reg32_imm8(EAX, 16);
-	mov_reg32_preg32x4pimm32(EAX, EAX, (unsigned long)readmemb);
-	cmp_reg32_imm32(EAX, (unsigned long)read_rdramb);
+	mov_reg32_preg32x4pimm32(EAX, EAX, (u32)readmemb);
+	cmp_reg32_imm32(EAX, (u32)read_rdramb);
      }
    je_rj(47);
    
-   mov_m32_imm32((void *)(&PC), (unsigned long)(dst+1)); // 10
-   mov_m32_reg32((unsigned long *)(&address), EBX); // 6
-   mov_m32_imm32((unsigned long *)(&rdword), (unsigned long)dst->f.i.rt); // 10
+   mov_m32_imm32((void *)(&PC), (u32)(dst+1)); // 10
+   mov_m32_reg32((u32 *)(&address), EBX); // 6
+   mov_m32_imm32((u32 *)(&rdword), (u32)dst->f.i.rt); // 10
    shr_reg32_imm8(EBX, 16); // 3
-   mov_reg32_preg32x4pimm32(EBX, EBX, (unsigned long)readmemb); // 7
+   mov_reg32_preg32x4pimm32(EBX, EBX, (u32)readmemb); // 7
    call_reg32(EBX); // 2
    movsx_reg32_m8(EAX, (unsigned char *)dst->f.i.rt); // 7
    jmp_imm_short(16); // 2
    
    and_reg32_imm32(EBX, 0x7FFFFF); // 6
    xor_reg8_imm8(BL, 3); // 3
-   movsx_reg32_8preg32pimm32(EAX, EBX, (unsigned long)rdram); // 7
+   movsx_reg32_8preg32pimm32(EAX, EBX, (u32)rdram); // 7
    
-   set_register_state(EAX, (unsigned long*)dst->f.i.rt, 1);
+   set_register_state(EAX, (u32*)dst->f.i.rt, 1);
 #endif
 }
 
 void genlh()
 {
 #ifdef INTERPRET_LH
-   gencallinterp((unsigned long)LH, 0);
+   gencallinterp((u32)LH, 0);
 #else
    free_all_registers();
    simplify_access();
-   mov_eax_memoffs32((unsigned long *)dst->f.i.rs);
-   add_eax_imm32((long)dst->f.i.immediate);
+   mov_eax_memoffs32((u32 *)dst->f.i.rs);
+   add_eax_imm32((s32)dst->f.i.immediate);
    mov_reg32_reg32(EBX, EAX);
    if(fast_memory)
      {
@@ -1351,42 +1351,42 @@ void genlh()
    else
      {
 	shr_reg32_imm8(EAX, 16);
-	mov_reg32_preg32x4pimm32(EAX, EAX, (unsigned long)readmemh);
-	cmp_reg32_imm32(EAX, (unsigned long)read_rdramh);
+	mov_reg32_preg32x4pimm32(EAX, EAX, (u32)readmemh);
+	cmp_reg32_imm32(EAX, (u32)read_rdramh);
      }
    je_rj(47);
    
-   mov_m32_imm32((void *)(&PC), (unsigned long)(dst+1)); // 10
-   mov_m32_reg32((unsigned long *)(&address), EBX); // 6
-   mov_m32_imm32((unsigned long *)(&rdword), (unsigned long)dst->f.i.rt); // 10
+   mov_m32_imm32((void *)(&PC), (u32)(dst+1)); // 10
+   mov_m32_reg32((u32 *)(&address), EBX); // 6
+   mov_m32_imm32((u32 *)(&rdword), (u32)dst->f.i.rt); // 10
    shr_reg32_imm8(EBX, 16); // 3
-   mov_reg32_preg32x4pimm32(EBX, EBX, (unsigned long)readmemh); // 7
+   mov_reg32_preg32x4pimm32(EBX, EBX, (u32)readmemh); // 7
    call_reg32(EBX); // 2
    movsx_reg32_m16(EAX, (unsigned short *)dst->f.i.rt); // 7
    jmp_imm_short(16); // 2
    
    and_reg32_imm32(EBX, 0x7FFFFF); // 6
    xor_reg8_imm8(BL, 2); // 3
-   movsx_reg32_16preg32pimm32(EAX, EBX, (unsigned long)rdram); // 7
+   movsx_reg32_16preg32pimm32(EAX, EBX, (u32)rdram); // 7
    
-   set_register_state(EAX, (unsigned long*)dst->f.i.rt, 1);
+   set_register_state(EAX, (u32*)dst->f.i.rt, 1);
 #endif
 }
 
 void genlwl()
 {
-   gencallinterp((unsigned long)LWL, 0);
+   gencallinterp((u32)LWL, 0);
 }
 
 void genlw()
 {
 #ifdef INTERPRET_LW
-   gencallinterp((unsigned long)LW, 0);
+   gencallinterp((u32)LW, 0);
 #else
    free_all_registers();
    simplify_access();
-   mov_eax_memoffs32((unsigned long *)dst->f.i.rs);
-   add_eax_imm32((long)dst->f.i.immediate);
+   mov_eax_memoffs32((u32 *)dst->f.i.rs);
+   add_eax_imm32((s32)dst->f.i.immediate);
    mov_reg32_reg32(EBX, EAX);
    if(fast_memory)
      {
@@ -1396,36 +1396,36 @@ void genlw()
    else
      {
 	shr_reg32_imm8(EAX, 16);
-	mov_reg32_preg32x4pimm32(EAX, EAX, (unsigned long)readmem);
-	cmp_reg32_imm32(EAX, (unsigned long)read_rdram);
+	mov_reg32_preg32x4pimm32(EAX, EAX, (u32)readmem);
+	cmp_reg32_imm32(EAX, (u32)read_rdram);
      }
    je_rj(45);
    
-   mov_m32_imm32((void *)(&PC), (unsigned long)(dst+1)); // 10
-   mov_m32_reg32((unsigned long *)(&address), EBX); // 6
-   mov_m32_imm32((unsigned long *)(&rdword), (unsigned long)dst->f.i.rt); // 10
+   mov_m32_imm32((void *)(&PC), (u32)(dst+1)); // 10
+   mov_m32_reg32((u32 *)(&address), EBX); // 6
+   mov_m32_imm32((u32 *)(&rdword), (u32)dst->f.i.rt); // 10
    shr_reg32_imm8(EBX, 16); // 3
-   mov_reg32_preg32x4pimm32(EBX, EBX, (unsigned long)readmem); // 7
+   mov_reg32_preg32x4pimm32(EBX, EBX, (u32)readmem); // 7
    call_reg32(EBX); // 2
-   mov_eax_memoffs32((unsigned long *)(dst->f.i.rt)); // 5
+   mov_eax_memoffs32((u32 *)(dst->f.i.rt)); // 5
    jmp_imm_short(12); // 2
    
    and_reg32_imm32(EBX, 0x7FFFFF); // 6
-   mov_reg32_preg32pimm32(EAX, EBX, (unsigned long)rdram); // 6
+   mov_reg32_preg32pimm32(EAX, EBX, (u32)rdram); // 6
    
-   set_register_state(EAX, (unsigned long*)dst->f.i.rt, 1);
+   set_register_state(EAX, (u32*)dst->f.i.rt, 1);
 #endif
 }
 
 void genlbu()
 {
 #ifdef INTERPRET_LBU
-   gencallinterp((unsigned long)LBU, 0);
+   gencallinterp((u32)LBU, 0);
 #else
    free_all_registers();
    simplify_access();
-   mov_eax_memoffs32((unsigned long *)dst->f.i.rs);
-   add_eax_imm32((long)dst->f.i.immediate);
+   mov_eax_memoffs32((u32 *)dst->f.i.rs);
+   add_eax_imm32((s32)dst->f.i.immediate);
    mov_reg32_reg32(EBX, EAX);
    if(fast_memory)
      {
@@ -1435,39 +1435,39 @@ void genlbu()
    else
      {
 	shr_reg32_imm8(EAX, 16);
-	mov_reg32_preg32x4pimm32(EAX, EAX, (unsigned long)readmemb);
-	cmp_reg32_imm32(EAX, (unsigned long)read_rdramb);
+	mov_reg32_preg32x4pimm32(EAX, EAX, (u32)readmemb);
+	cmp_reg32_imm32(EAX, (u32)read_rdramb);
      }
    je_rj(46);
    
-   mov_m32_imm32((void *)(&PC), (unsigned long)(dst+1)); // 10
-   mov_m32_reg32((unsigned long *)(&address), EBX); // 6
-   mov_m32_imm32((unsigned long *)(&rdword), (unsigned long)dst->f.i.rt); // 10
+   mov_m32_imm32((void *)(&PC), (u32)(dst+1)); // 10
+   mov_m32_reg32((u32 *)(&address), EBX); // 6
+   mov_m32_imm32((u32 *)(&rdword), (u32)dst->f.i.rt); // 10
    shr_reg32_imm8(EBX, 16); // 3
-   mov_reg32_preg32x4pimm32(EBX, EBX, (unsigned long)readmemb); // 7
+   mov_reg32_preg32x4pimm32(EBX, EBX, (u32)readmemb); // 7
    call_reg32(EBX); // 2
-   mov_reg32_m32(EAX, (unsigned long *)dst->f.i.rt); // 6
+   mov_reg32_m32(EAX, (u32 *)dst->f.i.rt); // 6
    jmp_imm_short(15); // 2
    
    and_reg32_imm32(EBX, 0x7FFFFF); // 6
    xor_reg8_imm8(BL, 3); // 3
-   mov_reg32_preg32pimm32(EAX, EBX, (unsigned long)rdram); // 6
+   mov_reg32_preg32pimm32(EAX, EBX, (u32)rdram); // 6
    
    and_eax_imm32(0xFF);
    
-   set_register_state(EAX, (unsigned long*)dst->f.i.rt, 1);
+   set_register_state(EAX, (u32*)dst->f.i.rt, 1);
 #endif
 }
 
 void genlhu()
 {
 #ifdef INTERPRET_LHU
-   gencallinterp((unsigned long)LHU, 0);
+   gencallinterp((u32)LHU, 0);
 #else
    free_all_registers();
    simplify_access();
-   mov_eax_memoffs32((unsigned long *)dst->f.i.rs);
-   add_eax_imm32((long)dst->f.i.immediate);
+   mov_eax_memoffs32((u32 *)dst->f.i.rs);
+   add_eax_imm32((s32)dst->f.i.immediate);
    mov_reg32_reg32(EBX, EAX);
    if(fast_memory)
      {
@@ -1477,44 +1477,44 @@ void genlhu()
    else
      {
 	shr_reg32_imm8(EAX, 16);
-	mov_reg32_preg32x4pimm32(EAX, EAX, (unsigned long)readmemh);
-	cmp_reg32_imm32(EAX, (unsigned long)read_rdramh);
+	mov_reg32_preg32x4pimm32(EAX, EAX, (u32)readmemh);
+	cmp_reg32_imm32(EAX, (u32)read_rdramh);
      }
    je_rj(46);
    
-   mov_m32_imm32((void *)(&PC), (unsigned long)(dst+1)); // 10
-   mov_m32_reg32((unsigned long *)(&address), EBX); // 6
-   mov_m32_imm32((unsigned long *)(&rdword), (unsigned long)dst->f.i.rt); // 10
+   mov_m32_imm32((void *)(&PC), (u32)(dst+1)); // 10
+   mov_m32_reg32((u32 *)(&address), EBX); // 6
+   mov_m32_imm32((u32 *)(&rdword), (u32)dst->f.i.rt); // 10
    shr_reg32_imm8(EBX, 16); // 3
-   mov_reg32_preg32x4pimm32(EBX, EBX, (unsigned long)readmemh); // 7
+   mov_reg32_preg32x4pimm32(EBX, EBX, (u32)readmemh); // 7
    call_reg32(EBX); // 2
-   mov_reg32_m32(EAX, (unsigned long *)dst->f.i.rt); // 6
+   mov_reg32_m32(EAX, (u32 *)dst->f.i.rt); // 6
    jmp_imm_short(15); // 2
    
    and_reg32_imm32(EBX, 0x7FFFFF); // 6
    xor_reg8_imm8(BL, 2); // 3
-   mov_reg32_preg32pimm32(EAX, EBX, (unsigned long)rdram); // 6
+   mov_reg32_preg32pimm32(EAX, EBX, (u32)rdram); // 6
    
    and_eax_imm32(0xFFFF);
    
-   set_register_state(EAX, (unsigned long*)dst->f.i.rt, 1);
+   set_register_state(EAX, (u32*)dst->f.i.rt, 1);
 #endif
 }
 
 void genlwr()
 {
-   gencallinterp((unsigned long)LWR, 0);
+   gencallinterp((u32)LWR, 0);
 }
 
 void genlwu()
 {
 #ifdef INTERPRET_LWU
-   gencallinterp((unsigned long)LWU, 0);
+   gencallinterp((u32)LWU, 0);
 #else
    free_all_registers();
    simplify_access();
-   mov_eax_memoffs32((unsigned long *)dst->f.i.rs);
-   add_eax_imm32((long)dst->f.i.immediate);
+   mov_eax_memoffs32((u32 *)dst->f.i.rs);
+   add_eax_imm32((s32)dst->f.i.immediate);
    mov_reg32_reg32(EBX, EAX);
    if(fast_memory)
      {
@@ -1524,39 +1524,39 @@ void genlwu()
    else
      {
 	shr_reg32_imm8(EAX, 16);
-	mov_reg32_preg32x4pimm32(EAX, EAX, (unsigned long)readmem);
-	cmp_reg32_imm32(EAX, (unsigned long)read_rdram);
+	mov_reg32_preg32x4pimm32(EAX, EAX, (u32)readmem);
+	cmp_reg32_imm32(EAX, (u32)read_rdram);
      }
    je_rj(45);
    
-   mov_m32_imm32((void *)(&PC), (unsigned long)(dst+1)); // 10
-   mov_m32_reg32((unsigned long *)(&address), EBX); // 6
-   mov_m32_imm32((unsigned long *)(&rdword), (unsigned long)dst->f.i.rt); // 10
+   mov_m32_imm32((void *)(&PC), (u32)(dst+1)); // 10
+   mov_m32_reg32((u32 *)(&address), EBX); // 6
+   mov_m32_imm32((u32 *)(&rdword), (u32)dst->f.i.rt); // 10
    shr_reg32_imm8(EBX, 16); // 3
-   mov_reg32_preg32x4pimm32(EBX, EBX, (unsigned long)readmem); // 7
+   mov_reg32_preg32x4pimm32(EBX, EBX, (u32)readmem); // 7
    call_reg32(EBX); // 2
-   mov_eax_memoffs32((unsigned long *)(dst->f.i.rt)); // 5
+   mov_eax_memoffs32((u32 *)(dst->f.i.rt)); // 5
    jmp_imm_short(12); // 2
    
    and_reg32_imm32(EBX, 0x7FFFFF); // 6
-   mov_reg32_preg32pimm32(EAX, EBX, (unsigned long)rdram); // 6
+   mov_reg32_preg32pimm32(EAX, EBX, (u32)rdram); // 6
    
    xor_reg32_reg32(EBX, EBX);
    
-   set_64_register_state(EAX, EBX, (unsigned long*)dst->f.i.rt, 1);
+   set_64_register_state(EAX, EBX, (u32*)dst->f.i.rt, 1);
 #endif
 }
 
 void gensb()
 {
 #ifdef INTERPRET_SB
-   gencallinterp((unsigned long)SB, 0);
+   gencallinterp((u32)SB, 0);
 #else
    free_all_registers();
    simplify_access();
    mov_reg8_m8(CL, (unsigned char *)dst->f.i.rt);
-   mov_eax_memoffs32((unsigned long *)dst->f.i.rs);
-   add_eax_imm32((long)dst->f.i.immediate);
+   mov_eax_memoffs32((u32 *)dst->f.i.rs);
+   add_eax_imm32((s32)dst->f.i.immediate);
    mov_reg32_reg32(EBX, EAX);
    if(fast_memory)
      {
@@ -1566,54 +1566,54 @@ void gensb()
    else
      {
 	shr_reg32_imm8(EAX, 16);
-	mov_reg32_preg32x4pimm32(EAX, EAX, (unsigned long)writememb);
-	cmp_reg32_imm32(EAX, (unsigned long)write_rdramb);
+	mov_reg32_preg32x4pimm32(EAX, EAX, (u32)writememb);
+	cmp_reg32_imm32(EAX, (u32)write_rdramb);
      }
    je_rj(41);
    
-   mov_m32_imm32((void *)(&PC), (unsigned long)(dst+1)); // 10
-   mov_m32_reg32((unsigned long *)(&address), EBX); // 6
+   mov_m32_imm32((void *)(&PC), (u32)(dst+1)); // 10
+   mov_m32_reg32((u32 *)(&address), EBX); // 6
    mov_m8_reg8((unsigned char *)(&byte), CL); // 6
    shr_reg32_imm8(EBX, 16); // 3
-   mov_reg32_preg32x4pimm32(EBX, EBX, (unsigned long)writememb); // 7
+   mov_reg32_preg32x4pimm32(EBX, EBX, (u32)writememb); // 7
    call_reg32(EBX); // 2
-   mov_eax_memoffs32((unsigned long *)(&address)); // 5
+   mov_eax_memoffs32((u32 *)(&address)); // 5
    jmp_imm_short(17); // 2
    
    mov_reg32_reg32(EAX, EBX); // 2
    and_reg32_imm32(EBX, 0x7FFFFF); // 6
    xor_reg8_imm8(BL, 3); // 3
-   mov_preg32pimm32_reg8(EBX, (unsigned long)rdram, CL); // 6
+   mov_preg32pimm32_reg8(EBX, (u32)rdram, CL); // 6
    
    mov_reg32_reg32(EBX, EAX);
    shr_reg32_imm8(EBX, 12);
-   cmp_preg32pimm32_imm8(EBX, (unsigned long)invalid_code, 0);
+   cmp_preg32pimm32_imm8(EBX, (u32)invalid_code, 0);
    jne_rj(54);
    mov_reg32_reg32(ECX, EBX); // 2
    shl_reg32_imm8(EBX, 2); // 3
-   mov_reg32_preg32pimm32(EBX, EBX, (unsigned long)blocks); // 6
+   mov_reg32_preg32pimm32(EBX, EBX, (u32)blocks); // 6
    mov_reg32_preg32pimm32(EBX, EBX, (int)&actual->block - (int)actual); // 6
    and_eax_imm32(0xFFF); // 5
    shr_reg32_imm8(EAX, 2); // 3
    mov_reg32_imm32(EDX, sizeof(precomp_instr)); // 5
    mul_reg32(EDX); // 2
    mov_reg32_preg32preg32pimm32(EAX, EAX, EBX, (int)&dst->ops - (int)dst); // 7
-   cmp_reg32_imm32(EAX, (unsigned long)NOTCOMPILED); // 6
+   cmp_reg32_imm32(EAX, (u32)NOTCOMPILED); // 6
    je_rj(7); // 2
-   mov_preg32pimm32_imm8(ECX, (unsigned long)invalid_code, 1); // 7
+   mov_preg32pimm32_imm8(ECX, (u32)invalid_code, 1); // 7
 #endif
 }
 
 void gensh()
 {
 #ifdef INTERPRET_SH
-   gencallinterp((unsigned long)SH, 0);
+   gencallinterp((u32)SH, 0);
 #else
    free_all_registers();
    simplify_access();
    mov_reg16_m16(CX, (unsigned short *)dst->f.i.rt);
-   mov_eax_memoffs32((unsigned long *)dst->f.i.rs);
-   add_eax_imm32((long)dst->f.i.immediate);
+   mov_eax_memoffs32((u32 *)dst->f.i.rs);
+   add_eax_imm32((s32)dst->f.i.immediate);
    mov_reg32_reg32(EBX, EAX);
    if(fast_memory)
      {
@@ -1623,59 +1623,59 @@ void gensh()
    else
      {
 	shr_reg32_imm8(EAX, 16);
-	mov_reg32_preg32x4pimm32(EAX, EAX, (unsigned long)writememh);
-	cmp_reg32_imm32(EAX, (unsigned long)write_rdramh);
+	mov_reg32_preg32x4pimm32(EAX, EAX, (u32)writememh);
+	cmp_reg32_imm32(EAX, (u32)write_rdramh);
      }
    je_rj(42);
    
-   mov_m32_imm32((void *)(&PC), (unsigned long)(dst+1)); // 10
-   mov_m32_reg32((unsigned long *)(&address), EBX); // 6
+   mov_m32_imm32((void *)(&PC), (u32)(dst+1)); // 10
+   mov_m32_reg32((u32 *)(&address), EBX); // 6
    mov_m16_reg16((unsigned short *)(&hword), CX); // 7
    shr_reg32_imm8(EBX, 16); // 3
-   mov_reg32_preg32x4pimm32(EBX, EBX, (unsigned long)writememh); // 7
+   mov_reg32_preg32x4pimm32(EBX, EBX, (u32)writememh); // 7
    call_reg32(EBX); // 2
-   mov_eax_memoffs32((unsigned long *)(&address)); // 5
+   mov_eax_memoffs32((u32 *)(&address)); // 5
    jmp_imm_short(18); // 2
    
    mov_reg32_reg32(EAX, EBX); // 2
    and_reg32_imm32(EBX, 0x7FFFFF); // 6
    xor_reg8_imm8(BL, 2); // 3
-   mov_preg32pimm32_reg16(EBX, (unsigned long)rdram, CX); // 7
+   mov_preg32pimm32_reg16(EBX, (u32)rdram, CX); // 7
    
    mov_reg32_reg32(EBX, EAX);
    shr_reg32_imm8(EBX, 12);
-   cmp_preg32pimm32_imm8(EBX, (unsigned long)invalid_code, 0);
+   cmp_preg32pimm32_imm8(EBX, (u32)invalid_code, 0);
    jne_rj(54);
    mov_reg32_reg32(ECX, EBX); // 2
    shl_reg32_imm8(EBX, 2); // 3
-   mov_reg32_preg32pimm32(EBX, EBX, (unsigned long)blocks); // 6
+   mov_reg32_preg32pimm32(EBX, EBX, (u32)blocks); // 6
    mov_reg32_preg32pimm32(EBX, EBX, (int)&actual->block - (int)actual); // 6
    and_eax_imm32(0xFFF); // 5
    shr_reg32_imm8(EAX, 2); // 3
    mov_reg32_imm32(EDX, sizeof(precomp_instr)); // 5
    mul_reg32(EDX); // 2
    mov_reg32_preg32preg32pimm32(EAX, EAX, EBX, (int)&dst->ops - (int)dst); // 7
-   cmp_reg32_imm32(EAX, (unsigned long)NOTCOMPILED); // 6
+   cmp_reg32_imm32(EAX, (u32)NOTCOMPILED); // 6
    je_rj(7); // 2
-   mov_preg32pimm32_imm8(ECX, (unsigned long)invalid_code, 1); // 7
+   mov_preg32pimm32_imm8(ECX, (u32)invalid_code, 1); // 7
 #endif
 }
 
 void genswl()
 {
-   gencallinterp((unsigned long)SWL, 0);
+   gencallinterp((u32)SWL, 0);
 }
 
 void gensw()
 {
 #ifdef INTERPRET_SW
-   gencallinterp((unsigned long)SW, 0);
+   gencallinterp((u32)SW, 0);
 #else
    free_all_registers();
    simplify_access();
-   mov_reg32_m32(ECX, (unsigned long *)dst->f.i.rt);
-   mov_eax_memoffs32((unsigned long *)dst->f.i.rs);
-   add_eax_imm32((long)dst->f.i.immediate);
+   mov_reg32_m32(ECX, (u32 *)dst->f.i.rt);
+   mov_eax_memoffs32((u32 *)dst->f.i.rs);
+   add_eax_imm32((s32)dst->f.i.immediate);
    mov_reg32_reg32(EBX, EAX);
    if(fast_memory)
      {
@@ -1685,68 +1685,68 @@ void gensw()
    else
      {
 	shr_reg32_imm8(EAX, 16);
-	mov_reg32_preg32x4pimm32(EAX, EAX, (unsigned long)writemem);
-	cmp_reg32_imm32(EAX, (unsigned long)write_rdram);
+	mov_reg32_preg32x4pimm32(EAX, EAX, (u32)writemem);
+	cmp_reg32_imm32(EAX, (u32)write_rdram);
      }
    je_rj(41);
    
-   mov_m32_imm32((void *)(&PC), (unsigned long)(dst+1)); // 10
-   mov_m32_reg32((unsigned long *)(&address), EBX); // 6
-   mov_m32_reg32((unsigned long *)(&word), ECX); // 6
+   mov_m32_imm32((void *)(&PC), (u32)(dst+1)); // 10
+   mov_m32_reg32((u32 *)(&address), EBX); // 6
+   mov_m32_reg32((u32 *)(&word), ECX); // 6
    shr_reg32_imm8(EBX, 16); // 3
-   mov_reg32_preg32x4pimm32(EBX, EBX, (unsigned long)writemem); // 7
+   mov_reg32_preg32x4pimm32(EBX, EBX, (u32)writemem); // 7
    call_reg32(EBX); // 2
-   mov_eax_memoffs32((unsigned long *)(&address)); // 5
+   mov_eax_memoffs32((u32 *)(&address)); // 5
    jmp_imm_short(14); // 2
    
    mov_reg32_reg32(EAX, EBX); // 2
    and_reg32_imm32(EBX, 0x7FFFFF); // 6
-   mov_preg32pimm32_reg32(EBX, (unsigned long)rdram, ECX); // 6
+   mov_preg32pimm32_reg32(EBX, (u32)rdram, ECX); // 6
    
    mov_reg32_reg32(EBX, EAX);
    shr_reg32_imm8(EBX, 12);
-   cmp_preg32pimm32_imm8(EBX, (unsigned long)invalid_code, 0);
+   cmp_preg32pimm32_imm8(EBX, (u32)invalid_code, 0);
    jne_rj(54);
    mov_reg32_reg32(ECX, EBX); // 2
    shl_reg32_imm8(EBX, 2); // 3
-   mov_reg32_preg32pimm32(EBX, EBX, (unsigned long)blocks); // 6
+   mov_reg32_preg32pimm32(EBX, EBX, (u32)blocks); // 6
    mov_reg32_preg32pimm32(EBX, EBX, (int)&actual->block - (int)actual); // 6
    and_eax_imm32(0xFFF); // 5
    shr_reg32_imm8(EAX, 2); // 3
    mov_reg32_imm32(EDX, sizeof(precomp_instr)); // 5
    mul_reg32(EDX); // 2
    mov_reg32_preg32preg32pimm32(EAX, EAX, EBX, (int)&dst->ops - (int)dst); // 7
-   cmp_reg32_imm32(EAX, (unsigned long)NOTCOMPILED); // 6
+   cmp_reg32_imm32(EAX, (u32)NOTCOMPILED); // 6
    je_rj(7); // 2
-   mov_preg32pimm32_imm8(ECX, (unsigned long)invalid_code, 1); // 7
+   mov_preg32pimm32_imm8(ECX, (u32)invalid_code, 1); // 7
 #endif
 }
 
 void gensdl()
 {
-   gencallinterp((unsigned long)SDL, 0);
+   gencallinterp((u32)SDL, 0);
 }
 
 void gensdr()
 {
-   gencallinterp((unsigned long)SDR, 0);
+   gencallinterp((u32)SDR, 0);
 }
 
 void genswr()
 {
-   gencallinterp((unsigned long)SWR, 0);
+   gencallinterp((u32)SWR, 0);
 }
 
 void gencheck_cop1_unusable()
 {
-   unsigned long temp, temp2;
+   u32 temp, temp2;
    free_all_registers();
    simplify_access();
-   test_m32_imm32((unsigned long*)&Status, 0x20000000);
+   test_m32_imm32((u32*)&Status, 0x20000000);
    jne_rj(0);
    temp = code_length;
    
-   gencallinterp((unsigned long)check_cop1_unusable, 0);
+   gencallinterp((u32)check_cop1_unusable, 0);
    
    temp2 = code_length;
    code_length = temp - 1;
@@ -1757,12 +1757,12 @@ void gencheck_cop1_unusable()
 void genlwc1()
 {
 #ifdef INTERPRET_LWC1
-   gencallinterp((unsigned long)LWC1, 0);
+   gencallinterp((u32)LWC1, 0);
 #else
    gencheck_cop1_unusable();
    
-   mov_eax_memoffs32((unsigned long *)(&reg[dst->f.lf.base]));
-   add_eax_imm32((long)dst->f.lf.offset);
+   mov_eax_memoffs32((u32 *)(&reg[dst->f.lf.base]));
+   add_eax_imm32((s32)dst->f.lf.offset);
    mov_reg32_reg32(EBX, EAX);
    if(fast_memory)
      {
@@ -1772,23 +1772,23 @@ void genlwc1()
    else
      {
 	shr_reg32_imm8(EAX, 16);
-	mov_reg32_preg32x4pimm32(EAX, EAX, (unsigned long)readmem);
-	cmp_reg32_imm32(EAX, (unsigned long)read_rdram);
+	mov_reg32_preg32x4pimm32(EAX, EAX, (u32)readmem);
+	cmp_reg32_imm32(EAX, (u32)read_rdram);
      }
    je_rj(42);
    
-   mov_m32_imm32((void *)(&PC), (unsigned long)(dst+1)); // 10
-   mov_m32_reg32((unsigned long *)(&address), EBX); // 6
-   mov_reg32_m32(EDX, (unsigned long*)(&reg_cop1_simple[dst->f.lf.ft])); // 6
-   mov_m32_reg32((unsigned long *)(&rdword), EDX); // 6
+   mov_m32_imm32((void *)(&PC), (u32)(dst+1)); // 10
+   mov_m32_reg32((u32 *)(&address), EBX); // 6
+   mov_reg32_m32(EDX, (u32*)(&reg_cop1_simple[dst->f.lf.ft])); // 6
+   mov_m32_reg32((u32 *)(&rdword), EDX); // 6
    shr_reg32_imm8(EBX, 16); // 3
-   mov_reg32_preg32x4pimm32(EBX, EBX, (unsigned long)readmem); // 7
+   mov_reg32_preg32x4pimm32(EBX, EBX, (u32)readmem); // 7
    call_reg32(EBX); // 2
    jmp_imm_short(20); // 2
    
    and_reg32_imm32(EBX, 0x7FFFFF); // 6
-   mov_reg32_preg32pimm32(EAX, EBX, (unsigned long)rdram); // 6
-   mov_reg32_m32(EBX, (unsigned long*)(&reg_cop1_simple[dst->f.lf.ft])); // 6
+   mov_reg32_preg32pimm32(EAX, EBX, (u32)rdram); // 6
+   mov_reg32_m32(EBX, (u32*)(&reg_cop1_simple[dst->f.lf.ft])); // 6
    mov_preg32_reg32(EBX, EAX); // 2
 #endif
 }
@@ -1796,12 +1796,12 @@ void genlwc1()
 void genldc1()
 {
 #ifdef INTERPRET_LDC1
-   gencallinterp((unsigned long)LDC1, 0);
+   gencallinterp((u32)LDC1, 0);
 #else
    gencheck_cop1_unusable();
    
-   mov_eax_memoffs32((unsigned long *)(&reg[dst->f.lf.base]));
-   add_eax_imm32((long)dst->f.lf.offset);
+   mov_eax_memoffs32((u32 *)(&reg[dst->f.lf.base]));
+   add_eax_imm32((s32)dst->f.lf.offset);
    mov_reg32_reg32(EBX, EAX);
    if(fast_memory)
      {
@@ -1811,24 +1811,24 @@ void genldc1()
    else
      {
 	shr_reg32_imm8(EAX, 16);
-	mov_reg32_preg32x4pimm32(EAX, EAX, (unsigned long)readmemd);
-	cmp_reg32_imm32(EAX, (unsigned long)read_rdramd);
+	mov_reg32_preg32x4pimm32(EAX, EAX, (u32)readmemd);
+	cmp_reg32_imm32(EAX, (u32)read_rdramd);
      }
    je_rj(42);
    
-   mov_m32_imm32((void *)(&PC), (unsigned long)(dst+1)); // 10
-   mov_m32_reg32((unsigned long *)(&address), EBX); // 6
-   mov_reg32_m32(EDX, (unsigned long*)(&reg_cop1_double[dst->f.lf.ft])); // 6
-   mov_m32_reg32((unsigned long *)(&rdword), EDX); // 6
+   mov_m32_imm32((void *)(&PC), (u32)(dst+1)); // 10
+   mov_m32_reg32((u32 *)(&address), EBX); // 6
+   mov_reg32_m32(EDX, (u32*)(&reg_cop1_double[dst->f.lf.ft])); // 6
+   mov_m32_reg32((u32 *)(&rdword), EDX); // 6
    shr_reg32_imm8(EBX, 16); // 3
-   mov_reg32_preg32x4pimm32(EBX, EBX, (unsigned long)readmemd); // 7
+   mov_reg32_preg32x4pimm32(EBX, EBX, (u32)readmemd); // 7
    call_reg32(EBX); // 2
    jmp_imm_short(32); // 2
    
    and_reg32_imm32(EBX, 0x7FFFFF); // 6
-   mov_reg32_preg32pimm32(EAX, EBX, ((unsigned long)rdram)+4); // 6
-   mov_reg32_preg32pimm32(ECX, EBX, ((unsigned long)rdram)); // 6
-   mov_reg32_m32(EBX, (unsigned long*)(&reg_cop1_double[dst->f.lf.ft])); // 6
+   mov_reg32_preg32pimm32(EAX, EBX, ((u32)rdram)+4); // 6
+   mov_reg32_preg32pimm32(ECX, EBX, ((u32)rdram)); // 6
+   mov_reg32_m32(EBX, (u32*)(&reg_cop1_double[dst->f.lf.ft])); // 6
    mov_preg32_reg32(EBX, EAX); // 2
    mov_preg32pimm32_reg32(EBX, 4, ECX); // 6
 #endif
@@ -1841,12 +1841,12 @@ void gencache()
 void genld()
 {
 #ifdef INTERPRET_LD
-   gencallinterp((unsigned long)LD, 0);
+   gencallinterp((u32)LD, 0);
 #else
    free_all_registers();
    simplify_access();
-   mov_eax_memoffs32((unsigned long *)dst->f.i.rs);
-   add_eax_imm32((long)dst->f.i.immediate);
+   mov_eax_memoffs32((u32 *)dst->f.i.rs);
+   add_eax_imm32((s32)dst->f.i.immediate);
    mov_reg32_reg32(EBX, EAX);
    if(fast_memory)
      {
@@ -1856,40 +1856,40 @@ void genld()
    else
      {
 	shr_reg32_imm8(EAX, 16);
-	mov_reg32_preg32x4pimm32(EAX, EAX, (unsigned long)readmemd);
-	cmp_reg32_imm32(EAX, (unsigned long)read_rdramd);
+	mov_reg32_preg32x4pimm32(EAX, EAX, (u32)readmemd);
+	cmp_reg32_imm32(EAX, (u32)read_rdramd);
      }
    je_rj(51);
    
-   mov_m32_imm32((void *)(&PC), (unsigned long)(dst+1)); // 10
-   mov_m32_reg32((unsigned long *)(&address), EBX); // 6
-   mov_m32_imm32((unsigned long *)(&rdword), (unsigned long)dst->f.i.rt); // 10
+   mov_m32_imm32((void *)(&PC), (u32)(dst+1)); // 10
+   mov_m32_reg32((u32 *)(&address), EBX); // 6
+   mov_m32_imm32((u32 *)(&rdword), (u32)dst->f.i.rt); // 10
    shr_reg32_imm8(EBX, 16); // 3
-   mov_reg32_preg32x4pimm32(EBX, EBX, (unsigned long)readmemd); // 7
+   mov_reg32_preg32x4pimm32(EBX, EBX, (u32)readmemd); // 7
    call_reg32(EBX); // 2
-   mov_eax_memoffs32((unsigned long *)(dst->f.i.rt)); // 5
-   mov_reg32_m32(ECX, (unsigned long *)(dst->f.i.rt)+1); // 6
+   mov_eax_memoffs32((u32 *)(dst->f.i.rt)); // 5
+   mov_reg32_m32(ECX, (u32 *)(dst->f.i.rt)+1); // 6
    jmp_imm_short(18); // 2
    
    and_reg32_imm32(EBX, 0x7FFFFF); // 6
-   mov_reg32_preg32pimm32(EAX, EBX, ((unsigned long)rdram)+4); // 6
-   mov_reg32_preg32pimm32(ECX, EBX, ((unsigned long)rdram)); // 6
+   mov_reg32_preg32pimm32(EAX, EBX, ((u32)rdram)+4); // 6
+   mov_reg32_preg32pimm32(ECX, EBX, ((u32)rdram)); // 6
    
-   set_64_register_state(EAX, ECX, (unsigned long*)dst->f.i.rt, 1);
+   set_64_register_state(EAX, ECX, (u32*)dst->f.i.rt, 1);
 #endif
 }
 
 void genswc1()
 {
 #ifdef INTERPRET_SWC1
-   gencallinterp((unsigned long)SWC1, 0);
+   gencallinterp((u32)SWC1, 0);
 #else
    gencheck_cop1_unusable();
    
-   mov_reg32_m32(EDX, (unsigned long*)(&reg_cop1_simple[dst->f.lf.ft]));
+   mov_reg32_m32(EDX, (u32*)(&reg_cop1_simple[dst->f.lf.ft]));
    mov_reg32_preg32(ECX, EDX);
-   mov_eax_memoffs32((unsigned long *)(&reg[dst->f.lf.base]));
-   add_eax_imm32((long)dst->f.lf.offset);
+   mov_eax_memoffs32((u32 *)(&reg[dst->f.lf.base]));
+   add_eax_imm32((s32)dst->f.lf.offset);
    mov_reg32_reg32(EBX, EAX);
    if(fast_memory)
      {
@@ -1899,55 +1899,55 @@ void genswc1()
    else
      {
 	shr_reg32_imm8(EAX, 16);
-	mov_reg32_preg32x4pimm32(EAX, EAX, (unsigned long)writemem);
-	cmp_reg32_imm32(EAX, (unsigned long)write_rdram);
+	mov_reg32_preg32x4pimm32(EAX, EAX, (u32)writemem);
+	cmp_reg32_imm32(EAX, (u32)write_rdram);
      }
    je_rj(41);
    
-   mov_m32_imm32((void *)(&PC), (unsigned long)(dst+1)); // 10
-   mov_m32_reg32((unsigned long *)(&address), EBX); // 6
-   mov_m32_reg32((unsigned long *)(&word), ECX); // 6
+   mov_m32_imm32((void *)(&PC), (u32)(dst+1)); // 10
+   mov_m32_reg32((u32 *)(&address), EBX); // 6
+   mov_m32_reg32((u32 *)(&word), ECX); // 6
    shr_reg32_imm8(EBX, 16); // 3
-   mov_reg32_preg32x4pimm32(EBX, EBX, (unsigned long)writemem); // 7
+   mov_reg32_preg32x4pimm32(EBX, EBX, (u32)writemem); // 7
    call_reg32(EBX); // 2
-   mov_eax_memoffs32((unsigned long *)(&address)); // 5
+   mov_eax_memoffs32((u32 *)(&address)); // 5
    jmp_imm_short(14); // 2
    
    mov_reg32_reg32(EAX, EBX); // 2
    and_reg32_imm32(EBX, 0x7FFFFF); // 6
-   mov_preg32pimm32_reg32(EBX, (unsigned long)rdram, ECX); // 6
+   mov_preg32pimm32_reg32(EBX, (u32)rdram, ECX); // 6
    
    mov_reg32_reg32(EBX, EAX);
    shr_reg32_imm8(EBX, 12);
-   cmp_preg32pimm32_imm8(EBX, (unsigned long)invalid_code, 0);
+   cmp_preg32pimm32_imm8(EBX, (u32)invalid_code, 0);
    jne_rj(54);
    mov_reg32_reg32(ECX, EBX); // 2
    shl_reg32_imm8(EBX, 2); // 3
-   mov_reg32_preg32pimm32(EBX, EBX, (unsigned long)blocks); // 6
+   mov_reg32_preg32pimm32(EBX, EBX, (u32)blocks); // 6
    mov_reg32_preg32pimm32(EBX, EBX, (int)&actual->block - (int)actual); // 6
    and_eax_imm32(0xFFF); // 5
    shr_reg32_imm8(EAX, 2); // 3
    mov_reg32_imm32(EDX, sizeof(precomp_instr)); // 5
    mul_reg32(EDX); // 2
    mov_reg32_preg32preg32pimm32(EAX, EAX, EBX, (int)&dst->ops - (int)dst); // 7
-   cmp_reg32_imm32(EAX, (unsigned long)NOTCOMPILED); // 6
+   cmp_reg32_imm32(EAX, (u32)NOTCOMPILED); // 6
    je_rj(7); // 2
-   mov_preg32pimm32_imm8(ECX, (unsigned long)invalid_code, 1); // 7
+   mov_preg32pimm32_imm8(ECX, (u32)invalid_code, 1); // 7
 #endif
 }
 
 void gensdc1()
 {
 #ifdef INTERPRET_SDC1
-   gencallinterp((unsigned long)SDC1, 0);
+   gencallinterp((u32)SDC1, 0);
 #else
    gencheck_cop1_unusable();
    
-   mov_reg32_m32(ESI, (unsigned long*)(&reg_cop1_double[dst->f.lf.ft]));
+   mov_reg32_m32(ESI, (u32*)(&reg_cop1_double[dst->f.lf.ft]));
    mov_reg32_preg32(ECX, ESI);
    mov_reg32_preg32pimm32(EDX, ESI, 4);
-   mov_eax_memoffs32((unsigned long *)(&reg[dst->f.lf.base]));
-   add_eax_imm32((long)dst->f.lf.offset);
+   mov_eax_memoffs32((u32 *)(&reg[dst->f.lf.base]));
+   add_eax_imm32((s32)dst->f.lf.offset);
    mov_reg32_reg32(EBX, EAX);
    if(fast_memory)
      {
@@ -1957,57 +1957,57 @@ void gensdc1()
    else
      {
 	shr_reg32_imm8(EAX, 16);
-	mov_reg32_preg32x4pimm32(EAX, EAX, (unsigned long)writememd);
-	cmp_reg32_imm32(EAX, (unsigned long)write_rdramd);
+	mov_reg32_preg32x4pimm32(EAX, EAX, (u32)writememd);
+	cmp_reg32_imm32(EAX, (u32)write_rdramd);
      }
    je_rj(47);
    
-   mov_m32_imm32((void *)(&PC), (unsigned long)(dst+1)); // 10
-   mov_m32_reg32((unsigned long *)(&address), EBX); // 6
-   mov_m32_reg32((unsigned long *)(&dword), ECX); // 6
-   mov_m32_reg32((unsigned long *)(&dword)+1, EDX); // 6
+   mov_m32_imm32((void *)(&PC), (u32)(dst+1)); // 10
+   mov_m32_reg32((u32 *)(&address), EBX); // 6
+   mov_m32_reg32((u32 *)(&dword), ECX); // 6
+   mov_m32_reg32((u32 *)(&dword)+1, EDX); // 6
    shr_reg32_imm8(EBX, 16); // 3
-   mov_reg32_preg32x4pimm32(EBX, EBX, (unsigned long)writememd); // 7
+   mov_reg32_preg32x4pimm32(EBX, EBX, (u32)writememd); // 7
    call_reg32(EBX); // 2
-   mov_eax_memoffs32((unsigned long *)(&address)); // 5
+   mov_eax_memoffs32((u32 *)(&address)); // 5
    jmp_imm_short(20); // 2
    
    mov_reg32_reg32(EAX, EBX); // 2
    and_reg32_imm32(EBX, 0x7FFFFF); // 6
-   mov_preg32pimm32_reg32(EBX, ((unsigned long)rdram)+4, ECX); // 6
-   mov_preg32pimm32_reg32(EBX, ((unsigned long)rdram)+0, EDX); // 6
+   mov_preg32pimm32_reg32(EBX, ((u32)rdram)+4, ECX); // 6
+   mov_preg32pimm32_reg32(EBX, ((u32)rdram)+0, EDX); // 6
    
    mov_reg32_reg32(EBX, EAX);
    shr_reg32_imm8(EBX, 12);
-   cmp_preg32pimm32_imm8(EBX, (unsigned long)invalid_code, 0);
+   cmp_preg32pimm32_imm8(EBX, (u32)invalid_code, 0);
    jne_rj(54);
    mov_reg32_reg32(ECX, EBX); // 2
    shl_reg32_imm8(EBX, 2); // 3
-   mov_reg32_preg32pimm32(EBX, EBX, (unsigned long)blocks); // 6
+   mov_reg32_preg32pimm32(EBX, EBX, (u32)blocks); // 6
    mov_reg32_preg32pimm32(EBX, EBX, (int)&actual->block - (int)actual); // 6
    and_eax_imm32(0xFFF); // 5
    shr_reg32_imm8(EAX, 2); // 3
    mov_reg32_imm32(EDX, sizeof(precomp_instr)); // 5
    mul_reg32(EDX); // 2
    mov_reg32_preg32preg32pimm32(EAX, EAX, EBX, (int)&dst->ops - (int)dst); // 7
-   cmp_reg32_imm32(EAX, (unsigned long)NOTCOMPILED); // 6
+   cmp_reg32_imm32(EAX, (u32)NOTCOMPILED); // 6
    je_rj(7); // 2
-   mov_preg32pimm32_imm8(ECX, (unsigned long)invalid_code, 1); // 7
+   mov_preg32pimm32_imm8(ECX, (u32)invalid_code, 1); // 7
 #endif
 }
 
 void gensd()
 {
 #ifdef INTERPRET_SD
-   gencallinterp((unsigned long)SD, 0);
+   gencallinterp((u32)SD, 0);
 #else
    free_all_registers();
    simplify_access();
    
-   mov_reg32_m32(ECX, (unsigned long *)dst->f.i.rt);
-   mov_reg32_m32(EDX, ((unsigned long *)dst->f.i.rt)+1);
-   mov_eax_memoffs32((unsigned long *)dst->f.i.rs);
-   add_eax_imm32((long)dst->f.i.immediate);
+   mov_reg32_m32(ECX, (u32 *)dst->f.i.rt);
+   mov_reg32_m32(EDX, ((u32 *)dst->f.i.rt)+1);
+   mov_eax_memoffs32((u32 *)dst->f.i.rs);
+   add_eax_imm32((s32)dst->f.i.immediate);
    mov_reg32_reg32(EBX, EAX);
    if(fast_memory)
      {
@@ -2017,51 +2017,51 @@ void gensd()
    else
      {
 	shr_reg32_imm8(EAX, 16);
-	mov_reg32_preg32x4pimm32(EAX, EAX, (unsigned long)writememd);
-	cmp_reg32_imm32(EAX, (unsigned long)write_rdramd);
+	mov_reg32_preg32x4pimm32(EAX, EAX, (u32)writememd);
+	cmp_reg32_imm32(EAX, (u32)write_rdramd);
      }
    je_rj(47);
    
-   mov_m32_imm32((void *)(&PC), (unsigned long)(dst+1)); // 10
-   mov_m32_reg32((unsigned long *)(&address), EBX); // 6
-   mov_m32_reg32((unsigned long *)(&dword), ECX); // 6
-   mov_m32_reg32((unsigned long *)(&dword)+1, EDX); // 6
+   mov_m32_imm32((void *)(&PC), (u32)(dst+1)); // 10
+   mov_m32_reg32((u32 *)(&address), EBX); // 6
+   mov_m32_reg32((u32 *)(&dword), ECX); // 6
+   mov_m32_reg32((u32 *)(&dword)+1, EDX); // 6
    shr_reg32_imm8(EBX, 16); // 3
-   mov_reg32_preg32x4pimm32(EBX, EBX, (unsigned long)writememd); // 7
+   mov_reg32_preg32x4pimm32(EBX, EBX, (u32)writememd); // 7
    call_reg32(EBX); // 2
-   mov_eax_memoffs32((unsigned long *)(&address)); // 5
+   mov_eax_memoffs32((u32 *)(&address)); // 5
    jmp_imm_short(20); // 2
    
    mov_reg32_reg32(EAX, EBX); // 2
    and_reg32_imm32(EBX, 0x7FFFFF); // 6
-   mov_preg32pimm32_reg32(EBX, ((unsigned long)rdram)+4, ECX); // 6
-   mov_preg32pimm32_reg32(EBX, ((unsigned long)rdram)+0, EDX); // 6
+   mov_preg32pimm32_reg32(EBX, ((u32)rdram)+4, ECX); // 6
+   mov_preg32pimm32_reg32(EBX, ((u32)rdram)+0, EDX); // 6
    
    mov_reg32_reg32(EBX, EAX);
    shr_reg32_imm8(EBX, 12);
-   cmp_preg32pimm32_imm8(EBX, (unsigned long)invalid_code, 0);
+   cmp_preg32pimm32_imm8(EBX, (u32)invalid_code, 0);
    jne_rj(54);
    mov_reg32_reg32(ECX, EBX); // 2
    shl_reg32_imm8(EBX, 2); // 3
-   mov_reg32_preg32pimm32(EBX, EBX, (unsigned long)blocks); // 6
+   mov_reg32_preg32pimm32(EBX, EBX, (u32)blocks); // 6
    mov_reg32_preg32pimm32(EBX, EBX, (int)&actual->block - (int)actual); // 6
    and_eax_imm32(0xFFF); // 5
    shr_reg32_imm8(EAX, 2); // 3
    mov_reg32_imm32(EDX, sizeof(precomp_instr)); // 5
    mul_reg32(EDX); // 2
    mov_reg32_preg32preg32pimm32(EAX, EAX, EBX, (int)&dst->ops - (int)dst); // 7
-   cmp_reg32_imm32(EAX, (unsigned long)NOTCOMPILED); // 6
+   cmp_reg32_imm32(EAX, (u32)NOTCOMPILED); // 6
    je_rj(7); // 2
-   mov_preg32pimm32_imm8(ECX, (unsigned long)invalid_code, 1); // 7
+   mov_preg32pimm32_imm8(ECX, (u32)invalid_code, 1); // 7
 #endif
 }
 
 void genll()
 {
-   gencallinterp((unsigned long)LL, 0);
+   gencallinterp((u32)LL, 0);
 }
 
 void gensc()
 {
-   gencallinterp((unsigned long)SC, 0);
+   gencallinterp((u32)SC, 0);
 }

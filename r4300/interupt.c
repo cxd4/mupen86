@@ -55,7 +55,7 @@ int vi_field=0;
 typedef struct _interupt_queue
 {
    int type;
-   unsigned long count;
+   u32 count;
    struct _interupt_queue *next;
 } interupt_queue;
 
@@ -88,7 +88,7 @@ void print_queue()
 
 static int SPECIAL_done = 0;
 
-int before_event(unsigned long evt1, unsigned long evt2, int type2)
+int before_event(u32 evt1, u32 evt2, int type2)
 {
    if(evt1 - Count < 0x80000000)
      {

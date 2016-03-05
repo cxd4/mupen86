@@ -29,10 +29,9 @@
 
 extern int use_flashram;
 
-
 void init_flashram();
-void flashram_command(unsigned long command);
-unsigned long flashram_status();
+void flashram_command(u32 command);
+u32 flashram_status();
 void dma_read_flashram();
 void dma_write_flashram();
 

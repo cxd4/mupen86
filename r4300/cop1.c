@@ -36,7 +36,7 @@
 void MFC1()
 {
    if (check_cop1_unusable()) return;
-   rrt32 = *((long*)reg_cop1_simple[rfs]);
+   rrt32 = *((s32*)reg_cop1_simple[rfs]);
    sign_extended(rrt);
    PC++;
 }
@@ -44,7 +44,7 @@ void MFC1()
 void DMFC1()
 {
    if (check_cop1_unusable()) return;
-   rrt = *((long long*)reg_cop1_double[rfs]);
+   rrt = *((s64*)reg_cop1_double[rfs]);
    PC++;
 }
 
@@ -67,14 +67,14 @@ void CFC1()
 void MTC1()
 {
    if (check_cop1_unusable()) return;
-   *((long*)reg_cop1_simple[rfs]) = rrt32;
+   *((s32*)reg_cop1_simple[rfs]) = rrt32;
    PC++;
 }
 
 void DMTC1()
 {
    if (check_cop1_unusable()) return;
-   *((long long*)reg_cop1_double[rfs]) = rrt;
+   *((s64*)reg_cop1_double[rfs]) = rrt;
    PC++;
 }
 

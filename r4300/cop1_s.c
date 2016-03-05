@@ -104,7 +104,7 @@ void ROUND_L_S()
 {
    if (check_cop1_unusable()) return;
    set_round();
-   *((long long*)(reg_cop1_double[cffd])) = *reg_cop1_simple[cffs];
+   *((s64*)(reg_cop1_double[cffd])) = *reg_cop1_simple[cffs];
    PC++;
 }
 
@@ -112,7 +112,7 @@ void TRUNC_L_S()
 {
    if (check_cop1_unusable()) return;
    set_trunc();
-   *((long long*)(reg_cop1_double[cffd])) = *reg_cop1_simple[cffs];
+   *((s64*)(reg_cop1_double[cffd])) = *reg_cop1_simple[cffs];
    PC++;
 }
 
@@ -120,7 +120,7 @@ void CEIL_L_S()
 {
    if (check_cop1_unusable()) return;
    set_ceil();
-   *((long long*)(reg_cop1_double[cffd])) = *reg_cop1_simple[cffs];
+   *((s64*)(reg_cop1_double[cffd])) = *reg_cop1_simple[cffs];
    PC++;
 }
 
@@ -128,7 +128,7 @@ void FLOOR_L_S()
 {
    if (check_cop1_unusable()) return;
    set_floor();
-   *((long long*)(reg_cop1_double[cffd])) = *reg_cop1_simple[cffs];
+   *((s64*)(reg_cop1_double[cffd])) = *reg_cop1_simple[cffs];
    PC++;
 }
 
@@ -136,7 +136,7 @@ void ROUND_W_S()
 {
    if (check_cop1_unusable()) return;
    set_round();
-   *((long*)reg_cop1_simple[cffd]) = *reg_cop1_simple[cffs];
+   *((s32*)reg_cop1_simple[cffd]) = *reg_cop1_simple[cffs];
    PC++;
 }
 
@@ -144,7 +144,7 @@ void TRUNC_W_S()
 {
    if (check_cop1_unusable()) return;
    set_trunc();
-   *((long*)reg_cop1_simple[cffd]) = *reg_cop1_simple[cffs];
+   *((s32*)reg_cop1_simple[cffd]) = *reg_cop1_simple[cffs];
    PC++;
 }
 
@@ -152,7 +152,7 @@ void CEIL_W_S()
 {
    if (check_cop1_unusable()) return;
    set_ceil();
-   *((long*)reg_cop1_simple[cffd]) = *reg_cop1_simple[cffs];
+   *((s32*)reg_cop1_simple[cffd]) = *reg_cop1_simple[cffs];
    PC++;
 }
 
@@ -160,7 +160,7 @@ void FLOOR_W_S()
 {
    if (check_cop1_unusable()) return;
    set_floor();
-   *((long*)reg_cop1_simple[cffd]) = *reg_cop1_simple[cffs];
+   *((s32*)reg_cop1_simple[cffd]) = *reg_cop1_simple[cffs];
    PC++;
 }
 
@@ -176,7 +176,7 @@ void CVT_W_S()
 {
    if (check_cop1_unusable()) return;
    set_rounding();
-   *((long*)reg_cop1_simple[cffd]) = *reg_cop1_simple[cffs];
+   *((s32*)reg_cop1_simple[cffd]) = *reg_cop1_simple[cffs];
    PC++;
 }
 
@@ -184,7 +184,7 @@ void CVT_L_S()
 {
    if (check_cop1_unusable()) return;
    set_rounding();
-   *((long long*)(reg_cop1_double[cffd])) = *reg_cop1_simple[cffs];
+   *((s64*)(reg_cop1_double[cffd])) = *reg_cop1_simple[cffs];
    PC++;
 }
 

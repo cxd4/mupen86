@@ -34,12 +34,12 @@
 #include "../r4300.h"
 #include "../recomph.h"
 
-static unsigned long* reg_content[8];
+static u32* reg_content[8];
 static precomp_instr* last_access[8];
 static precomp_instr* free_since[8];
 static int dirty[8];
 static int r64[8];
-static unsigned long* r0;
+static u32* r0;
 
 void init_cache(precomp_instr* start)
 {
@@ -49,7 +49,7 @@ void init_cache(precomp_instr* start)
 	last_access[i] = NULL;
 	free_since[i] = start;
      }
-   r0 = (unsigned long*)reg;
+   r0 = (u32*)reg;
 }
 
 void free_all_registers()
@@ -113,7 +113,7 @@ void free_register(int reg)
 	if (r64[reg] == -1)
 	  {
 	     sar_reg32_imm8(reg, 31);
-	     mov_m32_reg32((unsigned long*)reg_content[reg]+1, reg);
+	     mov_m32_reg32((u32*)reg_content[reg]+1, reg);
 	  }
 	else mov_m32_reg32(reg_content[r64[reg]], r64[reg]);
      }
@@ -160,7 +160,7 @@ int lru_register_exc1(int exc1)
 // if there was another value before it's cleanly removed of the
 // register cache. After that, the register number is returned.
 // If data are already cached, the function only returns the register number
-int allocate_register(unsigned long *addr)
+int allocate_register(u32 *addr)
 {
    unsigned int oldest_access = 0xFFFFFFFF;
    int reg = 0, i;
@@ -235,7 +235,7 @@ int allocate_register(unsigned long *addr)
 
 // this function is similar to allocate_register except it loads
 // a 64 bits value, and return the register number of the LSB part
-int allocate_64_register1(unsigned long *addr)
+int allocate_64_register1(u32 *addr)
 {
    int reg1, reg2, i;
    
@@ -274,7 +274,7 @@ int allocate_64_register1(unsigned long *addr)
 
 // this function is similar to allocate_register except it loads
 // a 64 bits value, and return the register number of the MSB part
-int allocate_64_register2(unsigned long *addr)
+int allocate_64_register2(u32 *addr)
 {
    int reg1, reg2, i;
    
@@ -315,7 +315,7 @@ int allocate_64_register2(unsigned long *addr)
 // and then, it returns 1  if it's a 64 bit value
 //                      0  if it's a 32 bit value
 //                      -1 if it's not cached
-int is64(unsigned long *addr)
+int is64(u32 *addr)
 {
    int i;
    for (i=0; i<8; i++)
@@ -329,7 +329,7 @@ int is64(unsigned long *addr)
    return -1;
 }
 
-int allocate_register_w(unsigned long *addr)
+int allocate_register_w(u32 *addr)
 {
    unsigned int oldest_access = 0xFFFFFFFF;
    int reg = 0, i;
@@ -393,7 +393,7 @@ int allocate_register_w(unsigned long *addr)
    return reg;
 }
 
-int allocate_64_register1_w(unsigned long *addr)
+int allocate_64_register1_w(u32 *addr)
 {
    int reg1, reg2, i;
    
@@ -448,7 +448,7 @@ int allocate_64_register1_w(unsigned long *addr)
    return reg1;
 }
 
-int allocate_64_register2_w(unsigned long *addr)
+int allocate_64_register2_w(u32 *addr)
 {
    int reg1, reg2, i;
    
@@ -503,7 +503,7 @@ int allocate_64_register2_w(unsigned long *addr)
    return reg2;
 }
 
-void set_register_state(int reg, unsigned long *addr, int d)
+void set_register_state(int reg, u32 *addr, int d)
 {
    last_access[reg] = dst;
    reg_content[reg] = addr;
@@ -511,7 +511,7 @@ void set_register_state(int reg, unsigned long *addr, int d)
    dirty[reg] = d;
 }
 
-void set_64_register_state(int reg1, int reg2, unsigned long *addr, int d)
+void set_64_register_state(int reg1, int reg2, u32 *addr, int d)
 {
    last_access[reg1] = dst;
    last_access[reg2] = dst;
@@ -568,7 +568,7 @@ void force_32(int reg)
      }
 }
 
-void allocate_register_manually(int reg, unsigned long *addr)
+void allocate_register_manually(int reg, u32 *addr)
 {
    int i;
    
@@ -658,7 +658,7 @@ void allocate_register_manually(int reg, unsigned long *addr)
      }
 }
 
-void allocate_register_manually_w(int reg, unsigned long *addr, int load)
+void allocate_register_manually_w(int reg, u32 *addr, int load)
 {
    int i;
    
@@ -773,7 +773,7 @@ void build_wrapper(precomp_instr *instr, unsigned char* code, precomp_block* blo
 
    //--
    /*code[j++] = 0xB8;
-   *((unsigned long*)&code[j]) = (unsigned long)(fake);
+   *((u32*)&code[j]) = (u32)(fake);
    j+=4;
    code[j++] = 0xFF;
    code[j++] = 0xD0;*/
@@ -787,11 +787,11 @@ void build_wrapper(precomp_instr *instr, unsigned char* code, precomp_block* blo
    code[j++] = 0x00;
    
    code[j++] = 0xA1;
-   *((unsigned long*)&code[j]) = (unsigned long)(&block->code);
+   *((u32*)&code[j]) = (u32)(&block->code);
    j+=4;
    
    code[j++] = 0x05;
-   *((unsigned long*)&code[j]) = (unsigned long)instr->local_addr;
+   *((u32*)&code[j]) = (u32)instr->local_addr;
    j+=4;
    
    code[j++] = 0x89;
@@ -804,8 +804,8 @@ void build_wrapper(precomp_instr *instr, unsigned char* code, precomp_block* blo
 	  {
 	     code[j++] = 0x8B;
 	     code[j++] = (i << 3) | 5;
-	     *((unsigned long*)&code[j]) = 
-	       (unsigned long)instr->reg_cache_infos.needed_registers[i];
+	     *((u32*)&code[j]) = 
+	       (u32)instr->reg_cache_infos.needed_registers[i];
 	     j+=4;
 	  }
      }
