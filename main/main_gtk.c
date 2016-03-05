@@ -29,7 +29,7 @@
 
 /* The gtk interface but it is far from being complete...*/
 
-#define VERSION "0.5"
+#define VERSION "0.5.86"
 
 #include <stdlib.h>
 #include <unistd.h>

@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#define NAME	"Mupen 64"
-#define VERSION	"0.5"
+#define NAME	"Mupen86"
+#define VERSION	"0.5.86"
 
 #include "../winlnxdefs.h"
 #include "../guifuncs.h"
