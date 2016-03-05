@@ -53,7 +53,7 @@ static unz_file_info pfile_info;
 static int i, tmp, z;
 
 int taille_rom;
-unsigned char *rom;
+u8 *rom;
 rom_header *ROM_HEADER;
 rom_settings ROM_SETTINGS;
 
@@ -106,9 +106,9 @@ static int find_file(char *argv)
 		  if (pfile_info.uncompressed_size >= 4)
 		    {
 		       unzReadCurrentFile(zip, buf, 4);
-		       if ((*((unsigned long*)buf) != 0x40123780) &&
-			   (*((unsigned long*)buf) != 0x12408037) &&
-			   (*((unsigned long*)buf) != 0x80371240))
+		       if ((*((u32*)buf) != 0x40123780) &&
+			   (*((u32*)buf) != 0x12408037) &&
+			   (*((u32*)buf) != 0x80371240))
 			 {
 			    unzCloseCurrentFile(zip);
 			 }

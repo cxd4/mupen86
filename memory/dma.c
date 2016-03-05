@@ -40,7 +40,7 @@
 #include "../main/guifuncs.h"
 #include "../r4300/ops.h"
 
-static unsigned char sram[0x8000];
+static u8 sram[0x8000];
 
 void dma_pi_read()
 {
@@ -67,7 +67,7 @@ void dma_pi_read()
 	     else for (i=0; i<0x8000; i++) sram[i] = 0;
 	     for (i=0; i<(pi_register.pi_rd_len_reg & 0xFFFFFF)+1; i++)
 	       sram[((pi_register.pi_cart_addr_reg-0x08000000)+i)^S8]=
-	       ((unsigned char*)rdram)[(pi_register.pi_dram_addr_reg+i)^S8];
+	       ((u8*)rdram)[(pi_register.pi_dram_addr_reg+i)^S8];
 	     f = fopen(filename, "wb");
 	     fwrite(sram, 1, 0x8000, f);
 	     fclose(f);
@@ -114,7 +114,7 @@ void dma_pi_write()
 		  else for (i=0; i<0x8000; i++) sram[i] = 0x0;
 		  free(filename);
 		  for (i=0; i<(pi_register.pi_wr_len_reg & 0xFFFFFF)+1; i++)
-		    ((unsigned char*)rdram)[(pi_register.pi_dram_addr_reg+i)^S8]=
+		    ((u8*)rdram)[(pi_register.pi_dram_addr_reg + i) ^ S8]=
 		    sram[(((pi_register.pi_cart_addr_reg-0x08000000)&0xFFFF)+i)^S8];
 		  use_flashram = -1;
 	       }
@@ -164,8 +164,8 @@ void dma_pi_write()
 	  {
 	     u32 rdram_address1 = pi_register.pi_dram_addr_reg+i+0x80000000;
 	     u32 rdram_address2 = pi_register.pi_dram_addr_reg+i+0xa0000000;
-	     
-	     ((unsigned char*)rdram)[(pi_register.pi_dram_addr_reg+i)^S8]=
+
+	     ((u8*)rdram)[(pi_register.pi_dram_addr_reg + i) ^ S8] =
 	       rom[(((pi_register.pi_cart_addr_reg-0x10000000)&0x3FFFFFF)+i)^S8];
 	     
 	     if(!invalid_code[rdram_address1>>12])
@@ -181,7 +181,7 @@ void dma_pi_write()
      {
 	for (i=0; i<longueur; i++)
 	  {
-	     ((unsigned char*)rdram)[(pi_register.pi_dram_addr_reg+i)^S8]=
+	     ((u8*)rdram)[(pi_register.pi_dram_addr_reg + i) ^ S8]=
 	       rom[(((pi_register.pi_cart_addr_reg-0x10000000)&0x3FFFFFF)+i)^S8];
 	  }
      }
@@ -217,14 +217,14 @@ void dma_sp_write()
    if ((sp_register.sp_mem_addr_reg & 0x1000) > 0)
      {
 	for (i=0; i<((sp_register.sp_rd_len_reg & 0xFFF)+1); i++)
-	  ((unsigned char *)(SP_IMEM))[((sp_register.sp_mem_addr_reg & 0xFFF)+i)^S8]=
-	  ((unsigned char *)(rdram))[((sp_register.sp_dram_addr_reg & 0xFFFFFF)+i)^S8];
+	  ((u8 *)(SP_IMEM))[((sp_register.sp_mem_addr_reg & 0xFFF) + i) ^ S8] =
+	  ((u8 *)(rdram))[((sp_register.sp_dram_addr_reg & 0xFFFFFF) + i) ^ S8];
      }
    else
      {
 	for (i=0; i<((sp_register.sp_rd_len_reg & 0xFFF)+1); i++)
-	  ((unsigned char *)(SP_DMEM))[((sp_register.sp_mem_addr_reg & 0xFFF)+i)^S8]=
-	  ((unsigned char *)(rdram))[((sp_register.sp_dram_addr_reg & 0xFFFFFF)+i)^S8];
+	  ((u8 *)(SP_DMEM))[((sp_register.sp_mem_addr_reg & 0xFFF) + i) ^ S8] =
+	  ((u8 *)(rdram))[((sp_register.sp_dram_addr_reg & 0xFFFFFF) + i) ^ S8];
      }
 }
 
@@ -234,14 +234,14 @@ void dma_sp_read()
    if ((sp_register.sp_mem_addr_reg & 0x1000) > 0)
      {
 	for (i=0; i<((sp_register.sp_wr_len_reg & 0xFFF)+1); i++)
-	  ((unsigned char *)(rdram))[((sp_register.sp_dram_addr_reg & 0xFFFFFF)+i)^S8]=
-	  ((unsigned char *)(SP_IMEM))[((sp_register.sp_mem_addr_reg & 0xFFF)+i)^S8];
+	  ((u8 *)(rdram))[((sp_register.sp_dram_addr_reg & 0xFFFFFF) + i) ^ S8] =
+	  ((u8 *)(SP_IMEM))[((sp_register.sp_mem_addr_reg & 0xFFF) + i) ^ S8];
      }
    else
      {
 	for (i=0; i<((sp_register.sp_wr_len_reg & 0xFFF)+1); i++)
-	  ((unsigned char *)(rdram))[((sp_register.sp_dram_addr_reg & 0xFFFFFF)+i)^S8]=
-	  ((unsigned char *)(SP_DMEM))[((sp_register.sp_mem_addr_reg & 0xFFF)+i)^S8];
+	  ((u8 *)(rdram))[((sp_register.sp_dram_addr_reg & 0xFFFFFF) + i) ^ S8] =
+	  ((u8 *)(SP_DMEM))[((sp_register.sp_mem_addr_reg & 0xFFF) + i) ^ S8];
      }
 }
 

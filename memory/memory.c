@@ -129,7 +129,8 @@ int init_memory()
    //swap rom
    u32 *roml;
    roml = (void *)rom;
-   for (i=0; i<(taille_rom/4); i++) roml[i] = sl(roml[i]);
+   for (i=0; i < taille_rom/4; i++)
+      roml[i] = sl(roml[i]);
    
    //init hash tables
    for (i=0; i<(0x10000); i++)
@@ -1431,7 +1432,7 @@ void read_rdramb()
 
 void read_rdramh()
 {
-   *rdword = *((unsigned short *)(rdramb + ((address & 0xFFFFFF)^S16)));
+   *rdword = *((u16 *)(rdramb + ((address & 0xFFFFFF) ^ S16)));
 }
 
 void read_rdramd()
@@ -1672,7 +1673,7 @@ void write_rdramregh()
 
 void write_rdramregd()
 {
-   *readrdramreg[*address_low + 0] = dword >> 32;
+   *readrdramreg[*address_low + 0] = (u32)(dword >> 32);
    *readrdramreg[*address_low + 4] = dword & 0xFFFFFFFF;
 }
 
@@ -1944,8 +1945,8 @@ void write_rsp_regd()
 	return;
 	break;
      }
-   *readrspreg[*address_low] = dword >> 32;
-   *readrspreg[*address_low+4] = dword & 0xFFFFFFFF;
+   *readrspreg[*address_low + 0] = (u32)(dword >> 32);
+   *readrspreg[*address_low + 4] = dword & 0xFFFFFFFF;
    switch(*address_low)
      {
       case 0x8:
@@ -2017,7 +2018,7 @@ void read_dph()
 void read_dpd()
 {
     *rdword =
-        ((u64)(*readdp[*address_low] + 0) << 32)
+        ((u64)(*readdp[*address_low + 0]) << 32)
       | ((u64)(*readdp[*address_low + 4]) <<  0)
     ;
 }
@@ -2345,10 +2346,7 @@ void read_vib()
 	vi_register.vi_current = (vi_register.vi_current&(~1))|vi_field;
 	break;
      }
-    *rdword =
-        *((u8*)readvi[*address_low & 0xFFFC]
-      + ((*address_low & 3) ^ S8))
-    ;
+    *rdword = *((u8*)readvi[*address_low & 0xFFFC] + ((*address_low & 3) ^ S8));
 }
 
 void read_vih()
@@ -2363,8 +2361,7 @@ void read_vih()
 	break;
      }
     *rdword =
-        *((u16*)((u8*)readvi[*address_low & 0xFFFC]
-      + ((*address_low & 3) ^ S16)))
+        *((u16*)((u8*)readvi[*address_low & 0xFFFC] + ((*address_low & 3) ^ S16)))
     ;
 }
 
