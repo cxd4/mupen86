@@ -40,27 +40,29 @@ extern precomp_instr *PC;
 
 extern precomp_block *blocks[0x100000], *actual;
 
+#include "../main/winlnxdefs.h"
+
 extern int stop, llbit;
-extern long long int reg[32], hi, lo;
-extern long long int local_rs, local_rt;
-extern unsigned long reg_cop0[32];
-extern long local_rs32, local_rt32;
-extern unsigned long jump_target;
+extern s64 reg[32], hi, lo;
+extern s64 local_rs, local_rt;
+extern u32 reg_cop0[32];
+extern s32 local_rs32, local_rt32;
+extern u32 jump_target;
 extern double *reg_cop1_double[32];
 extern float *reg_cop1_simple[32];
-extern long reg_cop1_fgr_32[32];
-extern long long int reg_cop1_fgr_64[32];
-extern long FCR0, FCR31;
+extern s32 reg_cop1_fgr_32[32];
+extern s64 reg_cop1_fgr_64[32];
+extern s32 FCR0, FCR31;
 extern tlb tlb_e[32];
-extern unsigned long delay_slot, skip_jump, dyna_interp;
-extern unsigned long long int debug_count;
-extern unsigned long dynacore;
-extern unsigned long interpcore;
-extern unsigned int next_interupt, CIC_Chip;
+extern u32 delay_slot, skip_jump, dyna_interp;
+extern u64 debug_count;
+extern u32 dynacore;
+extern u32 interpcore;
+extern u32 next_interupt, CIC_Chip;
 extern int rounding_mode, trunc_mode, round_mode, ceil_mode, floor_mode;
-extern unsigned long last_addr, interp_addr;
+extern u32 last_addr, interp_addr;
 extern char invalid_code[0x100000];
-extern unsigned long jump_to_address;
+extern u32 jump_to_address;
 extern int no_audio_delay;
 extern int no_compiled_jump;
 

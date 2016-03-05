@@ -32,10 +32,10 @@
 #include "../r4300/exception.h"
 #include "../r4300/macros.h"
 
-unsigned long tlb_LUT_r[0x100000];
-unsigned long tlb_LUT_w[0x100000];
-extern unsigned long interp_addr;
-unsigned long virtual_to_physical_address(unsigned long addresse, int w)
+u32 tlb_LUT_r[0x100000];
+u32 tlb_LUT_w[0x100000];
+extern u32 interp_addr;
+u32 virtual_to_physical_address(u32 addresse, int w)
 {
    if (addresse >= 0x7f000000 && addresse < 0x80000000) // golden eye hack
      {
@@ -123,9 +123,10 @@ unsigned long virtual_to_physical_address(unsigned long addresse, int w)
    return 0x80000000;*/
 }
 
-int probe_nop(unsigned long address)
+int probe_nop(u32 address)
 {
-   unsigned long a;
+   u32 a;
+
    if (address < 0x80000000 || address > 0xc0000000)
      {
 	if (tlb_LUT_r[address>>12])

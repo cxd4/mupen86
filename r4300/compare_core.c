@@ -36,29 +36,30 @@
 
 static FILE *f;
 static int pipe_opened = 0;
-static long long int comp_reg[32];
-extern unsigned long op;
-extern unsigned long interp_addr;
-static unsigned long old_op;
+static s64 comp_reg[32];
+extern u32 op;
+extern u32 interp_addr;
+static u32 old_op;
 
 void display_error(char *txt)
 {
    int i;
-   unsigned long *comp_reg2 = (unsigned long *)comp_reg;
+   u32 *comp_reg2 = (u32 *)comp_reg;
+
    printf("err: %s\n", txt);
    if (interpcore)
      {
-	printf("addr:%x\n", (int)interp_addr);
-	if (!strcmp(txt, "PC")) printf("%x - %x\n", (int)interp_addr, *(int*)&comp_reg[0]);
+	printf("addr:%x\n", (s32)interp_addr);
+	if (!strcmp(txt, "PC")) printf("%x - %x\n", (s32)interp_addr, *(s32*)&comp_reg[0]);
      }
    else
      {
-	printf("addr:%x\n", (int)PC->addr);
-	if (!strcmp(txt, "PC")) printf("%x - %x\n", (int)PC->addr, *(int*)&comp_reg[0]);
+	printf("addr:%x\n", (s32)PC->addr);
+	if (!strcmp(txt, "PC")) printf("%x - %x\n", (s32)PC->addr, *(s32*)&comp_reg[0]);
      }
-   printf("%x, %x\n", (unsigned int)reg_cop0[9], (unsigned int)comp_reg2[9]);
-   printf("erreur @:%x\n", (int)old_op);
-   printf("erreur @:%x\n", (int)op);
+   printf("%x, %x\n", (u32)reg_cop0[9], (u32)comp_reg2[9]);
+   printf("erreur @:%x\n", (s32)old_op);
+   printf("erreur @:%x\n", (s32)op);
    
    if (!strcmp(txt, "gpr"))
        {
@@ -75,7 +76,7 @@ void display_error(char *txt)
 	    {
 	       if (reg_cop0[i] != comp_reg2[i])
 		 printf("reg_cop0[%d]=%x != reg_cop0[%d]=%x\n",
-			i, (unsigned int)reg_cop0[i], i, (unsigned int)comp_reg2[i]);
+			i, (u32)reg_cop0[i], i, (u32)comp_reg2[i]);
 	    }
        }
    /*for (i=0; i<32; i++)
@@ -116,7 +117,7 @@ void compare_core()
 	/*if(wait == 1 && reg_cop0[9] > 0x35000000) wait=0;
 	if(wait) return;*/
 	
-	fread (comp_reg, 4, sizeof(long), f);
+	fread(comp_reg, 4, sizeof(i64), f);
 	if (interpcore)
 	  {
 	     if (memcmp(&interp_addr, comp_reg, 4))
@@ -127,17 +128,17 @@ void compare_core()
 	     if (memcmp(&PC->addr, comp_reg, 4))
 	       display_error("PC");
 	  }
-	fread (comp_reg, 32, sizeof(long long int), f);
-	if (memcmp(reg, comp_reg, 32*sizeof(long long int)))
+	fread (comp_reg, 32, sizeof(i64), f);
+	if (memcmp(reg, comp_reg, 32*sizeof(i64)))
 	  display_error("gpr");
-	fread (comp_reg, 32, sizeof(long), f);
-	if (memcmp(reg_cop0, comp_reg, 32*sizeof(long)))
+	fread (comp_reg, 32, sizeof(i32), f);
+	if (memcmp(reg_cop0, comp_reg, 32*sizeof(i32)))
 	  display_error("cop0");
-	fread (comp_reg, 32, sizeof(long long int), f);
-	if (memcmp(reg_cop1_fgr_64, comp_reg, 32*sizeof(long long int)))
+	fread (comp_reg, 32, sizeof(i64), f);
+	if (memcmp(reg_cop1_fgr_64, comp_reg, 32*sizeof(i64)))
 	  display_error("cop1");
-	/*fread(comp_reg, 1, sizeof(long), f);
-	if (memcmp(&rdram[0x31280/4], comp_reg, sizeof(long)))
+	/*fread(comp_reg, 1, sizeof(i32), f);
+	if (memcmp(&rdram[0x31280/4], comp_reg, sizeof(i32)))
 	  display_error("mem");*/
 	/*fread (comp_reg, 4, 1, f);
 	if (memcmp(&FCR31, comp_reg, 4))
@@ -155,11 +156,11 @@ void compare_core()
 	/*if(wait == 1 && reg_cop0[9] > 0x35000000) wait=0;
 	if(wait) return;*/
 	
-	fwrite(&PC->addr, 4, sizeof(long), f);
-	fwrite(reg, 32, sizeof(long long int), f);
-	fwrite(reg_cop0, 32, sizeof(long), f);
-	fwrite(reg_cop1_fgr_64, 32, sizeof(long long int), f);
-	//fwrite(&rdram[0x31280/4], 1, sizeof(long), f);
+	fwrite(&PC->addr, 4, sizeof(i32), f);
+	fwrite(reg, 32, sizeof(i64), f);
+	fwrite(reg_cop0, 32, sizeof(i32), f);
+	fwrite(reg_cop1_fgr_64, 32, sizeof(i64), f);
+	//fwrite(&rdram[0x31280/4], 1, sizeof(i32), f);
 	/*fwrite(&FCR31, 4, 1, f);*/
      }
 }

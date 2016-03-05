@@ -33,7 +33,7 @@
 #include "../memory/memory.h"
 #include "recomph.h"
 
-extern unsigned long interp_addr;
+extern u32 interp_addr;
 
 void address_error_exception()
 {
@@ -53,13 +53,13 @@ void TLB_invalid_exception()
    stop=1;
 }
 
-void XTLB_refill_exception(unsigned long long int addresse)
+void XTLB_refill_exception(u64 addresse)
 {
    printf("XTLB refill exception\n");
    stop=1;
 }
 
-void TLB_refill_exception(unsigned long address, int w)
+void TLB_refill_exception(u32 address, int w)
 {
    int usual_handler = 0, i;
    //printf("TLB_refill_exception:%x\n", address);

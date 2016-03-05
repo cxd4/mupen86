@@ -30,34 +30,36 @@
 #ifndef TLB_H
 #define TLB_H
 
+#include "../main/winlnxdefs.h"
+
 typedef struct _tlb
 {
-   short mask;
-   long vpn2;
+   u16 mask;
+   s32 vpn2;
    char g;
    unsigned char asid;
-   long pfn_even;
+   s32 pfn_even;
    char c_even;
    char d_even;
    char v_even;
-   long pfn_odd;
+   s32 pfn_odd;
    char c_odd;
    char d_odd;
    char v_odd;
    char r;
-   //long check_parity_mask;
-   
-   unsigned long start_even;
-   unsigned long end_even;
-   unsigned long phys_even;
-   unsigned long start_odd;
-   unsigned long end_odd;
-   unsigned long phys_odd;
+   //s32 check_parity_mask;
+
+   u32 start_even;
+   u32 end_even;
+   u32 phys_even;
+   u32 start_odd;
+   u32 end_odd;
+   u32 phys_odd;
 } tlb;
 
-extern unsigned long tlb_LUT_r[0x100000];
-extern unsigned long tlb_LUT_w[0x100000];
-unsigned long virtual_to_physical_address(unsigned long addresse, int w);
-int probe_nop(unsigned long address);
+extern u32 tlb_LUT_r[0x100000];
+extern u32 tlb_LUT_w[0x100000];
+u32 virtual_to_physical_address(u32 addresse, int w);
+int probe_nop(u32 address);
 
 #endif

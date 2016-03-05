@@ -27,21 +27,23 @@
  *
 **/
 
+#include "../main/winlnxdefs.h"
+
 void compare_interupt();
 void gen_dp();
 void init_interupt();
 
 extern int vi_field;
-extern unsigned long next_vi;
+extern u32 next_vi;
 
 void gen_interupt();
 void check_interupt();
 
-void translate_event_queue(unsigned long base);
+void translate_event_queue(u32 base);
 void remove_event(int type);
-void add_interupt_event_count(int type, unsigned long count);
-void add_interupt_event(int type, unsigned long delay);
-unsigned long get_event(int type);
+void add_interupt_event_count(int type, u32 count);
+void add_interupt_event(int type, u32 delay);
+u32 get_event(int type);
 
 int save_eventqueue_infos(char *buf);
 void load_eventqueue_infos(char *buf);

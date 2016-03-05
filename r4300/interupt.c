@@ -49,7 +49,7 @@
 #include "../main/vcr.h"
 
 
-unsigned long next_vi;
+u32 next_vi;
 int vi_field=0;
 
 typedef struct _interupt_queue
@@ -117,9 +117,9 @@ int before_event(unsigned long evt1, unsigned long evt2, int type2)
    else return 0;
 }
 
-void add_interupt_event(int type, unsigned long delay)
+void add_interupt_event(int type, u32 delay)
 {
-   unsigned long count = Count + delay/**2*/;
+   u32 count = Count + delay/**2*/;
    int special = 0;
    
    if(type == SPECIAL_INT /*|| type == COMPARE_INT*/) special = 1;
@@ -190,7 +190,7 @@ void add_interupt_event(int type, unsigned long delay)
    //print_queue();
 }
 
-void add_interupt_event_count(int type, unsigned long count)
+void add_interupt_event_count(int type, u32 count)
 {
    add_interupt_event(type, (count - Count)/*/2*/);
 }
@@ -207,7 +207,7 @@ void remove_interupt_event()
      next_interupt = 0;
 }
 
-unsigned long get_event(int type)
+u32 get_event(int type)
 {
    interupt_queue *aux = q;
    if (q == NULL) return 0;
@@ -241,7 +241,7 @@ void remove_event(int type)
      }
 }
 
-void translate_event_queue(unsigned long base)
+void translate_event_queue(u32 base)
 {
    interupt_queue *aux;
    remove_event(COMPARE_INT);
@@ -260,9 +260,10 @@ int save_eventqueue_infos(char *buf)
 {
    int len = 0;
    interupt_queue *aux = q;
+
    if (q == NULL)
      {
-	*((unsigned long*)&buf[0]) = 0xFFFFFFFF;
+	*((u32*)&buf[0]) = 0xFFFFFFFFul;
 	return 4;
      }
    while (aux != NULL)
@@ -272,18 +273,20 @@ int save_eventqueue_infos(char *buf)
 	len += 8;
 	aux = aux->next;
      }
-   *((unsigned long*)&buf[len]) = 0xFFFFFFFF;
+   *((u32*)&buf[len]) = 0xFFFFFFFFul;
    return len+4;
 }
 
 void load_eventqueue_infos(char *buf)
 {
    int len = 0;
+
    clear_queue();
-   while (*((unsigned long*)&buf[len]) != 0xFFFFFFFF)
+   while (*((u32*)&buf[len]) != 0xFFFFFFFFul)
      {
-	int type = *((unsigned long*)&buf[len]);
-	unsigned long count = *((unsigned long*)&buf[len+4]);
+	s32 type  = *((u32*)&buf[len + 0]);
+	u32 count = *((u32*)&buf[len + 4]);
+
 	add_interupt_event_count(type, count);
 	len += 8;
      }
@@ -356,10 +359,12 @@ void gen_interupt()
 	  }
 	else
 	  {
+	     u32 dest;
+
 	     /*if ((Cause & (2 << 2)) && (Cause & 0x80000000))
 	       jump_to(skip_jump+4);
 	     else*/
-	     unsigned long dest = skip_jump;
+	     dest = skip_jump;
 	     skip_jump=0;
 	     jump_to(dest);
 	     last_addr = PC->addr;
@@ -452,7 +457,8 @@ void gen_interupt()
       case AI_INT:
 	if (ai_register.ai_status & 0x80000000) // full
 	  {
-	     unsigned long ai_event = get_event(AI_INT);
+	     u32 ai_event = get_event(AI_INT);
+
 	     remove_interupt_event();
 	     ai_register.ai_status &= ~0x80000000;
 	     ai_register.current_delay = ai_register.next_delay;

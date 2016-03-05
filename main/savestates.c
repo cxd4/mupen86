@@ -39,7 +39,7 @@
 #include "../r4300/r4300.h"
 #include "../r4300/interupt.h"
 
-extern unsigned long interp_addr;
+extern u32 interp_addr;
 extern int *autoinc_save_slot;
 
 int savestates_job = 0;
@@ -232,7 +232,8 @@ void savestates_load()
    while(1)
      {
 	gzread(f, buf+len, 4);
-	if (*((unsigned long*)&buf[len]) == 0xFFFFFFFF) break;
+	if (*((u32*)&buf[len]) == 0xFFFFFFFFul)
+	  break;
 	gzread(f, buf+len+4, 4);
 	len += 8;
      }

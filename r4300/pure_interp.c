@@ -41,60 +41,60 @@ extern int debugger_mode;
 extern void update_debugger();
 #endif
 
-unsigned long interp_addr;
-unsigned long op;
-static long skip;
+u32 interp_addr;
+u32 op;
+static s32 skip;
 
 void prefetch();
 
 static void (*interp_ops[64])(void);
 
-extern unsigned long next_vi;
+extern u32 next_vi;
 
 static void NI()
 {
-   printf("NI:%x\n", (unsigned int)op);
+   printf("NI:%x\n", op);
    stop=1;
 }
 
 static void SLL()
 {
-   rrd32 = (unsigned long)(rrt32) << rsa;
+   rrd32 = (u32)(rrt32) << rsa;
    sign_extended(rrd);
    interp_addr+=4;
 }
 
 static void SRL()
 {
-   rrd32 = (unsigned long)rrt32 >> rsa;
+   rrd32 = (u32)rrt32 >> rsa;
    sign_extended(rrd);
    interp_addr+=4;
 }
 
 static void SRA()
 {
-   rrd32 = (signed long)rrt32 >> rsa;
+   rrd32 = (s32)rrt32 >> rsa;
    sign_extended(rrd);
    interp_addr+=4;
 }
 
 static void SLLV()
 {
-   rrd32 = (unsigned long)(rrt32) << (rrs32&0x1F);
+   rrd32 = (u32)(rrt32) << (rrs32&0x1F);
    sign_extended(rrd);
    interp_addr+=4;
 }
 
 static void SRLV()
 {
-   rrd32 = (unsigned long)rrt32 >> (rrs32 & 0x1F);
+   rrd32 = (u32)rrt32 >> (rrs32 & 0x1F);
    sign_extended(rrd);
    interp_addr+=4;
 }
 
 static void SRAV()
 {
-   rrd32 = (signed long)rrt32 >> (rrs32 & 0x1F);
+   rrd32 = (s32)rrt32 >> (rrs32 & 0x1F);
    sign_extended(rrd);
    interp_addr+=4;
 }
@@ -115,7 +115,8 @@ static void JR()
 
 static void JALR()
 {
-   unsigned long long int *dest = PC->f.r.rd;
+   u64 *dest = PC->f.r.rd;
+
    local_rs32 = rrs32;
    interp_addr+=4;
    delay_slot=1;
@@ -177,19 +178,20 @@ static void DSLLV()
 
 static void DSRLV()
 {
-   rrd = (unsigned long long)rrt >> (rrs32 & 0x3F);
+   rrd = (u64)rrt >> (rrs32 & 0x3F);
    interp_addr+=4;
 }
 
 static void DSRAV()
 {
-   rrd = (long long)rrt >> (rrs32 & 0x3F);
+   rrd = (s64)rrt >> (rrs32 & 0x3F);
    interp_addr+=4;
 }
 
 static void MULT()
 {
-   long long int temp;
+   s64 temp;
+
    temp = rrs * rrt;
    hi = temp >> 32;
    lo = temp;
@@ -199,9 +201,10 @@ static void MULT()
 
 static void MULTU()
 {
-   unsigned long long int temp;
-   temp = (unsigned long)rrs * (unsigned long long)((unsigned long)rrt);
-   hi = (long long)temp >> 32;
+   u64 temp;
+
+   temp = (u32)rrs * (u64)((u32)rrt);
+   hi = (s64)temp >> 32;
    lo = temp;
    sign_extended(lo);
    interp_addr+=4;
@@ -224,8 +227,8 @@ static void DIVU()
 {
    if (rrt32)
      {
-	lo = (unsigned long)rrs32 / (unsigned long)rrt32;
-	hi = (unsigned long)rrs32 % (unsigned long)rrt32;
+	lo = (u32)rrs32 / (u32)rrt32;
+	hi = (u32)rrs32 % (u32)rrt32;
 	sign_extended(lo);
 	sign_extended(hi);
      }
@@ -235,11 +238,11 @@ static void DIVU()
 
 static void DMULT()
 {
-   unsigned long long int op1, op2, op3, op4;
-   unsigned long long int result1, result2, result3, result4;
-   unsigned long long int temp1, temp2, temp3, temp4;
+   u64 op1, op2, op3, op4;
+   u64 result1, result2, result3, result4;
+   u64 temp1, temp2, temp3, temp4;
    int sign = 0;
-   
+
    if (rrs < 0)
      {
 	op2 = -rrs;
@@ -281,10 +284,10 @@ static void DMULT()
 
 static void DMULTU()
 {
-   unsigned long long int op1, op2, op3, op4;
-   unsigned long long int result1, result2, result3, result4;
-   unsigned long long int temp1, temp2, temp3, temp4;
-   
+   u64 op1, op2, op3, op4;
+   u64 result1, result2, result3, result4;
+   u64 temp1, temp2, temp3, temp4;
+
    op1 = rrs & 0xFFFFFFFF;
    op2 = (rrs >> 32) & 0xFFFFFFFF;
    op3 = rrt & 0xFFFFFFFF;
@@ -310,8 +313,8 @@ static void DDIV()
 {
    if (rrt)
      {
-	lo = (long long int)rrs / (long long int)rrt;
-	hi = (long long int)rrs % (long long int)rrt;
+	lo = (s64)rrs / (s64)rrt;
+	hi = (s64)rrs % (s64)rrt;
      }
    else printf("ddiv\n");
    interp_addr+=4;
@@ -321,8 +324,8 @@ static void DDIVU()
 {
    if (rrt)
      {
-	lo = (unsigned long long int)rrs / (unsigned long long int)rrt;
-	hi = (unsigned long long int)rrs % (unsigned long long int)rrt;
+	lo = (u64)rrs / (u64)rrt;
+	hi = (u64)rrs % (u64)rrt;
      }
    else printf("ddivu\n");
    interp_addr+=4;
@@ -389,7 +392,7 @@ static void SLT()
 
 static void SLTU()
 {
-   if ((unsigned long long)rrs < (unsigned long long)rrt)
+   if ((u64)rrs < (u64)rrt)
      rrd = 1;
    else rrd = 0;
    interp_addr+=4;
@@ -437,7 +440,7 @@ static void DSLL()
 
 static void DSRL()
 {
-   rrd = (unsigned long long)rrt >> rsa;
+   rrd = (u64)rrt >> rsa;
    interp_addr+=4;
 }
 
@@ -455,13 +458,13 @@ static void DSLL32()
 
 static void DSRL32()
 {
-   rrd = (unsigned long long int)rrt >> (32+rsa);
+   rrd = (u64)rrt >> (32+rsa);
    interp_addr+=4;
 }
 
 static void DSRA32()
 {
-   rrd = (signed long long int)rrt >> (32+rsa);
+   rrd = (s64)rrt >> (32+rsa);
    interp_addr+=4;
 }
 
@@ -479,7 +482,8 @@ static void (*interp_special[64])(void) =
 
 static void BLTZ()
 {
-   short local_immediate = iimmediate;
+   s16 local_immediate = iimmediate;
+
    local_rs = irs;
    if ((interp_addr + (local_immediate+1)*4) == interp_addr)
      if (local_rs < 0)
@@ -509,7 +513,8 @@ static void BLTZ()
 
 static void BGEZ()
 {
-   short local_immediate = iimmediate;
+   s16 local_immediate = iimmediate;
+
    local_rs = irs;
    if ((interp_addr + (local_immediate+1)*4) == interp_addr)
      if (local_rs >= 0)
@@ -539,7 +544,8 @@ static void BGEZ()
 
 static void BLTZL()
 {
-   short local_immediate = iimmediate;
+   s16 local_immediate = iimmediate;
+
    local_rs = irs;
    if ((interp_addr + (local_immediate+1)*4) == interp_addr)
      if (irs < 0)
@@ -572,7 +578,8 @@ static void BLTZL()
 
 static void BGEZL()
 {
-   short local_immediate = iimmediate;
+   s16 local_immediate = iimmediate;
+
    local_rs = irs;
    if ((interp_addr + (local_immediate+1)*4) == interp_addr)
      if (irs >= 0)
@@ -605,7 +612,8 @@ static void BGEZL()
 
 static void BLTZAL()
 {
-   short local_immediate = iimmediate;
+   s16 local_immediate = iimmediate;
+
    local_rs = irs;
    reg[31]=interp_addr+8;
    if((&irs)!=(reg+31))
@@ -640,7 +648,8 @@ static void BLTZAL()
 
 static void BGEZAL()
 {
-   short local_immediate = iimmediate;
+   s16 local_immediate = iimmediate;
+
    local_rs = irs;
    reg[31]=interp_addr+8;
    if((&irs)!=(reg+31))
@@ -675,7 +684,8 @@ static void BGEZAL()
 
 static void BLTZALL()
 {
-   short local_immediate = iimmediate;
+   s16 local_immediate = iimmediate;
+
    local_rs = irs;
    reg[31]=interp_addr+8;
    if((&irs)!=(reg+31))
@@ -713,7 +723,8 @@ static void BLTZALL()
 
 static void BGEZALL()
 {
-   short local_immediate = iimmediate;
+   s16 local_immediate = iimmediate;
+
    local_rs = irs;
    reg[31]=interp_addr+8;
    if((&irs)!=(reg+31))
@@ -1041,7 +1052,7 @@ static void MTC0()
       case 11:   // Compare
 	update_count();
 	remove_event(COMPARE_INT);
-	add_interupt_event_count(COMPARE_INT, (unsigned long)rrt);
+	add_interupt_event_count(COMPARE_INT, (u32)rrt);
 	Compare = rrt;
 	Cause = Cause & 0xFFFF7FFF; //Timer interupt is clear
 	break;
@@ -1138,7 +1149,8 @@ static void (*interp_cop0[32])(void) =
 
 static void BC1F()
 {
-   short local_immediate = iimmediate;
+   s16 local_immediate = iimmediate;
+
    if ((interp_addr + (local_immediate+1)*4) == interp_addr)
      if ((FCR31 & 0x800000)==0)
        {
@@ -1167,7 +1179,8 @@ static void BC1F()
 
 static void BC1T()
 {
-   short local_immediate = iimmediate;
+   s16 local_immediate = iimmediate;
+
    if ((interp_addr + (local_immediate+1)*4) == interp_addr)
      if ((FCR31 & 0x800000)!=0)
        {
@@ -1196,7 +1209,8 @@ static void BC1T()
 
 static void BC1FL()
 {
-   short local_immediate = iimmediate;
+   s16 local_immediate = iimmediate;
+
    if ((interp_addr + (local_immediate+1)*4) == interp_addr)
      if ((FCR31 & 0x800000)==0)
        {
@@ -1229,7 +1243,8 @@ static void BC1FL()
 
 static void BC1TL()
 {
-   short local_immediate = iimmediate;
+   s16 local_immediate = iimmediate;
+
    if ((interp_addr + (local_immediate+1)*4) == interp_addr)
      if ((FCR31 & 0x800000)!=0)
        {
@@ -1333,56 +1348,56 @@ static void NEG_S()
 static void ROUND_L_S()
 {
    set_round();
-   *((long long*)(reg_cop1_double[cffd])) = *reg_cop1_simple[cffs];
+   *((s64*)(reg_cop1_double[cffd])) = *reg_cop1_simple[cffs];
    interp_addr+=4;
 }
 
 static void TRUNC_L_S()
 {
    set_trunc();
-   *((long long*)(reg_cop1_double[cffd])) = *reg_cop1_simple[cffs];
+   *((s64*)(reg_cop1_double[cffd])) = *reg_cop1_simple[cffs];
    interp_addr+=4;
 }
 
 static void CEIL_L_S()
 {
    set_ceil();
-   *((long long*)(reg_cop1_double[cffd])) = *reg_cop1_simple[cffs];
+   *((s64*)(reg_cop1_double[cffd])) = *reg_cop1_simple[cffs];
    interp_addr+=4;
 }
 
 static void FLOOR_L_S()
 {
    set_floor();
-   *((long long*)(reg_cop1_double[cffd])) = *reg_cop1_simple[cffs];
+   *((s64*)(reg_cop1_double[cffd])) = *reg_cop1_simple[cffs];
    interp_addr+=4;
 }
 
 static void ROUND_W_S()
 {
    set_round();
-   *((long*)reg_cop1_simple[cffd]) = *reg_cop1_simple[cffs];
+   *((s32*)reg_cop1_simple[cffd]) = *reg_cop1_simple[cffs];
    interp_addr+=4;
 }
 
 static void TRUNC_W_S()
 {
    set_trunc();
-   *((long*)reg_cop1_simple[cffd]) = *reg_cop1_simple[cffs];
+   *((s32*)reg_cop1_simple[cffd]) = *reg_cop1_simple[cffs];
    interp_addr+=4;
 }
 
 static void CEIL_W_S()
 {
    set_ceil();
-   *((long*)reg_cop1_simple[cffd]) = *reg_cop1_simple[cffs];
+   *((s32*)reg_cop1_simple[cffd]) = *reg_cop1_simple[cffs];
    interp_addr+=4;
 }
 
 static void FLOOR_W_S()
 {
    set_floor();
-   *((long*)reg_cop1_simple[cffd]) = *reg_cop1_simple[cffs];
+   *((s32*)reg_cop1_simple[cffd]) = *reg_cop1_simple[cffs];
    interp_addr+=4;
 }
 
@@ -1396,14 +1411,14 @@ static void CVT_D_S()
 static void CVT_W_S()
 {
    set_rounding();
-   *((long*)reg_cop1_simple[cffd]) = *reg_cop1_simple[cffs];
+   *((s32*)reg_cop1_simple[cffd]) = *reg_cop1_simple[cffs];
    interp_addr+=4;
 }
 
 static void CVT_L_S()
 {
    set_rounding();
-   *((long long*)(reg_cop1_double[cffd])) = *reg_cop1_simple[cffs];
+   *((s64*)(reg_cop1_double[cffd])) = *reg_cop1_simple[cffs];
    interp_addr+=4;
 }
 
@@ -1659,56 +1674,56 @@ static void NEG_D()
 static void ROUND_L_D()
 {
    set_round();
-   *((long long*)(reg_cop1_double[cffd])) = *reg_cop1_double[cffs];
+   *((s64*)(reg_cop1_double[cffd])) = *reg_cop1_double[cffs];
    interp_addr+=4;
 }
 
 static void TRUNC_L_D()
 {
    set_trunc();
-   *((long long*)(reg_cop1_double[cffd])) = *reg_cop1_double[cffs];
+   *((s64*)(reg_cop1_double[cffd])) = *reg_cop1_double[cffs];
    interp_addr+=4;
 }
 
 static void CEIL_L_D()
 {
    set_ceil();
-   *((long long*)(reg_cop1_double[cffd])) = *reg_cop1_double[cffs];
+   *((s64*)(reg_cop1_double[cffd])) = *reg_cop1_double[cffs];
    interp_addr+=4;
 }
 
 static void FLOOR_L_D()
 {
    set_floor();
-   *((long long*)(reg_cop1_double[cffd])) = *reg_cop1_double[cffs];
+   *((s64*)(reg_cop1_double[cffd])) = *reg_cop1_double[cffs];
    interp_addr+=4;
 }
 
 static void ROUND_W_D()
 {
    set_round();
-   *((long*)reg_cop1_simple[cffd]) = *reg_cop1_double[cffs];
+   *((s32*)reg_cop1_simple[cffd]) = *reg_cop1_double[cffs];
    interp_addr+=4;
 }
 
 static void TRUNC_W_D()
 {
    set_trunc();
-   *((long*)reg_cop1_simple[cffd]) = *reg_cop1_double[cffs];
+   *((s32*)reg_cop1_simple[cffd]) = *reg_cop1_double[cffs];
    interp_addr+=4;
 }
 
 static void CEIL_W_D()
 {
    set_ceil();
-   *((long*)reg_cop1_simple[cffd]) = *reg_cop1_double[cffs];
+   *((s32*)reg_cop1_simple[cffd]) = *reg_cop1_double[cffs];
    interp_addr+=4;
 }
 
 static void FLOOR_W_D()
 {
    set_floor();
-   *((long*)reg_cop1_simple[cffd]) = *reg_cop1_double[cffs];
+   *((s32*)reg_cop1_simple[cffd]) = *reg_cop1_double[cffs];
    interp_addr+=4;
 }
 
@@ -1722,14 +1737,14 @@ static void CVT_S_D()
 static void CVT_W_D()
 {
    set_rounding();
-   *((long*)reg_cop1_simple[cffd]) = *reg_cop1_double[cffs];
+   *((s32*)reg_cop1_simple[cffd]) = *reg_cop1_double[cffs];
    interp_addr+=4;
 }
 
 static void CVT_L_D()
 {
    set_rounding();
-   *((long long*)(reg_cop1_double[cffd])) = *reg_cop1_double[cffs];
+   *((s64*)(reg_cop1_double[cffd])) = *reg_cop1_double[cffs];
    interp_addr+=4;
 }
 
@@ -1916,14 +1931,14 @@ C_SF_D   ,C_NGLE_D ,C_SEQ_D ,C_NGL_D  ,C_LT_D   ,C_NGE_D  ,C_LE_D  ,C_NGT_D
 static void CVT_S_W()
 {
    set_rounding();
-   *reg_cop1_simple[cffd] = *((long*)reg_cop1_simple[cffs]);
+   *reg_cop1_simple[cffd] = *((s32*)reg_cop1_simple[cffs]);
    interp_addr+=4;
 }
 
 static void CVT_D_W()
 {
    set_rounding();
-   *reg_cop1_double[cffd] = *((long*)reg_cop1_simple[cffs]);
+   *reg_cop1_double[cffd] = *((s32*)reg_cop1_simple[cffs]);
    interp_addr+=4;
 }
 
@@ -1942,14 +1957,14 @@ static void (*interp_cop1_w[64])(void) =
 static void CVT_S_L()
 {
    set_rounding();
-   *reg_cop1_simple[cffd] = *((long long*)(reg_cop1_double[cffs]));
+   *reg_cop1_simple[cffd] = *((s64*)(reg_cop1_double[cffs]));
    interp_addr+=4;
 }
 
 static void CVT_D_L()
 {
    set_rounding();
-   *reg_cop1_double[cffd] = *((long long*)(reg_cop1_double[cffs]));
+   *reg_cop1_double[cffd] = *((s64*)(reg_cop1_double[cffs]));
    interp_addr+=4;
 }
 
@@ -1967,14 +1982,14 @@ static void (*interp_cop1_l[64])(void) =
 
 static void MFC1()
 {
-   rrt32 = *((long*)reg_cop1_simple[rfs]);
+   rrt32 = *((s32*)reg_cop1_simple[rfs]);
    sign_extended(rrt);
    interp_addr+=4;
 }
 
 static void DMFC1()
 {
-   rrt = *((long long*)(reg_cop1_double[rfs]));
+   rrt = *((s64*)(reg_cop1_double[rfs]));
    interp_addr+=4;
 }
 
@@ -1995,13 +2010,13 @@ static void CFC1()
 
 static void MTC1()
 {
-   *((long*)reg_cop1_simple[rfs]) = rrt32;
+   *((s32*)reg_cop1_simple[rfs]) = rrt32;
    interp_addr+=4;
 }
 
 static void DMTC1()
 {
-   *((long long*)reg_cop1_double[rfs]) = rrt;
+   *((s64*)reg_cop1_double[rfs]) = rrt;
    interp_addr+=4;
 }
 
@@ -2074,7 +2089,8 @@ static void REGIMM()
 
 static void J()
 {
-   unsigned long naddr = (PC->f.j.inst_index<<2) | (interp_addr & 0xF0000000);
+   u32 naddr = (PC->f.j.inst_index<<2) | (interp_addr & 0xF0000000);
+
    if (naddr == interp_addr)
      {
 	if (probe_nop(interp_addr+4))
@@ -2101,7 +2117,8 @@ static void J()
 
 static void JAL()
 {
-   unsigned long naddr = (PC->f.j.inst_index<<2) | (interp_addr & 0xF0000000);
+   u32 naddr = (PC->f.j.inst_index<<2) | (interp_addr & 0xF0000000);
+
    if (naddr == interp_addr)
      {
 	if (probe_nop(interp_addr+4))
@@ -2134,7 +2151,8 @@ static void JAL()
 
 static void BEQ()
 {
-   short local_immediate = iimmediate;
+   s16 local_immediate = iimmediate;
+
    local_rs = irs;
    local_rt = irt;
    if ((interp_addr + (local_immediate+1)*4) == interp_addr)
@@ -2165,7 +2183,8 @@ static void BEQ()
 
 static void BNE()
 {
-   short local_immediate = iimmediate;
+   s16 local_immediate = iimmediate;
+
    local_rs = irs;
    local_rt = irt;
    if ((interp_addr + (local_immediate+1)*4) == interp_addr)
@@ -2196,7 +2215,8 @@ static void BNE()
 
 static void BLEZ()
 {
-   short local_immediate = iimmediate;
+   s16 local_immediate = iimmediate;
+
    local_rs = irs;
    if ((interp_addr + (local_immediate+1)*4) == interp_addr)
      if (local_rs <= 0)
@@ -2226,7 +2246,8 @@ static void BLEZ()
 
 static void BGTZ()
 {
-   short local_immediate = iimmediate;
+   s16 local_immediate = iimmediate;
+
    local_rs = irs;
    if ((interp_addr + (local_immediate+1)*4) == interp_addr)
      if (local_rs > 0)
@@ -2277,7 +2298,7 @@ static void SLTI()
 
 static void SLTIU()
 {
-   if ((unsigned long long)irs < (unsigned long long)((long long)iimmediate))
+   if ((u64)irs < (u64)((s64)iimmediate))
      irt = 1;
    else irt = 0;
    interp_addr+=4;
@@ -2285,19 +2306,19 @@ static void SLTIU()
 
 static void ANDI()
 {
-   irt = irs & (unsigned short)iimmediate;
+   irt = irs & (u16)iimmediate;
    interp_addr+=4;
 }
 
 static void ORI()
 {
-   irt = irs | (unsigned short)iimmediate;
+   irt = irs | (u16)iimmediate;
    interp_addr+=4;
 }
 
 static void XORI()
 {
-   irt = irs ^ (unsigned short)iimmediate;
+   irt = irs ^ (u16)iimmediate;
    interp_addr+=4;
 }
 
@@ -2321,7 +2342,8 @@ static void COP1()
 
 static void BEQL()
 {
-   short local_immediate = iimmediate;
+   s16 local_immediate = iimmediate;
+
    local_rs = irs;
    local_rt = irt;
    if ((interp_addr + (local_immediate+1)*4) == interp_addr)
@@ -2359,7 +2381,8 @@ static void BEQL()
 
 static void BNEL()
 {
-   short local_immediate = iimmediate;
+   s16 local_immediate = iimmediate;
+
    local_rs = irs;
    local_rt = irt;
    if ((interp_addr + (local_immediate+1)*4) == interp_addr)
@@ -2397,7 +2420,8 @@ static void BNEL()
 
 static void BLEZL()
 {
-   short local_immediate = iimmediate;
+   s16 local_immediate = iimmediate;
+
    local_rs = irs;
    if ((interp_addr + (local_immediate+1)*4) == interp_addr)
      if (irs <= 0)
@@ -2434,7 +2458,8 @@ static void BLEZL()
 
 static void BGTZL()
 {
-   short local_immediate = iimmediate;
+   s16 local_immediate = iimmediate;
+
    local_rs = irs;
    if ((interp_addr + (local_immediate+1)*4) == interp_addr)
      if (irs > 0)
@@ -2483,7 +2508,8 @@ static void DADDIU()
 
 static void LDL()
 {
-   unsigned long long int word = 0;
+   u64 word = 0;
+
    interp_addr+=4;
    switch ((iimmediate + irs32) & 7)
      {
@@ -2539,7 +2565,8 @@ static void LDL()
 
 static void LDR()
 {
-   unsigned long long int word = 0;
+   u64 word = 0;
+
    interp_addr+=4;
    switch ((iimmediate + irs32) & 7)
      {
@@ -2613,7 +2640,8 @@ static void LH()
 
 static void LWL()
 {
-   unsigned long long int word = 0;
+   u64 word = 0;
+
    interp_addr+=4;
    switch ((iimmediate + irs32) & 3)
      {
@@ -2671,7 +2699,8 @@ static void LHU()
 
 static void LWR()
 {
-   unsigned long long int word = 0;
+   u64 word = 0;
+
    interp_addr+=4;
    switch ((iimmediate + irs32) & 3)
      {
@@ -2713,7 +2742,7 @@ static void SB()
 {
    interp_addr+=4;
    address = iimmediate + irs32;
-   byte = (unsigned char)(irt & 0xFF);
+   byte = (u8)(irt & 0xFF);
    write_byte_in_memory();
 }
 
@@ -2721,38 +2750,39 @@ static void SH()
 {
    interp_addr+=4;
    address = iimmediate + irs32;
-   hword = (unsigned short)(irt & 0xFFFF);
+   hword = (u16)(irt & 0xFFFF);
    write_hword_in_memory();
 }
 
 static void SWL()
 {
-   unsigned long long int old_word = 0;
+   u64 old_word = 0;
+
    interp_addr+=4;
    switch ((iimmediate + irs32) & 3)
      {
       case 0:
 	address = (iimmediate + irs32) & 0xFFFFFFFC;
-	word = (unsigned long)irt;
+	word = (u32)irt;
 	write_word_in_memory();
 	break;
       case 1:
 	address = (iimmediate + irs32) & 0xFFFFFFFC;
 	rdword = &old_word;
 	read_word_in_memory();
-	word = ((unsigned long)irt >> 8) | (old_word & 0xFF000000);
+	word = ((u32)irt >> 8) | (old_word & 0xFF000000);
 	write_word_in_memory();
 	break;
       case 2:
 	address = (iimmediate + irs32) & 0xFFFFFFFC;
 	rdword = &old_word;
 	read_word_in_memory();
-	word = ((unsigned long)irt >> 16) | (old_word & 0xFFFF0000);
+	word = ((u32)irt >> 16) | (old_word & 0xFFFF0000);
 	write_word_in_memory();
 	break;
       case 3:
 	address = iimmediate + irs32;
-	byte = (unsigned char)(irt >> 24);
+	byte = (u8)(irt >> 24);
 	write_byte_in_memory();
 	break;
      }
@@ -2762,13 +2792,14 @@ static void SW()
 {
    interp_addr+=4;
    address = iimmediate + irs32;
-   word = (unsigned long)(irt & 0xFFFFFFFF);
+   word = (u32)(irt & 0xFFFFFFFFul);
    write_word_in_memory();
 }
 
 static void SDL()
 {
-   unsigned long long int old_word = 0;
+   u64 old_word = 0;
+
    interp_addr+=4;
    switch ((iimmediate + irs32) & 7)
      {
@@ -2781,49 +2812,49 @@ static void SDL()
 	address = (iimmediate + irs32) & 0xFFFFFFF8;
 	rdword = &old_word;
 	read_dword_in_memory();
-	dword = ((unsigned long long)irt >> 8)|(old_word & 0xFF00000000000000LL);
+	dword = ((u64)irt >> 8)|(old_word & 0xFF00000000000000LL);
 	write_dword_in_memory();
 	break;
       case 2:
 	address = (iimmediate + irs32) & 0xFFFFFFF8;
 	rdword = &old_word;
 	read_dword_in_memory();
-	dword = ((unsigned long long)irt >> 16)|(old_word & 0xFFFF000000000000LL);
+	dword = ((u64)irt >> 16)|(old_word & 0xFFFF000000000000LL);
 	write_dword_in_memory();
 	break;
       case 3:
 	address = (iimmediate + irs32) & 0xFFFFFFF8;
 	rdword = &old_word;
 	read_dword_in_memory();
-	dword = ((unsigned long long)irt >> 24)|(old_word & 0xFFFFFF0000000000LL);
+	dword = ((u64)irt >> 24)|(old_word & 0xFFFFFF0000000000LL);
 	write_dword_in_memory();
 	break;
       case 4:
 	address = (iimmediate + irs32) & 0xFFFFFFF8;
 	rdword = &old_word;
 	read_dword_in_memory();
-	dword = ((unsigned long long)irt >> 32)|(old_word & 0xFFFFFFFF00000000LL);
+	dword = ((u64)irt >> 32)|(old_word & 0xFFFFFFFF00000000LL);
 	write_dword_in_memory();
 	break;
       case 5:
 	address = (iimmediate + irs32) & 0xFFFFFFF8;
 	rdword = &old_word;
 	read_dword_in_memory();
-	dword = ((unsigned long long)irt >> 40)|(old_word & 0xFFFFFFFFFF000000LL);
+	dword = ((u64)irt >> 40)|(old_word & 0xFFFFFFFFFF000000LL);
 	write_dword_in_memory();
 	break;
       case 6:
 	address = (iimmediate + irs32) & 0xFFFFFFF8;
 	rdword = &old_word;
 	read_dword_in_memory();
-	dword = ((unsigned long long)irt >> 48)|(old_word & 0xFFFFFFFFFFFF0000LL);
+	dword = ((u64)irt >> 48)|(old_word & 0xFFFFFFFFFFFF0000LL);
 	write_dword_in_memory();
 	break;
       case 7:
 	address = (iimmediate + irs32) & 0xFFFFFFF8;
 	rdword = &old_word;
 	read_dword_in_memory();
-	dword = ((unsigned long long)irt >> 56)|(old_word & 0xFFFFFFFFFFFFFF00LL);
+	dword = ((u64)irt >> 56)|(old_word & 0xFFFFFFFFFFFFFF00LL);
 	write_dword_in_memory();
 	break;
      }
@@ -2831,7 +2862,8 @@ static void SDL()
 
 static void SDR()
 {
-   unsigned long long int old_word = 0;
+   u64 old_word = 0;
+
    interp_addr+=4;
    switch ((iimmediate + irs32) & 7)
      {
@@ -2894,7 +2926,8 @@ static void SDR()
 
 static void SWR()
 {
-   unsigned long long int old_word = 0;
+   u64 old_word = 0;
+
    interp_addr+=4;
    switch ((iimmediate + irs32) & 3)
      {
@@ -2902,26 +2935,26 @@ static void SWR()
 	address = iimmediate + irs32;
 	rdword = &old_word;
 	read_word_in_memory();
-	word = ((unsigned long)irt << 24) | (old_word & 0x00FFFFFF);
+	word = ((u32)irt << 24) | (old_word & 0x00FFFFFF);
 	write_word_in_memory();
 	break;
       case 1:
 	address = (iimmediate + irs32) & 0xFFFFFFFC;
 	rdword = &old_word;
 	read_word_in_memory();
-	word = ((unsigned long)irt << 16) | (old_word & 0x0000FFFF);
+	word = ((u32)irt << 16) | (old_word & 0x0000FFFF);
 	write_word_in_memory();
 	break;
       case 2:
 	address = (iimmediate + irs32) & 0xFFFFFFFC;
 	rdword = &old_word;
 	read_word_in_memory();
-	word = ((unsigned long)irt << 8) | (old_word & 0x000000FF);
+	word = ((u32)irt << 8) | (old_word & 0x000000FF);
 	write_word_in_memory();
 	break;
       case 3:
 	address = (iimmediate + irs32) & 0xFFFFFFFC;
-	word = (unsigned long)irt;
+	word = (u32)irt;
 	write_word_in_memory();
 	break;
      }
@@ -2944,7 +2977,8 @@ static void LL()
 
 static void LWC1()
 {
-   unsigned long long int temp;
+   u64 temp;
+
    if (check_cop1_unusable()) return;
    interp_addr+=4;
    address = lfoffset+reg[lfbase];
@@ -2958,7 +2992,7 @@ static void LDC1()
    if (check_cop1_unusable()) return;
    interp_addr+=4;
    address = lfoffset+reg[lfbase];
-   rdword = (unsigned long long *)reg_cop1_double[lfft];
+   rdword = (u64 *)reg_cop1_double[lfft];
    read_dword_in_memory();
 }
 
@@ -2976,7 +3010,7 @@ static void SC()
    if(llbit)
      {
 	address = iimmediate + irs32;
-	word = (unsigned long)(irt & 0xFFFFFFFF);
+	word = (u32)(irt & 0xFFFFFFFF);
 	write_word_in_memory();
 	llbit = 0;
 	irt = 1;
@@ -2992,7 +3026,7 @@ static void SWC1()
    if (check_cop1_unusable()) return;
    interp_addr+=4;
    address = lfoffset+reg[lfbase];
-   word = *((long*)reg_cop1_simple[lfft]);
+   word = *((i32*)reg_cop1_simple[lfft]);
    write_word_in_memory();
 }
 
@@ -3001,7 +3035,7 @@ static void SDC1()
    if (check_cop1_unusable()) return;
    interp_addr+=4;
    address = lfoffset+reg[lfbase];
-   dword = *((unsigned long long*)reg_cop1_double[lfft]);
+   dword = *((u64*)reg_cop1_double[lfft]);
    write_dword_in_memory();
 }
 
@@ -3064,18 +3098,19 @@ void prefetch()
 	  }
 	else if ((interp_addr > 0xb0000000))
 	  {
-	     op = ((unsigned long*)rom)[(interp_addr & 0xFFFFFFF)/4];
+	     op = ((u32*)rom)[(interp_addr & 0xFFFFFFF) / sizeof(u32)];
 	     prefetch_opcode(op);
 	  }
 	else
 	  {
-	     printf("execution à l'addresse :%x\n", (int)interp_addr);
+	     printf("execution à l'addresse :%x\n", (s32)interp_addr);
 	     stop=1;
 	  }
      }
    else
      {
-	unsigned long addr = interp_addr, phys;
+	u32 addr = interp_addr, phys;
+
 	phys = virtual_to_physical_address(interp_addr, 2);
 	if (phys != 0x00000000) interp_addr = phys;
 	else 
@@ -3118,7 +3153,7 @@ void pure_interpreter()
    PC->addr = interp_addr;
 }
 
-void interprete_section(unsigned long addr)
+void interprete_section(u32 addr)
 {
    interp_addr = addr;
    PC = malloc(sizeof(precomp_instr));

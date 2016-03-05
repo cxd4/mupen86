@@ -44,24 +44,24 @@ extern int debugger_mode;
 extern void update_debugger();
 #endif
 
-unsigned long i, dynacore = 0, interpcore = 0;
+u32 i, dynacore = 0, interpcore = 0;
 int no_audio_delay = 0;
 int no_compiled_jump = 0;
 int stop, llbit;
-long long int reg[32], hi, lo;
-long long int local_rs, local_rt;
-unsigned long reg_cop0[32];
-long local_rs32, local_rt32;
-unsigned long jump_target;
+s64 reg[32], hi, lo;
+s64 local_rs, local_rt;
+u32 reg_cop0[32];
+s32 local_rs32, local_rt32;
+u32 jump_target;
 float *reg_cop1_simple[32];
 double *reg_cop1_double[32];
-long reg_cop1_fgr_32[32];
-long long int reg_cop1_fgr_64[32];
-long FCR0, FCR31;
+s32 reg_cop1_fgr_32[32];
+s64 reg_cop1_fgr_64[32];
+s32 FCR0, FCR31;
 tlb tlb_e[32];
-unsigned long delay_slot, skip_jump = 0, dyna_interp = 0, last_addr;
-unsigned long long int debug_count = 0;
-unsigned int next_interupt, CIC_Chip;
+u32 delay_slot, skip_jump = 0, dyna_interp = 0, last_addr;
+u64 debug_count = 0;
+u32 next_interupt, CIC_Chip;
 precomp_instr *PC;
 char invalid_code[0x100000];
 
@@ -81,12 +81,12 @@ void (*code)();
 
 void NI()
 {
-   printf("NI() @ %x\n", (int)PC->addr);
+   printf("NI() @ %x\n", (u32)PC->addr);
    printf("opcode not implemented : ");
    if (PC->addr >= 0xa4000000 && PC->addr < 0xa4001000)
-     printf("%x:%x\n", (int)PC->addr, (int)SP_DMEM[(PC->addr-0xa4000000)/4]);
+     printf("%x:%x\n", (u32)PC->addr, (u32)SP_DMEM[(PC->addr-0xa4000000)/4]);
    else
-     printf("%x:%x\n", (int)PC->addr, (int)rdram[(PC->addr-0x80000000)/4]);
+     printf("%x:%x\n", (u32)PC->addr, (u32)rdram[(PC->addr-0x80000000)/4]);
    stop=1;
 }
 
@@ -94,9 +94,9 @@ void RESERVED()
 {
    printf("reserved opcode : ");
    if (PC->addr >= 0xa4000000 && PC->addr < 0xa4001000)
-     printf("%x:%x\n", (int)PC->addr, (int)SP_DMEM[(PC->addr-0xa4000000)/4]);
+     printf("%x:%x\n", (u32)PC->addr, (u32)SP_DMEM[(PC->addr-0xa4000000)/4]);
    else
-     printf("%x:%x\n", (int)PC->addr, (int)rdram[(PC->addr-0x80000000)/4]);
+     printf("%x:%x\n", (u32)PC->addr, (u32)rdram[(PC->addr-0x80000000)/4]);
    stop=1;
 }
 
@@ -157,7 +157,8 @@ void J_OUT()
 
 void J_IDLE()
 {
-   long skip;
+   s32 skip;
+
    update_count();
    skip = next_interupt - Count;
    if (skip > 3) Count += (skip & 0xFFFFFFFC);
@@ -204,7 +205,8 @@ void JAL_OUT()
 
 void JAL_IDLE()
 {
-   long skip;
+   s32 skip;
+
    update_count();
    skip = next_interupt - Count;
    if (skip > 3) Count += (skip & 0xFFFFFFFC);
@@ -230,7 +232,7 @@ void BEQ_OUT()
 {
    local_rs = irs;
    local_rt = irt;
-   jump_target = (long)PC->f.i.immediate;
+   jump_target = (s32)PC->f.i.immediate;
    PC++;
    delay_slot=1;
    PC->ops();
@@ -244,7 +246,8 @@ void BEQ_OUT()
 
 void BEQ_IDLE()
 {
-   long skip;
+   s32 skip;
+
    if (irs == irt)
      {
 	update_count();
@@ -274,7 +277,7 @@ void BNE_OUT()
 {
    local_rs = irs;
    local_rt = irt;
-   jump_target = (long)PC->f.i.immediate;
+   jump_target = (s32)PC->f.i.immediate;
    PC++;
    delay_slot=1;
    PC->ops();
@@ -288,7 +291,8 @@ void BNE_OUT()
 
 void BNE_IDLE()
 {
-   long skip;
+   s32 skip;
+
    if (irs != irt)
      {
 	update_count();
@@ -316,7 +320,7 @@ void BLEZ()
 void BLEZ_OUT()
 {
    local_rs = irs;
-   jump_target = (long)PC->f.i.immediate;
+   jump_target = (s32)PC->f.i.immediate;
    PC++;
    delay_slot=1;
    PC->ops();
@@ -330,7 +334,7 @@ void BLEZ_OUT()
 
 void BLEZ_IDLE()
 {
-   long skip;
+   s32 skip;
    if (irs <= irt)
      {
 	update_count();
@@ -358,7 +362,7 @@ void BGTZ()
 void BGTZ_OUT()
 {
    local_rs = irs;
-   jump_target = (long)PC->f.i.immediate;
+   jump_target = (s32)PC->f.i.immediate;
    PC++;
    delay_slot=1;
    PC->ops();
@@ -372,7 +376,8 @@ void BGTZ_OUT()
 
 void BGTZ_IDLE()
 {
-   long skip;
+   s32 skip;
+
    if (irs > irt)
      {
 	update_count();
@@ -406,7 +411,7 @@ void SLTI()
 
 void SLTIU()
 {
-   if ((unsigned long long)irs < (unsigned long long)((long long)iimmediate))
+   if ((u64)irs < (u64)((s32)iimmediate))
      irt = 1;
    else irt = 0;
    PC++;
@@ -414,19 +419,19 @@ void SLTIU()
 
 void ANDI()
 {
-   irt = irs & (unsigned short)iimmediate;
+   irt = irs & (u16)iimmediate;
    PC++;
 }
 
 void ORI()
 {
-   irt = irs | (unsigned short)iimmediate;
+   irt = irs | (u16)iimmediate;
    PC++;
 }
 
 void XORI()
 {
-   irt = irs ^ (unsigned short)iimmediate;
+   irt = irs ^ (u16)iimmediate;
    PC++;
 }
 
@@ -462,7 +467,7 @@ void BEQL_OUT()
 {
    if (irs == irt)
      {
-	jump_target = (long)PC->f.i.immediate;
+	jump_target = (s32)PC->f.i.immediate;
 	PC++;
 	delay_slot=1;
 	PC->ops();
@@ -482,7 +487,7 @@ void BEQL_OUT()
 
 void BEQL_IDLE()
 {
-   long skip;
+   s32 skip;
    if (irs == irt)
      {
 	update_count();
@@ -518,7 +523,7 @@ void BNEL_OUT()
 {
    if (irs != irt)
      {
-	jump_target = (long)PC->f.i.immediate;
+	jump_target = (s32)PC->f.i.immediate;
 	PC++;
 	delay_slot=1;
 	PC->ops();
@@ -538,7 +543,7 @@ void BNEL_OUT()
 
 void BNEL_IDLE()
 {
-   long skip;
+   s32 skip;
    if (irs != irt)
      {
 	update_count();
@@ -574,7 +579,7 @@ void BLEZL_OUT()
 {
    if (irs <= 0)
      {
-	jump_target = (long)PC->f.i.immediate;
+	jump_target = (s32)PC->f.i.immediate;
 	PC++;
 	delay_slot=1;
 	PC->ops();
@@ -594,7 +599,8 @@ void BLEZL_OUT()
 
 void BLEZL_IDLE()
 {
-   long skip;
+   s32 skip;
+
    if (irs <= irt)
      {
 	update_count();
@@ -630,7 +636,7 @@ void BGTZL_OUT()
 {
    if (irs > 0)
      {
-	jump_target = (long)PC->f.i.immediate;
+	jump_target = (s32)PC->f.i.immediate;
 	PC++;
 	delay_slot=1;
 	PC->ops();
@@ -650,7 +656,8 @@ void BGTZL_OUT()
 
 void BGTZL_IDLE()
 {
-   long skip;
+   s32 skip;
+
    if (irs > irt)
      {
 	update_count();
@@ -675,7 +682,8 @@ void DADDIU()
 
 void LDL()
 {
-   unsigned long long int word = 0;
+   u64 word = 0;
+
    PC++;
    switch ((lsaddr) & 7)
      {
@@ -738,7 +746,8 @@ void LDL()
 
 void LDR()
 {
-   unsigned long long int word = 0;
+   u64 word = 0;
+
    PC++;
    switch ((lsaddr) & 7)
      {
@@ -821,7 +830,8 @@ void LH()
 
 void LWL()
 {
-   unsigned long long int word = 0;
+   u64 word = 0;
+
    PC++;
    switch ((lsaddr) & 3)
      {
@@ -884,7 +894,7 @@ void LHU()
 
 void LWR()
 {
-   unsigned long long int word = 0;
+   u64 word = 0;
    PC++;
    switch ((lsaddr) & 3)
      {
@@ -930,7 +940,7 @@ void SB()
 {
    PC++;
    address = lsaddr;
-   byte = (unsigned char)(lsrt & 0xFF);
+   byte = (u8)(lsrt & 0xFF);
    write_byte_in_memory();
    check_memory();
 }
@@ -939,20 +949,21 @@ void SH()
 {
    PC++;
    address = lsaddr;
-   hword = (unsigned short)(lsrt & 0xFFFF);
+   hword = (u16)(lsrt & 0xFFFF);
    write_hword_in_memory();
    check_memory();
 }
 
 void SWL()
 {
-   unsigned long long int old_word = 0;
+   u64 old_word = 0;
+
    PC++;
    switch ((lsaddr) & 3)
      {
       case 0:
 	address = (lsaddr) & 0xFFFFFFFC;
-	word = (unsigned long)lsrt;
+	word = (u32)lsrt;
 	write_word_in_memory();
 	check_memory();
 	break;
@@ -962,7 +973,7 @@ void SWL()
 	read_word_in_memory();
 	if(address)
 	  {
-	     word = ((unsigned long)lsrt >> 8) | (old_word & 0xFF000000);
+	     word = ((u32)lsrt >> 8) | (old_word & 0xFF000000);
 	     write_word_in_memory();
 	     check_memory();
 	  }
@@ -973,14 +984,14 @@ void SWL()
 	read_word_in_memory();
 	if(address)
 	  {
-	     word = ((unsigned long)lsrt >> 16) | (old_word & 0xFFFF0000);
+	     word = ((u32)lsrt >> 16) | (old_word & 0xFFFF0000);
 	     write_word_in_memory();
 	     check_memory();
 	  }
 	break;
       case 3:
 	address = lsaddr;
-	byte = (unsigned char)(lsrt >> 24);
+	byte = (u8)(lsrt >> 24);
 	write_byte_in_memory();
 	check_memory();
 	break;
@@ -991,14 +1002,15 @@ void SW()
 {
    PC++;
    address = lsaddr;
-   word = (unsigned long)(lsrt & 0xFFFFFFFF);
+   word = (u32)(lsrt & 0xFFFFFFFF);
    write_word_in_memory();
    check_memory();
 }
 
 void SDL()
 {
-   unsigned long long int old_word = 0;
+   u64 old_word = 0;
+
    PC++;
    switch ((lsaddr) & 7)
      {
@@ -1014,7 +1026,7 @@ void SDL()
 	read_dword_in_memory();
 	if(address)
 	  {
-	     dword = ((unsigned long long)lsrt >> 8)|(old_word & 0xFF00000000000000LL);
+	     dword = ((u64)lsrt >> 8)|(old_word & 0xFF00000000000000LL);
 	     write_dword_in_memory();
 	     check_memory();
 	  }
@@ -1025,7 +1037,7 @@ void SDL()
 	read_dword_in_memory();
 	if(address)
 	  {
-	     dword = ((unsigned long long)lsrt >> 16)|(old_word & 0xFFFF000000000000LL);
+	     dword = ((u64)lsrt >> 16)|(old_word & 0xFFFF000000000000LL);
 	     write_dword_in_memory();
 	     check_memory();
 	  }
@@ -1036,7 +1048,7 @@ void SDL()
 	read_dword_in_memory();
 	if(address)
 	  {
-	     dword = ((unsigned long long)lsrt >> 24)|(old_word & 0xFFFFFF0000000000LL);
+	     dword = ((u64)lsrt >> 24)|(old_word & 0xFFFFFF0000000000LL);
 	     write_dword_in_memory();
 	     check_memory();
 	  }
@@ -1047,7 +1059,7 @@ void SDL()
 	read_dword_in_memory();
 	if(address)
 	  {
-	     dword = ((unsigned long long)lsrt >> 32)|(old_word & 0xFFFFFFFF00000000LL);
+	     dword = ((u64)lsrt >> 32)|(old_word & 0xFFFFFFFF00000000LL);
 	     write_dword_in_memory();
 	     check_memory();
 	  }
@@ -1058,7 +1070,7 @@ void SDL()
 	read_dword_in_memory();
 	if(address)
 	  {
-	     dword = ((unsigned long long)lsrt >> 40)|(old_word & 0xFFFFFFFFFF000000LL);
+	     dword = ((u64)lsrt >> 40)|(old_word & 0xFFFFFFFFFF000000LL);
 	     write_dword_in_memory();
 	     check_memory();
 	  }
@@ -1069,7 +1081,7 @@ void SDL()
 	read_dword_in_memory();
 	if(address)
 	  {
-	     dword = ((unsigned long long)lsrt >> 48)|(old_word & 0xFFFFFFFFFFFF0000LL);
+	     dword = ((u64)lsrt >> 48)|(old_word & 0xFFFFFFFFFFFF0000LL);
 	     write_dword_in_memory();
 	     check_memory();
 	  }
@@ -1080,7 +1092,7 @@ void SDL()
 	read_dword_in_memory();
 	if(address)
 	  {
-	     dword = ((unsigned long long)lsrt >> 56)|(old_word & 0xFFFFFFFFFFFFFF00LL);
+	     dword = ((u64)lsrt >> 56)|(old_word & 0xFFFFFFFFFFFFFF00LL);
 	     write_dword_in_memory();
 	     check_memory();
 	  }
@@ -1090,7 +1102,8 @@ void SDL()
 
 void SDR()
 {
-   unsigned long long int old_word = 0;
+   u64 old_word = 0;
+
    PC++;
    switch ((lsaddr) & 7)
      {
@@ -1182,7 +1195,8 @@ void SDR()
 
 void SWR()
 {
-   unsigned long long int old_word = 0;
+   u64 old_word = 0;
+
    PC++;
    switch ((lsaddr) & 3)
      {
@@ -1192,7 +1206,7 @@ void SWR()
 	read_word_in_memory();
 	if(address)
 	  {
-	     word = ((unsigned long)lsrt << 24) | (old_word & 0x00FFFFFF);
+	     word = ((u32)lsrt << 24) | (old_word & 0x00FFFFFF);
 	     write_word_in_memory();
 	     check_memory();
 	  }
@@ -1203,7 +1217,7 @@ void SWR()
 	read_word_in_memory();
 	if(address)
 	  {
-	     word = ((unsigned long)lsrt << 16) | (old_word & 0x0000FFFF);
+	     word = ((u32)lsrt << 16) | (old_word & 0x0000FFFF);
 	     write_word_in_memory();
 	     check_memory();
 	  }
@@ -1214,14 +1228,14 @@ void SWR()
 	read_word_in_memory();
 	if(address)
 	  {
-	     word = ((unsigned long)lsrt << 8) | (old_word & 0x000000FF);
+	     word = ((u32)lsrt << 8) | (old_word & 0x000000FF);
 	     write_word_in_memory();
 	     check_memory();
 	  }
 	break;
       case 3:
 	address = (lsaddr) & 0xFFFFFFFC;
-	word = (unsigned long)lsrt;
+	word = (u32)lsrt;
 	write_word_in_memory();
 	check_memory();
 	break;
@@ -1248,14 +1262,15 @@ void LL()
 
 void LWC1()
 {  
-   unsigned long long int temp;
+   u64 temp;
+
    if (check_cop1_unusable()) return;
    PC++;
    address = lslfaddr;
    rdword = &temp;
    read_word_in_memory();
    if (address)
-     *((long*)reg_cop1_simple[lslfft]) = *rdword;
+     *((i32*)reg_cop1_simple[lslfft]) = *rdword;
 }
 
 void LDC1()
@@ -1263,7 +1278,7 @@ void LDC1()
    if (check_cop1_unusable()) return;
    PC++;
    address = lslfaddr;
-   rdword = (unsigned long long*)reg_cop1_double[lslfft];
+   rdword = (u64*)reg_cop1_double[lslfft];
    read_dword_in_memory();
 }
 
@@ -1281,7 +1296,7 @@ void SC()
    printf("SC\n");
    if (llbit) {
       address = lsaddr;
-      word = (unsigned long)(lsrt & 0xFFFFFFFF);
+      word = (u32)(lsrt & 0xFFFFFFFF);
       write_word_in_memory();
    }
    lsrt = llbit;*/
@@ -1290,7 +1305,7 @@ void SC()
    if(llbit)
      {
 	address = lsaddr;
-	word = (unsigned long)(lsrt & 0xFFFFFFFF);
+	word = (u32)(lsrt & 0xFFFFFFFF);
 	write_word_in_memory();
 	check_memory();
 	llbit = 0;
@@ -1307,7 +1322,7 @@ void SWC1()
    if (check_cop1_unusable()) return;
    PC++;
    address = lslfaddr;
-   word = *((long*)reg_cop1_simple[lslfft]);
+   word = *((i32*)reg_cop1_simple[lslfft]);
    write_word_in_memory();
    check_memory();
 }
@@ -1317,7 +1332,7 @@ void SDC1()
    if (check_cop1_unusable()) return;
    PC++;
    address = lslfaddr;
-   dword = *((unsigned long long*)reg_cop1_double[lslfft]);
+   dword = *((u64*)reg_cop1_double[lslfft]);
    write_dword_in_memory();
    check_memory();
 }
@@ -1334,10 +1349,11 @@ void SD()
 void NOTCOMPILED()
 {
    if ((PC->addr>>16) == 0xa400)
-     recompile_block((long *)SP_DMEM, blocks[0xa4000000>>12], PC->addr);
+     recompile_block((i32 *)SP_DMEM, blocks[0xa4000000>>12], PC->addr);
    else
      {
-	unsigned long paddr = 0;
+	u32 paddr = 0;
+
 	if (PC->addr >= 0x80000000 && PC->addr < 0xc0000000) paddr = PC->addr;
 	//else paddr = (tlb_LUT_r[PC->addr>>12]&0xFFFFF000)|(PC->addr&0xFFF);
 	else paddr = virtual_to_physical_address(PC->addr, 2);
@@ -1347,7 +1363,7 @@ void NOTCOMPILED()
             {
 		  //printf("not compiled rom:%x\n", paddr);
                 recompile_block(
-                    (long *)rom
+                    (i32 *)rom
                   + ((((paddr - (PC->addr - blocks[PC->addr >> 12]->start)) & 0x1FFFFFFF) - 0x10000000)>>2),
 
                     blocks[PC->addr >> 12],
@@ -1356,7 +1372,7 @@ void NOTCOMPILED()
             }
             else
                 recompile_block(
-                    (long *)rdram
+                    (i32 *)rdram
                   + (((paddr - (PC->addr - blocks[PC->addr >> 12]->start)) & 0x1FFFFFFF)>>2),
 
                     blocks[PC->addr >> 12],
@@ -1378,7 +1394,7 @@ void NOTCOMPILED2()
    NOTCOMPILED();
 }
 
-static inline unsigned long update_invalid_addr(unsigned long addr)
+static inline u32 update_invalid_addr(u32 addr)
 {
    if (addr >= 0x80000000 && addr < 0xa0000000)
      {
@@ -1409,10 +1425,10 @@ static inline unsigned long update_invalid_addr(unsigned long addr)
 }
 
 #define addr jump_to_address
-unsigned long jump_to_address;
+u32 jump_to_address;
 inline void jump_to_func()
 {
-   unsigned long paddr;
+   u32 paddr;
    if (skip_jump) return;
    paddr = update_invalid_addr(addr);
    if (!paddr) return;
@@ -1430,7 +1446,7 @@ inline void jump_to_func()
 	blocks[addr>>12]->start = addr & ~0xFFF;
 	blocks[addr>>12]->end = (addr & ~0xFFF) + 0x1000;
         init_block(
-            (long *)rdram
+            (s32 *)rdram
           + (((paddr - (addr - blocks[addr >> 12]->start)) & 0x1FFFFFFF)>>2),
 
             blocks[addr>>12]
@@ -1505,7 +1521,7 @@ void init_blocks()
 
 void go()
 {
-   long long CRC = 0;
+   s64 CRC = 0;
    unsigned int j;
    
    j=0;
@@ -1810,18 +1826,17 @@ void go()
    for (j=0; j<16; j++)
      printf ("reg[%2d]:%8x%8x        reg[%d]:%8x%8x\n",   
 	     j,
-	     (unsigned int)(reg[j] >> 32),
-	     (unsigned int)reg[j],
+	     (u32)(reg[j] >> 32),
+	     (u32)reg[j],
 	     j+16,
-	     (unsigned int)(reg[j+16] >> 32),
-	     (unsigned int)reg[j+16]);
+	     (u32)(reg[j+16] >> 32),
+	     (u32)reg[j+16]);
    printf("hi:%8x%8x        lo:%8x%8x\n",
-	  (unsigned int)(hi >> 32),
-	  (unsigned int)hi,
-	  (unsigned int)(lo >> 32),
-	  (unsigned int)lo);
-   printf("après %d instructions soit %x\n",(unsigned int)debug_count
-	  ,(unsigned int)debug_count);
+	  (u32)(hi >> 32),
+	  (u32)hi,
+	  (u32)(lo >> 32),
+	  (u32)lo);
+   printf("après %d instructions soit %x\n", (u32)debug_count, (u32)debug_count);
    for (i=0; i<0x100000; i++)
      {
 	if (blocks[i])
