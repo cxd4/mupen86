@@ -26,6 +26,7 @@
  * USA.
  *
 **/
+#if defined(HAVE_RECOMPILER)
 
 #include <stdio.h>
 #include "../recomph.h"
@@ -279,3 +280,5 @@ void genbc1tl_idle()
    genbc1tl();
 #endif
 }
+
+#endif

@@ -37,6 +37,8 @@
 #include "macros.h"
 #include "recomp.h"
 #include "recomph.h"
+
+#include <stdlib.h>
 #include <malloc.h>
 
 #ifdef DBG
@@ -106,7 +108,9 @@ void FIN_BLOCK()
      {
 	jump_to((PC-1)->addr+4);
 	PC->ops();
+#if defined(HAVE_RECOMPILER)
 	if (dynacore) dyna_jump();
+#endif
      }
    else
      {
@@ -122,8 +126,10 @@ void FIN_BLOCK()
 	  }
 	else
 	  PC->ops();
-	
+
+#if defined(HAVE_RECOMPILER)
 	if (dynacore) dyna_jump();
+#endif
      }
 }
 
@@ -1348,6 +1354,7 @@ void SD()
 
 void NOTCOMPILED()
 {
+#if defined(HAVE_RECOMPILER)
    if ((PC->addr>>16) == 0xa400)
      recompile_block((i32 *)SP_DMEM, blocks[0xa4000000>>12], PC->addr);
    else
@@ -1387,6 +1394,7 @@ void NOTCOMPILED()
      //*return_address = (u32)(blocks[PC->addr>>12]->code + PC->local_addr);
    //else
    //PC->ops();
+#endif
 }
 
 void NOTCOMPILED2()
@@ -1447,16 +1455,20 @@ inline void jump_to_func()
 	  }
 	blocks[addr>>12]->start = addr & ~0xFFF;
 	blocks[addr>>12]->end = (addr & ~0xFFF) + 0x1000;
+
         init_block(
             (s32 *)rdram
-          + (((paddr - (addr - blocks[addr >> 12]->start)) & 0x1FFFFFFF)>>2),
+          + (((paddr - (addr - blocks[addr >> 12]->start)) & 0x1FFFFFFF) >> 2),
 
-            blocks[addr>>12]
+            blocks[addr >> 12]
         );
      }
-   PC=actual->block+((addr-actual->start)>>2);
-   
-   if (dynacore) dyna_jump();
+    PC = (actual -> block) + ((addr - actual->start) >> 2);
+
+#if defined(HAVE_RECOMPILER)
+    if (dynacore)
+        dyna_jump();
+#endif
 }
 #undef addr
 
@@ -1504,22 +1516,22 @@ void init_blocks()
 	invalid_code[i] = 1;
 	blocks[i] = NULL;
      }
-   blocks[0xa4000000>>12] = malloc(sizeof(precomp_block));
-   invalid_code[0xa4000000>>12] = 1;
-   blocks[0xa4000000>>12]->code = NULL;
-   blocks[0xa4000000>>12]->block = NULL;
-   blocks[0xa4000000>>12]->jumps_table = NULL;
-   blocks[0xa4000000>>12]->start = 0xa4000000;
-   blocks[0xa4000000>>12]->end = 0xa4001000;
-   actual=blocks[0xa4000000>>12];
-    init_block((i32 *)SP_DMEM, blocks[0xA4000000 >> 12]);
-   PC=actual->block+(0x40/4);
+   blocks[0xa4000000 >> 12] = malloc(sizeof(precomp_block));
+   invalid_code[0xa4000000 >> 12] = 1;
+   blocks[0xa4000000 >> 12]->code = NULL;
+   blocks[0xa4000000 >> 12]->block = NULL;
+   blocks[0xa4000000 >> 12]->jumps_table = NULL;
+   blocks[0xa4000000 >> 12]->start = 0xa4000000;
+   blocks[0xa4000000 >> 12]->end = 0xa4001000;
+   actual = blocks[0xa4000000 >> 12];
+
+   init_block((i32 *)SP_DMEM, blocks[0xA4000000 >> 12]);
+   PC = actual->block + (0x40 / sizeof(i32));
 #ifdef DBG
    if (debugger_mode) // debugger shows initial state (before 1st instruction).
      update_debugger();
 #endif
 }
-
 
 void go()
 {
@@ -1756,7 +1768,7 @@ void go()
 
    if (!dynacore)
      {
-	printf ("interpreter\n");
+	printf("interpreter\n");
 	init_blocks();
 	last_addr = PC->addr;
 	while (!stop)
@@ -1815,12 +1827,17 @@ void go()
      }
    else
      {
+#if defined(HAVE_RECOMPILER)
 	dynacore = 1;
 	printf("dynamic recompiler\n");
 	init_blocks();
 	code = (void *)(actual->code+(actual->block[0x40/4].local_addr));
 	dyna_start(code);
 	PC++;
+#else
+        fputs("No re-compiler available in this build.  Sorry.\n", stderr);
+        abort();
+#endif
      }
    debug_count+= Count;
    printf ("PC=%x:%x\n", (unsigned int)(PC->addr), 

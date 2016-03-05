@@ -26,6 +26,7 @@
  * USA.
  *
 **/
+#if defined(HAVE_RECOMPILER)
 
 #include <stdio.h>
 #include "../recomph.h"
@@ -1166,3 +1167,5 @@ void gendsra32()
    sar_reg32_imm8(rd, dst->f.r.sa);
 #endif
 }
+
+#endif

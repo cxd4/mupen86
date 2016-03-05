@@ -26,6 +26,7 @@
  * USA.
  *
 **/
+#if defined(HAVE_RECOMPILER)
 
 #include <stdlib.h>
 
@@ -38,9 +39,9 @@
 void dyna_jump()
 {
    if (PC->reg_cache_infos.need_map)
-     *return_address = (unsigned long)(PC->reg_cache_infos.jump_wrapper);
+     *return_address = (u32)(PC->reg_cache_infos.jump_wrapper);
    else
-     *return_address = (unsigned long)(actual->code + PC->local_addr);
+     *return_address = (u32)(actual->code + PC->local_addr);
    /*asm("mov return_address, %%esp \n"
        "ret                       \n"
        :
@@ -69,7 +70,7 @@ static void dyna_stop2() {}
 
 void dyna_stop()
 {
-   *return_address = (unsigned long)dyna_stop2;
+   *return_address = (u32)dyna_stop2;
 #ifndef _WIN32
    asm("mov return_address, %%esp \n"
        "ret                       \n"
@@ -84,3 +85,5 @@ void dyna_stop()
        : "memory");
 #endif // _WIN32
 }
+
+#endif

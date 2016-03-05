@@ -26,6 +26,7 @@
  * USA.
  *
 **/
+#if defined(HAVE_RECOMPILER)
 
 #include "assemble.h"
 #include "../r4300.h"
@@ -2065,3 +2066,5 @@ void gensc()
 {
    gencallinterp((u32)SC, 0);
 }
+
+#endif

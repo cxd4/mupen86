@@ -26,6 +26,7 @@
  * USA.
  *
 **/
+#if defined(HAVE_RECOMPILER)
 
 #include "assemble.h"
 #include "../recomph.h"
@@ -1260,3 +1261,4 @@ void ffree_fpreg(int fpreg)
    put8(0xC0 + fpreg);
 }
 
+#endif

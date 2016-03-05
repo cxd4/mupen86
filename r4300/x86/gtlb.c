@@ -26,6 +26,7 @@
  * USA.
  *
 **/
+#if defined(HAVE_RECOMPILER)
 
 #include <stdio.h>
 #include "../recomph.h"
@@ -35,47 +36,49 @@
 
 void gentlbwi()
 {
-   gencallinterp((unsigned long)TLBWI, 0);
+   gencallinterp((u32)TLBWI, 0);
    /*dst->local_addr = code_length;
-   mov_m32_imm32((void *)(&PC), (unsigned long)(dst));
-   mov_reg32_imm32(EAX, (unsigned long)(TLBWI));
+   mov_m32_imm32((void *)(&PC), (u32)(dst));
+   mov_reg32_imm32(EAX, (u32)(TLBWI));
    call_reg32(EAX);
    genupdate_system(0);*/
 }
 
 void gentlbp()
 {
-   gencallinterp((unsigned long)TLBP, 0);
+   gencallinterp((u32)TLBP, 0);
    /*dst->local_addr = code_length;
-   mov_m32_imm32((void *)(&PC), (unsigned long)(dst));
-   mov_reg32_imm32(EAX, (unsigned long)(TLBP));
+   mov_m32_imm32((void *)(&PC), (u32)(dst));
+   mov_reg32_imm32(EAX, (u32)(TLBP));
    call_reg32(EAX);
    genupdate_system(0);*/
 }
 
 void gentlbr()
 {
-   gencallinterp((unsigned long)TLBR, 0);
+   gencallinterp((u32)TLBR, 0);
    /*dst->local_addr = code_length;
-   mov_m32_imm32((void *)(&PC), (unsigned long)(dst));
-   mov_reg32_imm32(EAX, (unsigned long)(TLBR));
+   mov_m32_imm32((void *)(&PC), (u32)(dst));
+   mov_reg32_imm32(EAX, (u32)(TLBR));
    call_reg32(EAX);
    genupdate_system(0);*/
 }
 
 void generet()
 {
-   gencallinterp((unsigned long)ERET, 1);
+   gencallinterp((u32)ERET, 1);
    /*dst->local_addr = code_length;
-   mov_m32_imm32((void *)(&PC), (unsigned long)(dst));
+   mov_m32_imm32((void *)(&PC), (u32)(dst));
    genupdate_system(0);
-   mov_reg32_imm32(EAX, (unsigned long)(ERET));
+   mov_reg32_imm32(EAX, (u32)(ERET));
    call_reg32(EAX);
-   mov_reg32_imm32(EAX, (unsigned long)(jump_code));
-   jmp_reg32(EAX);*/
+   mov_reg32_imm32(EAX, (u32)(jump_code));
+   jmp_rlongeg32(EAX);*/
 }
 
 void gentlbwr()
 {
-   gencallinterp((unsigned long)TLBWR, 0);
+   gencallinterp((u32)TLBWR, 0);
 }
+
+#endif

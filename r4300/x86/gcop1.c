@@ -26,6 +26,7 @@
  * USA.
  *
 **/
+#if defined(HAVE_RECOMPILER)
 
 #include <stdio.h>
 #include "../recomph.h"
@@ -137,3 +138,5 @@ void genctc1()
    fldcw_m16((u16*)&rounding_mode);
 #endif
 }
+
+#endif

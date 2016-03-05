@@ -538,18 +538,25 @@ int main (int argc, char *argv[])
    printf("16kb eeprom=%d\n", ROM_SETTINGS.eeprom_16kb);
    printf ("emulation mode:\n"
 	   "     1. interpreter\n"
+#if defined(HAVE_RECOMPILER)
 	   "     2. dynamic recompiler (default)\n"
-           "     3. pure interpreter\n");
+#endif
+           "     3. pure interpreter\n"
+   );
    
    if(p_emumode)
      c = p_emumode_value;
    else
      c = getchar();
-   
-   if (c == '1') dynacore=0;
-   else if (c == '3') dynacore=2;
-   else dynacore=1;
-   
+
+   if (c == '1')
+     dynacore = 0;
+   else
+     if (c == '3')
+       dynacore = 2;
+   else
+     dynacore = 1;
+
    SDL_Init(SDL_INIT_VIDEO);
    SDL_SetVideoMode(10, 10, 16, 0);
    SDL_ShowCursor(0);

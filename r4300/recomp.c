@@ -36,15 +36,27 @@
 #include "../memory/memory.h"
 #include "recomph.h"
 
+int fast_memory;
+
 // global variables :
 precomp_instr *dst; // destination structure for the recompiled instruction
+s32 src; // the current recompiled instruction
+
 int code_length; // current real recompiled code length
 int max_code_length; // current recompiled code's buffer length
 unsigned char **inst_pointer; // output buffer for recompiled code
 precomp_block *dst_block; // the current block that we are recompiling
-s32 src; // the current recompiled instruction
-int fast_memory;
 
+static void RNOTCOMPILED()
+{
+    dst->ops = NOTCOMPILED;
+#if defined(HAVE_RECOMPILER)
+    if (dynacore)
+        gennotcompiled();
+#endif
+}
+
+#if defined(HAVE_RECOMPILER)
 u32 *return_address; // that's where the dynarec will restart when
                                // going back from a C function
 
@@ -63,12 +75,6 @@ static void RFIN_BLOCK()
 {
    dst->ops = FIN_BLOCK;
    if (dynacore) genfin_block();
-}
-
-static void RNOTCOMPILED()
-{
-   dst->ops = NOTCOMPILED;
-   if (dynacore) gennotcompiled();
 }
 
 static void recompile_standard_i_type()
@@ -2154,148 +2160,6 @@ static void (*recomp_ops[64])(void) =
 };
 
 /**********************************************************************
- ******************** initialize an empty block ***********************
- **********************************************************************/
-void init_block(s32 *source, precomp_block *block)
-{
-   int i, length, already_exist = 1;
-   static int init_length;
-   start_section(COMPILER_SECTION);
-   //printf("init block recompiled %x\n", (int)block->start);
-   
-   length = (block->end-block->start)/4;
-   
-   if (!block->block)
-     {
-	block->block = malloc(((length+1)+(length>>2)) * sizeof(precomp_instr));
-	already_exist = 0;
-     }
-   if (dynacore)
-     {
-	if (!block->code)
-	  {
-	     block->code = malloc(5000);
-	     max_code_length = 5000;
-	  }
-	else
-	  max_code_length = block->max_code_length;
-	code_length = 0;
-	inst_pointer = &block->code;
-	
-	if (block->jumps_table)
-	  {
-	     free(block->jumps_table);
-	     block->jumps_table = NULL;
-	  }
-	init_assembler(NULL, 0);
-	init_cache(block->block);
-     }
-   
-   if (!already_exist)
-     {
-	for (i=0; i<length; i++)
-	  {
-	     dst = block->block + i;
-	     dst->addr = block->start + i*4;
-	     dst->reg_cache_infos.need_map = 0;
-	     dst->local_addr = code_length;
-#ifdef EMU64_DEBUG
-	     if (dynacore) gendebug();
-#endif
-	     RNOTCOMPILED();
-	  }
-	init_length = code_length;
-     }
-   else
-     {
-	code_length = init_length;
-	for (i=0; i<length; i++)
-	  {
-	     dst = block->block + i;
-	     dst->reg_cache_infos.need_map = 0;
-	     dst->local_addr = i * (code_length / length);
-	     dst->ops = NOTCOMPILED;
-	  }
-     }
-   
-   if (dynacore)
-     {
-	free_all_registers();
-	//passe2(block->block, 0, i, block);
-	block->code_length = code_length;
-	block->max_code_length = max_code_length;
-	free_assembler(&block->jumps_table, &block->jumps_number);
-     }
-   
-   /* here we're marking the block as a valid code even if it's not compiled
-    * yet as the game should have already set up the code correctly.
-    */
-   invalid_code[block->start>>12] = 0;
-   if (block->end < 0x80000000 || block->start >= 0xc0000000)
-     {	
-	u32 paddr;
-	
-	paddr = virtual_to_physical_address(block->start, 2);
-	invalid_code[paddr>>12] = 0;
-	if (!blocks[paddr>>12])
-	  {
-	     blocks[paddr>>12] = malloc(sizeof(precomp_block));
-	     blocks[paddr>>12]->code = NULL;
-	     blocks[paddr>>12]->block = NULL;
-	     blocks[paddr>>12]->jumps_table = NULL;
-	     blocks[paddr>>12]->start = paddr & ~0xFFF;
-	     blocks[paddr>>12]->end = (paddr & ~0xFFF) + 0x1000;
-	  }
-	init_block(NULL, blocks[paddr>>12]);
-	
-	paddr += block->end - block->start - 4;
-	invalid_code[paddr>>12] = 0;
-	if (!blocks[paddr>>12])
-	  {
-	     blocks[paddr>>12] = malloc(sizeof(precomp_block));
-	     blocks[paddr>>12]->code = NULL;
-	     blocks[paddr>>12]->block = NULL;
-	     blocks[paddr>>12]->jumps_table = NULL;
-	     blocks[paddr>>12]->start = paddr & ~0xFFF;
-	     blocks[paddr>>12]->end = (paddr & ~0xFFF) + 0x1000;
-	  }
-	init_block(NULL, blocks[paddr>>12]);
-     }
-   else
-     {
-	if (block->start >= 0x80000000 && block->end < 0xa0000000 &&
-	    invalid_code[(block->start+0x20000000)>>12])
-	  {
-	     if (!blocks[(block->start+0x20000000)>>12])
-	       {
-		  blocks[(block->start+0x20000000)>>12] = malloc(sizeof(precomp_block));
-		  blocks[(block->start+0x20000000)>>12]->code = NULL;
-		  blocks[(block->start+0x20000000)>>12]->block = NULL;
-		  blocks[(block->start+0x20000000)>>12]->jumps_table = NULL;
-		  blocks[(block->start+0x20000000)>>12]->start = (block->start+0x20000000) & ~0xFFF;
-		  blocks[(block->start+0x20000000)>>12]->end = ((block->start+0x20000000) & ~0xFFF) + 0x1000;
-	       }
-	     init_block(NULL, blocks[(block->start+0x20000000)>>12]);
-	  }
-	if (block->start >= 0xa0000000 && block->end < 0xc0000000 &&
-	    invalid_code[(block->start-0x20000000)>>12])
-	  {
-	     if (!blocks[(block->start-0x20000000)>>12])
-	       {
-		  blocks[(block->start-0x20000000)>>12] = malloc(sizeof(precomp_block));
-		  blocks[(block->start-0x20000000)>>12]->code = NULL;
-		  blocks[(block->start-0x20000000)>>12]->block = NULL;
-		  blocks[(block->start-0x20000000)>>12]->jumps_table = NULL;
-		  blocks[(block->start-0x20000000)>>12]->start = (block->start-0x20000000) & ~0xFFF;
-		  blocks[(block->start-0x20000000)>>12]->end = ((block->start-0x20000000) & ~0xFFF) + 0x1000;
-	       }
-	     init_block(NULL, blocks[(block->start-0x20000000)>>12]);
-	  }
-     }
-   end_section(COMPILER_SECTION);
-}
-
-/**********************************************************************
  ********************* recompile a block of code **********************
  **********************************************************************/
 void recompile_block(s32 *source, precomp_block *block, u32 func)
@@ -2497,12 +2361,176 @@ void recompile_opcode()
    delay_slot_compiled = 2;
 }
 
+#endif
+
 /**********************************************************************
  ************** decode one opcode (for the interpreter) ***************
  **********************************************************************/
 void prefetch_opcode(u32 op)
 {
-   dst = PC;
-   src = op;
-   recomp_ops[((src >> 26) & 0x3F)]();
+    static int already_warned;
+
+    dst = PC;
+    src = op;
+
+#if defined(HAVE_RECOMPILER)
+    recomp_ops[((src >> 26) & 0x3F)]();
+#else
+    if (!already_warned)
+        fputs("WARNING:  Pure interpreter calls compiler functions.\n", stderr);
+#endif
+    already_warned = TRUE;
+    return;
+}
+
+/**********************************************************************
+ ******************** initialize an empty block ***********************
+ **********************************************************************/
+void init_block(s32 *source, precomp_block *block)
+{
+    int i, length, already_exist = 1;
+    static int init_length;
+
+    start_section(COMPILER_SECTION);
+#if 0
+    printf("init block recompiled %x\n", (int)block->start);
+#endif
+
+    length = (block->end - block->start) / 4;
+
+    if (!block->block)
+    {
+        block->block = malloc(
+            (length + 1 + (length >> 2)) * sizeof(precomp_instr)
+        );
+        already_exist = 0;
+    }
+#if defined(HAVE_RECOMPILER)
+    if (dynacore)
+    {
+	if (!block->code)
+        {
+            block->code = malloc(5000);
+            max_code_length = 5000;
+        }
+        else
+            max_code_length = block->max_code_length;
+        code_length = 0;
+        inst_pointer = &block->code;
+
+        if (block->jumps_table)
+        {
+            free(block->jumps_table);
+            block->jumps_table = NULL;
+        }
+        init_assembler(NULL, 0);
+        init_cache(block->block);
+    }
+#endif
+
+    if (!already_exist)
+    {
+        for (i = 0; i < length; i++)
+        {
+            dst = block->block + i;
+            dst->addr = block->start + i*4;
+            dst->reg_cache_infos.need_map = 0;
+            dst->local_addr = code_length;
+#ifdef EMU64_DEBUG
+            if (dynacore)
+                gendebug();
+#endif
+            RNOTCOMPILED();
+        }
+        init_length = code_length;
+    }
+    else
+    {
+        code_length = init_length;
+        for (i = 0; i < length; i++)
+        {
+            dst = block->block + i;
+            dst->reg_cache_infos.need_map = 0;
+            dst->local_addr = i * (code_length / length);
+            dst->ops = NOTCOMPILED;
+        }
+    }
+
+#if defined(HAVE_RECOMPILER)
+    if (dynacore)
+    {
+        free_all_registers();
+     /* passe2(block->block, 0, i, block); */
+        block->code_length = code_length;
+        block->max_code_length = max_code_length;
+        free_assembler(&block->jumps_table, &block->jumps_number);
+    }
+#endif
+
+    /* here we're marking the block as a valid code even if it's not compiled
+     * yet as the game should have already set up the code correctly.
+     */
+    invalid_code[block->start >> 12] = 0;
+    if (block->end < 0x80000000 || block->start >= 0xc0000000)
+    {	
+        u32 paddr;
+
+        paddr = virtual_to_physical_address(block->start, 2);
+        invalid_code[paddr >> 12] = 0;
+        if (!blocks[paddr >> 12])
+        {
+            blocks[paddr >> 12] = malloc(sizeof(precomp_block));
+            blocks[paddr >> 12]->code = NULL;
+            blocks[paddr >> 12]->block = NULL;
+            blocks[paddr >> 12]->jumps_table = NULL;
+            blocks[paddr >> 12]->start = paddr & ~0xFFF;
+            blocks[paddr >> 12]->end = (paddr & ~0xFFF) + 0x1000;
+        }
+        init_block(NULL, blocks[paddr >> 12]);
+
+        paddr += block->end - block->start - 4;
+        invalid_code[paddr >> 12] = 0;
+        if (!blocks[paddr >> 12])
+        {
+            blocks[paddr >> 12] = malloc(sizeof(precomp_block));
+            blocks[paddr >> 12]->code = NULL;
+            blocks[paddr >> 12]->block = NULL;
+            blocks[paddr >> 12]->jumps_table = NULL;
+            blocks[paddr >> 12]->start = paddr & ~0xFFF;
+            blocks[paddr >> 12]->end = (paddr & ~0xFFF) + 0x1000;
+        }
+        init_block(NULL, blocks[paddr >> 12]);
+    }
+    else
+    {
+        if (block->start >= 0x80000000 && block->end < 0xa0000000 &&
+            invalid_code[(block->start + 0x20000000) >> 12])
+        {
+            if (!blocks[(block->start + 0x20000000) >> 12])
+            {
+                blocks[(block->start + 0x20000000) >> 12] = malloc(sizeof(precomp_block));
+                blocks[(block->start + 0x20000000) >> 12]->code = NULL;
+                blocks[(block->start + 0x20000000) >> 12]->block = NULL;
+                blocks[(block->start + 0x20000000) >> 12]->jumps_table = NULL;
+                blocks[(block->start + 0x20000000) >> 12]->start = (block->start + 0x20000000) & ~0xFFF;
+                blocks[(block->start + 0x20000000) >> 12]->end = ((block->start + 0x20000000) & ~0xFFF) + 0x1000;
+            }
+            init_block(NULL, blocks[(block->start+0x20000000)>>12]);
+        }
+        if (block->start >= 0xa0000000 && block->end < 0xc0000000 &&
+            invalid_code[(block->start - 0x20000000) >> 12])
+        {
+            if (!blocks[(block->start - 0x20000000) >> 12])
+            {
+                blocks[(block->start - 0x20000000) >> 12] = malloc(sizeof(precomp_block));
+                blocks[(block->start - 0x20000000) >> 12]->code = NULL;
+                blocks[(block->start - 0x20000000) >> 12]->block = NULL;
+                blocks[(block->start - 0x20000000) >> 12]->jumps_table = NULL;
+                blocks[(block->start - 0x20000000) >> 12]->start = (block->start - 0x20000000) & ~0xFFF;
+                blocks[(block->start - 0x20000000) >> 12]->end = ((block->start - 0x20000000) & ~0xFFF) + 0x1000;
+            }
+            init_block(NULL, blocks[(block->start - 0x20000000) >> 12]);
+        }
+    }
+    end_section(COMPILER_SECTION);
 }

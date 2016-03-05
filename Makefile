@@ -6,7 +6,7 @@ CC		=gcc
 CXX		=g++
 
 #CFLAGS		=-DX86 -O3 -Wall -DEMU64_DEBUG
-CFLAGS		=-DX86 -O3 -fexpensive-optimizations -fomit-frame-pointer -funroll-loops -ffast-math -fno-strict-aliasing -msse2 -Wall -pipe
+CFLAGS		=-DX86 -O3 -DHAVE_RECOMPILER -fexpensive-optimizations -fomit-frame-pointer -funroll-loops -ffast-math -fno-strict-aliasing -msse2 -Wall -pipe
 #CFLAGS		=-DX86 -O3 -msse2 -Wall -g -pg
 #CFLAGS		=-DX86 -Wall -pipe -g3 -DEMU64_DEBUG
 #CFLAGS		=-DX86 -Wall -pipe -g -DEMU64_DEBUG -DCOMPARE_CORE

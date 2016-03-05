@@ -26,6 +26,7 @@
  * USA.
  *
 **/
+#if defined(HAVE_RECOMPILER)
 
 #include <stdio.h>
 #include "../recomph.h"
@@ -606,3 +607,5 @@ void genc_ngt_s()
    and_m32_imm32((u32*)&FCR31, ~0x800000); // 10
 #endif
 }
+
+#endif

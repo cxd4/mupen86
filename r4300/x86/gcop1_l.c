@@ -26,6 +26,7 @@
  * USA.
  *
 **/
+#if defined(HAVE_RECOMPILER)
 
 #include "../recomph.h"
 #include "assemble.h"
@@ -58,3 +59,5 @@ void gencvt_d_l()
    fstp_preg32_qword(EAX);
 #endif
 }
+
+#endif

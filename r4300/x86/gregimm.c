@@ -26,6 +26,7 @@
  * USA.
  *
 **/
+#if defined(HAVE_RECOMPILER)
 
 #include <stdio.h>
 #include "../recomph.h"
@@ -579,3 +580,5 @@ void genbgezall_idle()
    genbgezall();
 #endif
 }
+
+#endif
