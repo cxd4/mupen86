@@ -229,10 +229,10 @@ static void sigterm_handler()
 }
 #endif
 
-int main (int argc, char *argv[])
+int main(int argc, char *argv[])
 {
    char c;
-   char plugins[100][100], s[20];
+   char plugins[100 + 1][100], s[20];
    char romfile[PATH_MAX];
    int old_i, i, i1, i2, i3, i4;
    int p, p_fullscreen = 0, p_emumode = 0, p_gfx = 0, p_audio = 0, p_input = 0, p_rsp = 0, p_help = 0, p_error = 0;
