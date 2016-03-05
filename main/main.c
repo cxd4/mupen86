@@ -146,9 +146,12 @@ void new_vi()
 
 static int filter(const SDL_Event *event)
 {
-   switch (event->type)
-     {
-      case SDL_KEYDOWN:
+    switch (event->type)
+    {
+    case SDL_QUIT:
+        stop_it();
+        break; 
+    case SDL_KEYDOWN:
 	switch (event->key.keysym.sym)
 	  {
 	   case SDLK_F5:
