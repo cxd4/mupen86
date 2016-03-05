@@ -281,7 +281,8 @@ install:
 	
 clean:
 	find . -name '*.o' -print0 | xargs -0r rm -f
-	rm mupen64 mupen64_nogui mupen64_dbg
+#	rm mupen64 mupen64_nogui mupen64_dbg # Normally _dbg is not built, so cleaning it is an error.
+	rm mupen64 mupen64_nogui
 
 clean_o:
 	find . -name '*.o' -print0 | xargs -0r rm -f
