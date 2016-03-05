@@ -159,13 +159,16 @@ void BC1FL_OUT()
 
 void BC1FL_IDLE()
 {
-   long skip;
+   s32 skip;
+
    if ((FCR31 & 0x800000)==0)
      {
 	update_count();
 	skip = next_interupt - Count;
-	if (skip > 3) Count += (skip & 0xFFFFFFFC);
-	else BC1FL();
+	if (skip > 3)
+	  Count += (skip & 0xFFFFFFFC);
+	else
+	  BC1FL();
      }
    else BC1FL();
 }

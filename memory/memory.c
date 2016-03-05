@@ -2413,6 +2413,7 @@ void write_vi()
 void write_vib()
 {
    int temp;
+
    switch(*address_low)
      {
       case 0x0:
@@ -2456,6 +2457,7 @@ void write_vib()
 void write_vih()
 {
    int temp;
+
    switch(*address_low)
      {
       case 0x0:
