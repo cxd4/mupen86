@@ -240,21 +240,22 @@ typedef struct _mips_register
 
 typedef struct _VI_register
 {
-   u32 vi_status;
-   u32 vi_origin;
-   u32 vi_width;
-   u32 vi_v_intr;
-   u32 vi_current;
-   u32 vi_burst;
-   u32 vi_v_sync;
-   u32 vi_h_sync;
-   u32 vi_leap;
-   u32 vi_h_start;
-   u32 vi_v_start;
-   u32 vi_v_burst;
-   u32 vi_x_scale;
-   u32 vi_y_scale;
-   u32 vi_delay;
+    u32 vi_status;
+    u32 vi_origin;
+    u32 vi_width;
+    u32 vi_v_intr;
+    u32 vi_current;
+    u32 vi_burst;
+    u32 vi_v_sync;
+    u32 vi_h_sync;
+    u32 vi_leap;
+    u32 vi_h_start;
+    u32 vi_v_start;
+    u32 vi_v_burst;
+    u32 vi_x_scale;
+    u32 vi_y_scale;
+
+    u32 vi_delay;
 } VI_register;
 
 typedef struct _AI_register
