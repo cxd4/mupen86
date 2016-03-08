@@ -60,7 +60,7 @@ static void RNOTCOMPILED()
 #endif
 }
 
-#if defined(HAVE_RECOMPILER)
+#if defined(HAVE_RECOMPILER) || 0
 u32 *return_address; // that's where the dynarec will restart when
                                // going back from a C function
 static void RSV()
@@ -2156,6 +2156,10 @@ static void (*recomp_ops[64])(void) = {
    RSC     , RSWC1  , RSV  , RSV   , RSCD , RSDC1, RSV   , RSD   ,
 };
 
+#endif
+
+#if defined(HAVE_RECOMPILER)
+
 int is_jump()
 {
    int dyn=0;
@@ -2260,18 +2264,10 @@ void recompile_opcode()
  **********************************************************************/
 void prefetch_opcode(u32 op)
 {
-    static int already_warned;
-
     dst = PC;
     src = op;
 
-#if defined(HAVE_RECOMPILER)
-    recomp_ops[((src >> 26) & 0x3F)]();
-#else
-    if (!already_warned)
-        fputs("WARNING:  Pure interpreter calls compiler functions.\n", stderr);
-#endif
-    already_warned = TRUE;
+    recomp_ops[(src >> 26) & 0x3F]();
     return;
 }
 
@@ -2478,7 +2474,7 @@ void recompile_block(s32 *source, precomp_block *block, u32 func)
         if (dynacore)
             gendebug();
 #endif
-#if defined(HAVE_RECOMPILER)
+#if defined(HAVE_RECOMPILER) || 0
         recomp_ops[(src >> 26) & 0x3F]();
 #endif
         dst = block->block + i;
