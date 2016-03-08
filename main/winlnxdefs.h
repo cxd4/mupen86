@@ -33,8 +33,8 @@
 /* cxd4 -- To do--possibly delete tihs to replace with the below? */
 #include "../memory/memory.h"
 
-typedef int HINSTANCE;
-typedef int HWND;
+typedef void* HINSTANCE;
+typedef void* HWND;
 typedef int WPARAM;
 typedef int LPARAM;
 
