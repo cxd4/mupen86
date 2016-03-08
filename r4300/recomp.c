@@ -60,7 +60,7 @@ static void RNOTCOMPILED()
 #endif
 }
 
-#if defined(HAVE_RECOMPILER) || 0
+#if defined(HAVE_RECOMPILER) || 1
 u32 *return_address; // that's where the dynarec will restart when
                                // going back from a C function
 static void RSV()
@@ -2474,7 +2474,7 @@ void recompile_block(s32 *source, precomp_block *block, u32 func)
         if (dynacore)
             gendebug();
 #endif
-#if defined(HAVE_RECOMPILER) || 0
+#if defined(HAVE_RECOMPILER) || 1
         recomp_ops[(src >> 26) & 0x3F]();
 #endif
         dst = block->block + i;
