@@ -33,10 +33,19 @@
 /* cxd4 -- To do--possibly delete tihs to replace with the below? */
 #include "../memory/memory.h"
 
+#include <stddef.h>
+#undef ssize_t
+
+#ifdef _WIN64
+typedef s64 ssize_t;
+#else
+typedef signed long ssize_t;
+#endif
+
 typedef void* HINSTANCE;
 typedef void* HWND;
-typedef int WPARAM;
-typedef int LPARAM;
+typedef size_t WPARAM;
+typedef ssize_t LPARAM;
 
 #define __declspec(dllexport)
 #define _cdecl
