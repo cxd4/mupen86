@@ -38,6 +38,11 @@
 *.n64
 *.a64
 
+# third-party configuration files
+*.conf
+*.cfg
+*.ini
+
 # executables
 *.exe
 *.out
