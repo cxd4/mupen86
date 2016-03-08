@@ -47,6 +47,10 @@ int max_code_length; // current recompiled code's buffer length
 unsigned char **inst_pointer; // output buffer for recompiled code
 precomp_block *dst_block; // the current block that we are recompiling
 
+static s32 *SRC; /* currently recompiled instruction in the input stream */
+static int check_nop; /* next instruction is nop ? */
+static int delay_slot_compiled = 0;
+
 static void RNOTCOMPILED()
 {
     dst->ops = NOTCOMPILED;
@@ -59,12 +63,6 @@ static void RNOTCOMPILED()
 #if defined(HAVE_RECOMPILER)
 u32 *return_address; // that's where the dynarec will restart when
                                // going back from a C function
-
-static s32 *SRC; // currently recompiled instruction in the input stream
-static int check_nop; // next instruction is nop ?
-static int delay_slot_compiled = 0;
-
-
 static void RSV()
 {
    dst->ops = RESERVED;
@@ -2147,8 +2145,7 @@ static void RSD()
    if (dynacore) gensd();
 }
 
-static void (*recomp_ops[64])(void) =
-{
+static void (*recomp_ops[64])(void) = {
    RSPECIAL, RREGIMM, RJ   , RJAL  , RBEQ , RBNE , RBLEZ , RBGTZ ,
    RADDI   , RADDIU , RSLTI, RSLTIU, RANDI, RORI , RXORI , RLUI  ,
    RCOP0   , RCOP1  , RSV  , RSV   , RBEQL, RBNEL, RBLEZL, RBGTZL,
@@ -2156,113 +2153,8 @@ static void (*recomp_ops[64])(void) =
    RLB     , RLH    , RLWL , RLW   , RLBU , RLHU , RLWR  , RLWU  ,
    RSB     , RSH    , RSWL , RSW   , RSDL , RSDR , RSWR  , RCACHE,
    RLL     , RLWC1  , RSV  , RSV   , RLLD , RLDC1, RSV   , RLD   ,
-   RSC     , RSWC1  , RSV  , RSV   , RSCD , RSDC1, RSV   , RSD
+   RSC     , RSWC1  , RSV  , RSV   , RSCD , RSDC1, RSV   , RSD   ,
 };
-
-/**********************************************************************
- ********************* recompile a block of code **********************
- **********************************************************************/
-void recompile_block(s32 *source, precomp_block *block, u32 func)
-{
-   int i, length, finished=0;
-   start_section(COMPILER_SECTION);
-   length = (block->end-block->start)/4;
-   dst_block = block;
-   
-   //for (i=0; i<16; i++) block->md5[i] = 0;
-   block->adler32 = 0;
-   
-   if (dynacore)
-     {
-	code_length = block->code_length;
-	max_code_length = block->max_code_length;
-	inst_pointer = &block->code;
-	init_assembler(block->jumps_table, block->jumps_number);
-	init_cache(block->block + (func&0xFFF)/4);
-     }
-   
-   for (i=(func&0xFFF)/4; /*i<length &&*/finished!=2; i++)
-     {
-	if(block->start < 0x80000000 || block->start >= 0xc0000000)
-	  {
-	     u32 address2 = 
-	       virtual_to_physical_address(block->start + i*4, 0);
-	     if(blocks[address2>>12]->block[(address2&0xFFF)/4].ops == NOTCOMPILED)
-	       blocks[address2>>12]->block[(address2&0xFFF)/4].ops = NOTCOMPILED2;
-	  }
-	
-	SRC = source + i;
-	src = source[i];
-	if (!source[i+1]) check_nop = 1; else check_nop = 0;
-	dst = block->block + i;
-	dst->addr = block->start + i*4;
-	dst->reg_cache_infos.need_map = 0;
-	dst->local_addr = code_length;
-#ifdef EMU64_DEBUG
-	if (dynacore) gendebug();
-#endif
-	recomp_ops[((src >> 26) & 0x3F)]();
-	dst = block->block + i;
-	/*if ((dst+1)->ops != NOTCOMPILED && !delay_slot_compiled &&
-	    i < length)
-	  {
-	     if (dynacore) genlink_subblock();
-	     finished = 2;
-	  }*/
-	if (delay_slot_compiled) 
-	  {
-	     delay_slot_compiled--;
-	     free_all_registers();
-	  }
-	
-	if (i >= length-2+(length>>2)) finished = 2;
-	if (i >= (length-1) && (block->start == 0xa4000000 ||
-				block->start >= 0xc0000000 ||
-				block->end   <  0x80000000)) finished = 2;
-	if (dst->ops == ERET || finished == 1) finished = 2;
-	if (/*i >= length &&*/ 
-	    (dst->ops == J || dst->ops == J_OUT || dst->ops == JR) &&
-	    !(i >= (length-1) && (block->start >= 0xc0000000 ||
-				  block->end   <  0x80000000)))
-	  finished = 1;
-     }
-   if (i >= length)
-     {
-	dst = block->block + i;
-	dst->addr = block->start + i*4;
-	dst->reg_cache_infos.need_map = 0;
-	dst->local_addr = code_length;
-#ifdef EMU64_DEBUG
-	if (dynacore) gendebug();
-#endif
-	RFIN_BLOCK();
-	i++;
-	if (i < length-1+(length>>2)) // useful when last opcode is a jump
-	  {
-	     dst = block->block + i;
-	     dst->addr = block->start + i*4;
-	     dst->reg_cache_infos.need_map = 0;
-	     dst->local_addr = code_length;
-#ifdef EMU64_DEBUG
-	     if (dynacore) gendebug();
-#endif
-	     RFIN_BLOCK();
-	     i++;
-	  }
-     }
-   else if (dynacore) genlink_subblock();
-   if (dynacore)
-     {
-	free_all_registers();
-	passe2(block->block, (func&0xFFF)/4, i, block);
-	block->code_length = code_length;
-	block->max_code_length = max_code_length;
-	free_assembler(&block->jumps_table, &block->jumps_number);
-     }
-   //printf("block recompiled (%x-%x)\n", (int)func, (int)(block->start+i*4));
-   //getchar();
-   end_section(COMPILER_SECTION);
-}
 
 int is_jump()
 {
@@ -2532,5 +2424,137 @@ void init_block(s32 *source, precomp_block *block)
             init_block(NULL, blocks[(block->start - 0x20000000) >> 12]);
         }
     }
+    end_section(COMPILER_SECTION);
+}
+
+/**********************************************************************
+ ********************* recompile a block of code **********************
+ **********************************************************************/
+void recompile_block(s32 *source, precomp_block *block, u32 func)
+{
+    int i, length, finished;
+
+    finished = 0;
+    start_section(COMPILER_SECTION);
+    length = (block->end - block->start)/4;
+    dst_block = block;
+
+#if 0
+    for (i = 0; i < 16; i++)
+        block->md5[i] = 0;
+#endif
+    block->adler32 = 0;
+
+#if defined(HAVE_RECOMPILER)
+    if (dynacore) {
+        code_length     =  (block -> code_length);
+        max_code_length =  (block -> max_code_length);
+        inst_pointer    = &(block -> code);
+        init_assembler(block->jumps_table, block->jumps_number);
+        init_cache(block->block + (func & 0xFFF)/4);
+    }
+#endif
+
+    for (i = (func & 0xFFF)/4;/* i < length && */finished != 2; i++) {
+        if (block->start < 0x80000000 || block->start >= 0xc0000000) {
+            u32 address2;
+
+            address2 = virtual_to_physical_address(block->start + 4*i, 0);
+            if (blocks[address2 >> 12]->block[(address2 & 0xFFF)/4].ops == NOTCOMPILED)
+                blocks[address2 >> 12]->block[(address2 & 0xFFF)/4].ops = NOTCOMPILED2;
+        }
+
+        SRC = source + i;
+        src = source[i];
+        if (source[i + 1] == 0)
+            check_nop = 1;
+        else
+            check_nop = 0;
+        dst = block->block + i;
+        dst->addr = block->start + 4*i;
+        dst->reg_cache_infos.need_map = 0;
+        dst->local_addr = code_length;
+#if defined(HAVE_RECOMPILER) && defined(EMU64_DEBUG)
+        if (dynacore)
+            gendebug();
+#endif
+#if defined(HAVE_RECOMPILER)
+        recomp_ops[(src >> 26) & 0x3F]();
+#endif
+        dst = block->block + i;
+#if 0
+        if ((dst + 1)->ops != NOTCOMPILED && !delay_slot_compiled && i < length) {
+            if (dynacore)
+                genlink_subblock();
+            finished = 2;
+        }
+#endif
+        if (delay_slot_compiled) {
+            delay_slot_compiled--;
+#if defined(HAVE_RECOMPILER)
+            free_all_registers();
+#endif
+        }
+
+        if (i >= length - 2 + (length >> 2))
+            finished = 2;
+        if (i >= length - 1 && (block->start == 0xA4000000 ||
+                                block->start >= 0xC0000000 ||
+                                block->end   <  0x80000000))
+            finished = 2;
+        if (dst->ops == ERET || finished == 1)
+            finished = 2;
+        if (/*i >= length &&*/ 
+            (dst->ops == J || dst->ops == J_OUT || dst->ops == JR) &&
+           !(i >= length - 1 && (block->start >= 0xC0000000 ||
+                                 block->end   <  0x80000000))) {
+            finished = 1;
+        }
+    }
+    if (i >= length) {
+        dst = block->block + i;
+        dst->addr = block->start + 4*i;
+        dst->reg_cache_infos.need_map = 0;
+        dst->local_addr = code_length;
+#if defined(HAVE_RECOMPILER) && defined(EMU64_DEBUG)
+        if (dynacore)
+            gendebug();
+#endif
+#if defined(HAVE_RECOMPILER)
+        RFIN_BLOCK();
+#endif
+        i++;
+        if (i < length - 1 + (length >> 2)) { /* useful when last opcode is a jump */
+            dst = block->block + i;
+            dst->addr = block->start + i*4;
+            dst->reg_cache_infos.need_map = 0;
+            dst->local_addr = code_length;
+#if defined(HAVE_RECOMPILER) && defined(EMU64_DEBUG)
+            if (dynacore)
+                gendebug();
+#endif
+#if defined(HAVE_RECOMPILER)
+            RFIN_BLOCK();
+#endif
+            i++;
+        }
+    }
+#if defined(HAVE_RECOMPILER)
+    else
+        if (dynacore)
+            genlink_subblock();
+
+    if (dynacore) {
+        free_all_registers();
+        passe2(block->block, (func&0xFFF)/4, i, block);
+        block->code_length = code_length;
+        block->max_code_length = max_code_length;
+        free_assembler(&block->jumps_table, &block->jumps_number);
+    }
+#endif
+#if 0
+    printf("block recompiled (%p - %p)\n", func, block->start + 4*i);
+    getchar();
+#endif
     end_section(COMPILER_SECTION);
 }
