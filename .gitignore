@@ -16,7 +16,7 @@
 
 # object files
 *.o
-*.ko
+*.so
 *.obj
 *.elf
 
