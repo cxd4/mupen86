@@ -20,11 +20,17 @@
 *.obj
 *.elf
 
+# binary images
 *.bin
 *.BIN
+*.z64
+*.v64
+*.rom
+*.usa
+*.jap
+*.eur
 
 # save file extensions
-
 *.eep
 *.sra
 *.fla
