@@ -1354,21 +1354,23 @@ void SD()
 
 void NOTCOMPILED()
 {
+    if ((PC->addr >> 16) == 0xA400) {
 #if defined(HAVE_RECOMPILER)
-   if ((PC->addr>>16) == 0xa400)
-     recompile_block((i32 *)SP_DMEM, blocks[0xa4000000>>12], PC->addr);
-   else
-     {
-	u32 paddr = 0;
+        recompile_block((i32 *)SP_DMEM, blocks[0xA4000000 >> 12], PC->addr);
+#endif
+    } else {
+        u32 paddr;
 
-	if (PC->addr >= 0x80000000 && PC->addr < 0xc0000000) paddr = PC->addr;
-	//else paddr = (tlb_LUT_r[PC->addr>>12]&0xFFFFF000)|(PC->addr&0xFFF);
-	else paddr = virtual_to_physical_address(PC->addr, 2);
-	if (paddr)
-	  {
-            if ((paddr & 0x1FFFFFFF) >= 0x10000000)
-            {
-		  //printf("not compiled rom:%x\n", paddr);
+        paddr = 0;
+        if (PC->addr >= 0x80000000 && PC->addr < 0xc0000000)
+            paddr = PC->addr;
+        else
+         /* paddr = (tlb_LUT_r[PC->addr >> 12] & 0xFFFFF000) | (PC->addr & 0xFFF); */
+            paddr = virtual_to_physical_address(PC->addr, 2);
+        if (paddr) {
+#if defined(HAVE_RECOMPILER)
+            if ((paddr & 0x1FFFFFFF) >= 0x10000000) {
+             /* printf("not compiled rom:  %08X\n", paddr); */
                 recompile_block(
                     (i32 *)rom
                   + ((((paddr - (PC->addr - blocks[PC->addr >> 12]->start)) & 0x1FFFFFFF) - 0x10000000)>>2),
@@ -1376,8 +1378,7 @@ void NOTCOMPILED()
                     blocks[PC->addr >> 12],
                     PC -> addr
                 );
-            }
-            else
+            } else {
                 recompile_block(
                     (i32 *)rdram
                   + (((paddr - (PC->addr - blocks[PC->addr >> 12]->start)) & 0x1FFFFFFF)>>2),
@@ -1385,15 +1386,23 @@ void NOTCOMPILED()
                     blocks[PC->addr >> 12],
                     PC -> addr
                 );
-	  }
-	else printf("not compiled exception\n");
-     }
-   PC->ops();
-   if (dynacore)
-     dyna_jump();
-     //*return_address = (u32)(blocks[PC->addr>>12]->code + PC->local_addr);
-   //else
-   //PC->ops();
+            }
+#endif
+        } else {
+            printf("not compiled exception\n");
+        }
+    }
+#if 0
+    if (dynacore)
+        *(return_address) = (u32)(blocks[PC->addr >> 12]->code + PC->local_addr);
+    else
+        PC -> ops();
+#else
+    PC->ops();
+#if defined(HAVE_RECOMPILER)
+    if (dynacore)
+        dyna_jump();
+#endif
 #endif
 }
 
