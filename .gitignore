@@ -1,4 +1,5 @@
 /plugins/*
+/save/*
 /mupen64*
 /mupen64_nogui*
 /compiled/*
@@ -21,6 +22,15 @@
 
 *.bin
 *.BIN
+
+# save file extensions
+
+*.eep
+*.sra
+*.fla
+*.mpk
+*.n64
+*.a64
 
 # executables
 *.exe
