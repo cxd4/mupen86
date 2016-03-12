@@ -2963,16 +2963,17 @@ static void (*recomp_ops[64])(void) = {
 
 #endif
 
-#if defined(HAVE_RECOMPILER)
-
 int is_jump()
 {
-   int dyn=0;
-   int jump=0;
-   if(dynacore) dyn=1;
-   if(dyn) dynacore = 0;
-   recomp_ops[((src >> 26) & 0x3F)]();
-   if(dst->ops == J ||
+    int dyn = 0;
+    int jump = 0;
+
+    if (dynacore)
+        dyn = 1;
+    if (dyn)
+        dynacore = 0;
+    recomp_ops[(src >> 26) & 0x3F]();
+  if (dst->ops == J ||
       dst->ops == J_OUT ||
       dst->ops == J_IDLE ||
       dst->ops == JAL ||
@@ -3040,9 +3041,10 @@ int is_jump()
       dst->ops == BC1TL ||
       dst->ops == BC1TL_OUT ||
       dst->ops == BC1TL_IDLE)
-     jump = 1;
-   if(dyn) dynacore = 1;
-   return jump;
+    jump = 1;
+    if (dyn)
+        dynacore = 1;
+    return (jump);
 }
 
 /**********************************************************************
@@ -3050,19 +3052,17 @@ int is_jump()
  **********************************************************************/
 void recompile_opcode()
 {
-   SRC++;
-   src = *SRC;
-   dst++;
-   dst->addr = (dst-1)->addr + 4;
-   dst->reg_cache_infos.need_map = 0;
-   if(!is_jump())
-     recomp_ops[((src >> 26) & 0x3F)]();
-   else
-     RNOP();
-   delay_slot_compiled = 2;
+    SRC++;
+    src = *SRC;
+    dst++;
+    dst->addr = (dst - 1)->addr + 4;
+    dst->reg_cache_infos.need_map = 0;
+    if (!is_jump())
+        recomp_ops[(src >> 26) & 0x3F]();
+    else
+        RNOP();
+    delay_slot_compiled = 2;
 }
-
-#endif
 
 /**********************************************************************
  ************** decode one opcode (for the interpreter) ***************
