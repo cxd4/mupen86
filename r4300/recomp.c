@@ -3321,9 +3321,7 @@ void recompile_block(s32 *source, precomp_block *block, u32 func)
         if (dynacore)
             gendebug();
 #endif
-#if defined(HAVE_RECOMPILER)
         RFIN_BLOCK();
-#endif
         i++;
         if (i < length - 1 + (length >> 2)) { /* useful when last opcode is a jump */
             dst = block->block + i;
@@ -3334,9 +3332,7 @@ void recompile_block(s32 *source, precomp_block *block, u32 func)
             if (dynacore)
                 gendebug();
 #endif
-#if defined(HAVE_RECOMPILER)
             RFIN_BLOCK();
-#endif
             i++;
         }
     }
