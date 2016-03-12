@@ -108,7 +108,7 @@ void FIN_BLOCK()
      {
 	jump_to((PC-1)->addr+4);
 	PC->ops();
-#if defined(xxxxxxxxxxx)
+#if defined(HAVE_RECOMPILER)
 	if (dynacore) dyna_jump();
 #endif
      }
@@ -127,7 +127,7 @@ void FIN_BLOCK()
 	else
 	  PC->ops();
 
-#if defined(xxxxxxxxxxx)
+#if defined(HAVE_RECOMPILER)
 	if (dynacore) dyna_jump();
 #endif
      }
@@ -1399,7 +1399,7 @@ void NOTCOMPILED()
         PC -> ops();
 #else
     PC->ops();
-#if defined(xxxxxxxxxxx)
+#if defined(HAVE_RECOMPILER)
     if (dynacore)
         dyna_jump();
 #endif
@@ -1474,7 +1474,7 @@ inline void jump_to_func()
      }
     PC = (actual -> block) + ((addr - actual->start) >> 2);
 
-#if defined(xxxxxxxxxxx)
+#if defined(HAVE_RECOMPILER)
     if (dynacore)
         dyna_jump();
 #endif

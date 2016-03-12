@@ -1,4 +1,3 @@
-#undef HAVE_RECOMPILER
 /**
  * Mupen64 - recomp.c
  * Copyright (C) 2002 Hacktarux
