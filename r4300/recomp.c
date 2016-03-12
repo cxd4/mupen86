@@ -1,3 +1,4 @@
+#undef HAVE_RECOMPILER
 /**
  * Mupen64 - recomp.c
  * Copyright (C) 2002 Hacktarux
@@ -2095,7 +2096,8 @@ static void RDMFC1()
     dst->ops = DMFC1;
     recompile_standard_r_type();
     dst->f.r.nrd = (src >> 11) & 0x1F;
-    if (dst->f.r.rt == reg) RNOP();
+    if (dst->f.r.rt == reg)
+        RNOP();
 #if defined(HAVE_RECOMPILER)
     else if (dynacore)
         gendmfc1();
@@ -2107,7 +2109,8 @@ static void RCFC1()
     dst->ops = CFC1;
     recompile_standard_r_type();
     dst->f.r.nrd = (src >> 11) & 0x1F;
-    if (dst->f.r.rt == reg) RNOP();
+    if (dst->f.r.rt == reg)
+        RNOP();
 #if defined(HAVE_RECOMPILER)
     else if (dynacore)
         gencfc1();

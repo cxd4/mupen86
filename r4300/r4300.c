@@ -108,7 +108,7 @@ void FIN_BLOCK()
      {
 	jump_to((PC-1)->addr+4);
 	PC->ops();
-#if defined(HAVE_RECOMPILER)
+#if defined(xxxxxxxxxxx)
 	if (dynacore) dyna_jump();
 #endif
      }
@@ -127,7 +127,7 @@ void FIN_BLOCK()
 	else
 	  PC->ops();
 
-#if defined(HAVE_RECOMPILER)
+#if defined(xxxxxxxxxxx)
 	if (dynacore) dyna_jump();
 #endif
      }
@@ -1355,7 +1355,7 @@ void SD()
 void NOTCOMPILED()
 {
     if ((PC->addr >> 16) == 0xA400) {
-#if defined(HAVE_RECOMPILER)
+#if defined(HAVE_RECOMPILER) || 1
         recompile_block((i32 *)SP_DMEM, blocks[0xA4000000 >> 12], PC->addr);
 #endif
     } else {
@@ -1368,7 +1368,7 @@ void NOTCOMPILED()
          /* paddr = (tlb_LUT_r[PC->addr >> 12] & 0xFFFFF000) | (PC->addr & 0xFFF); */
             paddr = virtual_to_physical_address(PC->addr, 2);
         if (paddr) {
-#if defined(HAVE_RECOMPILER)
+#if defined(HAVE_RECOMPILER) || 1
             if ((paddr & 0x1FFFFFFF) >= 0x10000000) {
              /* printf("not compiled rom:  %08X\n", paddr); */
                 recompile_block(
@@ -1399,7 +1399,7 @@ void NOTCOMPILED()
         PC -> ops();
 #else
     PC->ops();
-#if defined(HAVE_RECOMPILER)
+#if defined(xxxxxxxxxxx)
     if (dynacore)
         dyna_jump();
 #endif
@@ -1474,7 +1474,7 @@ inline void jump_to_func()
      }
     PC = (actual -> block) + ((addr - actual->start) >> 2);
 
-#if defined(HAVE_RECOMPILER)
+#if defined(xxxxxxxxxxx)
     if (dynacore)
         dyna_jump();
 #endif
