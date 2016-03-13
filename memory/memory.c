@@ -1061,6 +1061,85 @@ static void update_MI_intr_mask_reg()
 				     );
 }
 
+static void FB_unprotect_old(void)
+{
+    register int i, j;
+    const int do_anything =
+        (fBGetFrameBufferInfo && fBRead && fBWrite && frameBufferInfos[0].addr)
+      ? 1 : 0
+    ;
+
+    if (!do_anything)
+        return;
+    for (i = 0; i < 6; i++) {
+        if (frameBufferInfos[i].addr) {
+            int start = frameBufferInfos[i].addr & 0x7FFFFF;
+            int end = start + frameBufferInfos[i].width*frameBufferInfos[i].height*frameBufferInfos[i].size - 1;
+
+            start = start >> 16;
+            end = end >> 16;
+            for (j = start; j <= end; j++) {
+                readmem  [0x8000 + j] = readmem  [0xA000 + j] = read_rdram;
+                readmemb [0x8000 + j] = readmemb [0xA000 + j] = read_rdramb;
+                readmemh [0x8000 + j] = readmemh [0xA000 + j] = read_rdramh;
+                readmemd [0x8000 + j] = readmemd [0xA000 + j] = read_rdramd;
+                writemem [0x8000 + j] = writemem [0xA000 + j] = write_rdram;
+                writememb[0x8000 + j] = writememb[0xA000 + j] = write_rdramb;
+                writememh[0x8000 + j] = writememh[0xA000 + j] = write_rdramh;
+                writememd[0x8000 + j] = writememd[0xA000 + j] = write_rdramd;
+            }
+        }
+    }
+}
+static void FB_protect_new(void)
+{
+    register int i, j;
+    const int do_anything =
+        (fBGetFrameBufferInfo && fBRead && fBWrite && frameBufferInfos[0].addr)
+      ? 1 : 0
+    ;
+
+    if (fBGetFrameBufferInfo && fBRead && fBWrite)
+        fBGetFrameBufferInfo(frameBufferInfos);
+    if (!do_anything)
+        return;
+
+    for (i = 0; i < 6; i++) {
+        if (frameBufferInfos[i].addr) {
+            int start = frameBufferInfos[i].addr & 0x7FFFFF;
+            int end = start + frameBufferInfos[i].width*frameBufferInfos[i].height*frameBufferInfos[i].size - 1;
+            int start1 = start;
+            int end1 = end;
+
+            start >>= 16;
+            end >>= 16;
+            for (j = start; j <= end; j++) {
+                readmem  [0x8000 + j] = readmem  [0xA000 + j] = read_rdramFB;
+                readmemb [0x8000 + j] = readmemb [0xA000 + j] = read_rdramFBb;
+                readmemh [0x8000 + j] = readmemh [0xA000 + j] = read_rdramFBh;
+                readmemd [0x8000 + j] = readmemd [0xA000 + j] = read_rdramFBd;
+                writemem [0x8000 + j] = writemem [0xA000 + j] = write_rdramFB;
+                writememb[0x8000 + j] = writememb[0xA000 + j] = write_rdramFBb;
+                writememh[0x8000 + j] = writememh[0xA000 + j] = write_rdramFBh;
+                writememd[0x8000 + j] = writememd[0xA000 + j] = write_rdramFBd;
+            }
+            start <<= 4;
+            end <<= 4;
+            for (j = start; j <= end; j++) {
+                if (j >= start1 && j <= end1)
+                    framebufferRead[j] = 1;
+                else
+                    framebufferRead[j] = 0;
+            }
+            if (firstFrameBufferSetting) {
+                firstFrameBufferSetting = 0;
+                fast_memory = 0;
+                for (j = 0; j < 0x100000; j++)
+                    invalid_code[j] = 1;
+            }
+        }
+    }
+}
 
 void update_SP()
 {
@@ -1126,33 +1205,9 @@ void update_SP()
 
     switch (SP_DMEM[0xFC0 / sizeof(i32)]) {
     case 1:  /* M_GFXTASK */
-        // unprotecting old frame buffers
-        if (fBGetFrameBufferInfo && fBRead && fBWrite && frameBufferInfos[0].addr) {
-            int i;
-
-            for (i = 0; i < 6; i++) {
-                if (frameBufferInfos[i].addr) {
-                    int j;
-                    int start = frameBufferInfos[i].addr & 0x7FFFFF;
-                    int end = start + frameBufferInfos[i].width*frameBufferInfos[i].height*frameBufferInfos[i].size - 1;
-
-                    start = start >> 16;
-                    end = end >> 16;
-                    for (j = start; j <= end; j++) {
-                        readmem  [0x8000 + j] = readmem  [0xA000 + j] = read_rdram;
-                        readmemb [0x8000 + j] = readmemb [0xA000 + j] = read_rdramb;
-                        readmemh [0x8000 + j] = readmemh [0xA000 + j] = read_rdramh;
-                        readmemd [0x8000 + j] = readmemd [0xA000 + j] = read_rdramd;
-                        writemem [0x8000 + j] = writemem [0xA000 + j] = write_rdram;
-                        writememb[0x8000 + j] = writememb[0xA000 + j] = write_rdramb;
-                        writememh[0x8000 + j] = writememh[0xA000 + j] = write_rdramh;
-                        writememd[0x8000 + j] = writememd[0xA000 + j] = write_rdramd;
-                    }
-                }
-            }
-        }
-
         // processDList();
+        FB_unprotect_old();
+
         rsp_register.rsp_pc &= 0xFFF;
         start_section(GFX_SECTION);
         doRspCycles(100);
@@ -1166,62 +1221,7 @@ void update_SP()
         add_interupt_event(SP_INT, 1000);
         add_interupt_event(DP_INT, 1000);
 
-	     // protecting new frame buffers
-        if (fBGetFrameBufferInfo && fBRead && fBWrite)
-            fBGetFrameBufferInfo(frameBufferInfos);
-	     if(fBGetFrameBufferInfo && fBRead && fBWrite &&
-		frameBufferInfos[0].addr)
-	       {
-		  int i;
-		  for(i=0; i<6; i++)
-		    {
-		       if(frameBufferInfos[i].addr)
-			 {
-			    int j;
-			    int start = frameBufferInfos[i].addr & 0x7FFFFF;
-			    int end = start + frameBufferInfos[i].width*
-			                      frameBufferInfos[i].height*
-			                      frameBufferInfos[i].size - 1;
-			    int start1 = start;
-			    int end1 = end;
-			    start >>= 16;
-			    end >>= 16;
-			    for(j=start; j<=end; j++)
-			      {
-				 readmem[0x8000+j] = read_rdramFB;
-				 readmem[0xa000+j] = read_rdramFB;
-				 readmemb[0x8000+j] = read_rdramFBb;
-				 readmemb[0xa000+j] = read_rdramFBb;
-				 readmemh[0x8000+j] = read_rdramFBh;
-				 readmemh[0xa000+j] = read_rdramFBh;
-				 readmemd[0x8000+j] = read_rdramFBd;
-				 readmemd[0xa000+j] = read_rdramFBd;
-				 writemem[0x8000+j] = write_rdramFB;
-				 writemem[0xa000+j] = write_rdramFB;
-				 writememb[0x8000+j] = write_rdramFBb;
-				 writememb[0xa000+j] = write_rdramFBb;
-				 writememh[0x8000+j] = write_rdramFBh;
-				 writememh[0xa000+j] = write_rdramFBh;
-				 writememd[0x8000+j] = write_rdramFBd;
-				 writememd[0xa000+j] = write_rdramFBd;
-			      }
-			    start <<= 4;
-			    end <<= 4;
-			    for(j=start; j<=end; j++)
-			      {
-				 if(j>=start1 && j<=end1) framebufferRead[j]=1;
-				 else framebufferRead[j] = 0;
-			      }
-			    if(firstFrameBufferSetting)
-			      {
-				 firstFrameBufferSetting = 0;
-				 fast_memory = 0;
-				 for(j=0; j<0x100000; j++)
-				   invalid_code[j] = 1;
-			      }
-			 }
-		    }
-	       }
+        FB_protect_new();
         break;
     case 2:  /* M_AUDTASK */
         //processAList();
@@ -1238,7 +1238,6 @@ void update_SP()
         add_interupt_event(SP_INT, 4000);
         break;
     default:
-        //printf("other task\n");
         rsp_register.rsp_pc &= 0xFFF;
         doRspCycles(100);
         rsp_register.rsp_pc |= save_pc;
