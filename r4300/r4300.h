@@ -75,12 +75,11 @@ int check_cop1_unusable();
 
 #define jump_to(a) { jump_to_address = a; jump_to_func(); }
 
-// profiling
-
-#define GFX_SECTION 1
-#define AUDIO_SECTION 2
-#define COMPILER_SECTION 3
-#define IDLE_SECTION 4
+/* profiling */
+#define GFX_SECTION             1
+#define AUDIO_SECTION           2
+#define COMPILER_SECTION        3
+#define IDLE_SECTION            4
 
 #ifndef __WIN32__
 

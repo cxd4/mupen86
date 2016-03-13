@@ -1143,7 +1143,9 @@ static void FB_protect_new(void)
 
 void update_SP()
 {
+    int section_type;
     const u32 SP_STATUS = sp_register.w_sp_status_reg;
+    const u32 task_type = SP_DMEM[0xFC0 / sizeof(i32)];
     int save_pc = rsp_register.rsp_pc & ~0xFFF;
 
     sp_register.halt        &= (SP_STATUS & 0x00000001) ? 0 : 1;
@@ -1202,50 +1204,51 @@ void update_SP()
         return;
     if (sp_register.halt || sp_register.broke)
         return;
-
-    switch (SP_DMEM[0xFC0 / sizeof(i32)]) {
+    switch (task_type) {
     case 1:  /* M_GFXTASK */
-        // processDList();
+        section_type = GFX_SECTION;
         FB_unprotect_old();
-
-        rsp_register.rsp_pc &= 0xFFF;
-        start_section(GFX_SECTION);
-        doRspCycles(100);
-        end_section(GFX_SECTION);
-        rsp_register.rsp_pc |= save_pc;
-        new_frame();
-
-        MI_register.mi_intr_reg &= ~0x21;
-        sp_register.sp_status_reg &= ~0x303;
-        update_count();
-        add_interupt_event(SP_INT, 1000);
-        add_interupt_event(DP_INT, 1000);
-
-        FB_protect_new();
         break;
     case 2:  /* M_AUDTASK */
-        //processAList();
-        rsp_register.rsp_pc &= 0xFFF;
-        start_section(AUDIO_SECTION);
-        doRspCycles(100);
-        end_section(AUDIO_SECTION);
-        rsp_register.rsp_pc |= save_pc;
-
-        MI_register.mi_intr_reg &= ~0x1;
-        sp_register.sp_status_reg &= ~0x303;
-        update_count();
-        //add_interupt_event(SP_INT, 500);
-        add_interupt_event(SP_INT, 4000);
+        section_type = AUDIO_SECTION;
         break;
     default:
-        rsp_register.rsp_pc &= 0xFFF;
-        doRspCycles(100);
-        rsp_register.rsp_pc |= save_pc;
+        section_type = -1;
+    }
+#if 0
+    if (section_type == GFX_SECTION)
+        processDList();
+    if (section_type == AUDIO_SECTION)
+        processAList();
+#endif
 
-        MI_register.mi_intr_reg &= ~0x1;
-        sp_register.sp_status_reg &= ~0x203;
-        update_count();
-        add_interupt_event(SP_INT, 0/*100*/);
+    rsp_register.rsp_pc &= 0x00000FFFul;
+    if (section_type > 0)
+        start_section(section_type);
+    doRspCycles(100);
+    if (section_type > 0)
+        end_section(section_type);
+    rsp_register.rsp_pc |= save_pc;
+
+    if (section_type == GFX_SECTION)
+        new_frame();
+    MI_register.mi_intr_reg &= ~0x1;
+    sp_register.sp_status_reg &= ~0x203;
+    update_count();
+    add_interupt_event(SP_INT, 0/*100*/);
+
+    if (section_type == GFX_SECTION) {
+        sp_register.sp_status_reg &= ~0x00000100;
+        MI_register.mi_intr_reg   &= ~0x00000020;
+
+        add_interupt_event(SP_INT, 1000);
+        add_interupt_event(DP_INT, 1000);
+        FB_protect_new();
+    } else if (section_type == AUDIO_SECTION) {
+        sp_register.sp_status_reg &= ~0x00000100;
+        add_interupt_event(SP_INT, /* 500 */4000);
+    } else {
+        add_interupt_event(SP_INT, 0/* 100 */);
     }
 #if 0
     printf("unknown task type\n");
