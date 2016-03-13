@@ -1064,6 +1064,8 @@ static void update_MI_intr_mask_reg()
 
 void update_SP()
 {
+    int save_pc = rsp_register.rsp_pc & ~0xFFF;
+
    if (sp_register.w_sp_status_reg & 0x1)
      sp_register.halt = 0;
    if (sp_register.w_sp_status_reg & 0x2)
@@ -1136,69 +1138,58 @@ void update_SP()
 				(sp_register.signal6 << 13) |
 				(sp_register.signal7 << 14)
 				);
-   //if (get_event(SP_INT)) return;
-   if (!(sp_register.w_sp_status_reg & 0x1) && 
-       !(sp_register.w_sp_status_reg & 0x4)) return;
-   if (!sp_register.halt && !sp_register.broke)
-     {
-	int save_pc = rsp_register.rsp_pc & ~0xFFF;
-	if (SP_DMEM[0xFC0/4] == 1)
-	  {
-	     // unprotecting old frame buffers
-	     if(fBGetFrameBufferInfo && fBRead && fBWrite && 
-		frameBufferInfos[0].addr)
-	       {
-		  int i;
-		  for(i=0; i<6; i++)
-		    {
-		       if(frameBufferInfos[i].addr)
-			 {
-			    int j;
-			    int start = frameBufferInfos[i].addr & 0x7FFFFF;
-			    int end = start + frameBufferInfos[i].width*
-			                      frameBufferInfos[i].height*
-			                      frameBufferInfos[i].size - 1;
-			    start = start >> 16;
-			    end = end >> 16;
-			    for(j=start; j<=end; j++)
-			      {
-				 readmem[0x8000+j] = read_rdram;
-				 readmem[0xa000+j] = read_rdram;
-				 readmemb[0x8000+j] = read_rdramb;
-				 readmemb[0xa000+j] = read_rdramb;
-				 readmemh[0x8000+j] = read_rdramh;
-				 readmemh[0xa000+j] = read_rdramh;
-				 readmemd[0x8000+j] = read_rdramd;
-				 readmemd[0xa000+j] = read_rdramd;
-				 writemem[0x8000+j] = write_rdram;
-				 writemem[0xa000+j] = write_rdram;
-				 writememb[0x8000+j] = write_rdramb;
-				 writememb[0xa000+j] = write_rdramb;
-				 writememh[0x8000+j] = write_rdramh;
-				 writememh[0xa000+j] = write_rdramh;
-				 writememd[0x8000+j] = write_rdramd;
-				 writememd[0xa000+j] = write_rdramd;
-			      }
-			 }
-		    }
-	       }
-	     
-	     //processDList();
-	     rsp_register.rsp_pc &= 0xFFF;
-	     start_section(GFX_SECTION);
-	     doRspCycles(100);
-	     end_section(GFX_SECTION);
-	     rsp_register.rsp_pc |= save_pc;
-	     new_frame();
-	     
-	     MI_register.mi_intr_reg &= ~0x21;
-	     sp_register.sp_status_reg &= ~0x303;
-	     update_count();
-	     add_interupt_event(SP_INT, 1000);
-	     add_interupt_event(DP_INT, 1000);
-	     
+
+    //if (get_event(SP_INT)) return;
+    if (!(sp_register.w_sp_status_reg & 0x1) && !(sp_register.w_sp_status_reg & 0x4))
+        return;
+    if (sp_register.halt || sp_register.broke)
+        return;
+
+    switch (SP_DMEM[0xFC0 / sizeof(i32)]) {
+    case 1:  /* M_GFXTASK */
+        // unprotecting old frame buffers
+        if (fBGetFrameBufferInfo && fBRead && fBWrite && frameBufferInfos[0].addr) {
+            int i;
+
+            for (i = 0; i < 6; i++) {
+                if (frameBufferInfos[i].addr) {
+                    int j;
+                    int start = frameBufferInfos[i].addr & 0x7FFFFF;
+                    int end = start + frameBufferInfos[i].width*frameBufferInfos[i].height*frameBufferInfos[i].size - 1;
+
+                    start = start >> 16;
+                    end = end >> 16;
+                    for (j = start; j <= end; j++) {
+                        readmem  [0x8000 + j] = readmem  [0xA000 + j] = read_rdram;
+                        readmemb [0x8000 + j] = readmemb [0xA000 + j] = read_rdramb;
+                        readmemh [0x8000 + j] = readmemh [0xA000 + j] = read_rdramh;
+                        readmemd [0x8000 + j] = readmemd [0xA000 + j] = read_rdramd;
+                        writemem [0x8000 + j] = writemem [0xA000 + j] = write_rdram;
+                        writememb[0x8000 + j] = writememb[0xA000 + j] = write_rdramb;
+                        writememh[0x8000 + j] = writememh[0xA000 + j] = write_rdramh;
+                        writememd[0x8000 + j] = writememd[0xA000 + j] = write_rdramd;
+                    }
+                }
+            }
+        }
+
+        // processDList();
+        rsp_register.rsp_pc &= 0xFFF;
+        start_section(GFX_SECTION);
+        doRspCycles(100);
+        end_section(GFX_SECTION);
+        rsp_register.rsp_pc |= save_pc;
+        new_frame();
+
+        MI_register.mi_intr_reg &= ~0x21;
+        sp_register.sp_status_reg &= ~0x303;
+        update_count();
+        add_interupt_event(SP_INT, 1000);
+        add_interupt_event(DP_INT, 1000);
+
 	     // protecting new frame buffers
-	     if(fBGetFrameBufferInfo && fBRead && fBWrite) fBGetFrameBufferInfo(frameBufferInfos);
+        if (fBGetFrameBufferInfo && fBRead && fBWrite)
+            fBGetFrameBufferInfo(frameBufferInfos);
 	     if(fBGetFrameBufferInfo && fBRead && fBWrite &&
 		frameBufferInfos[0].addr)
 	       {
@@ -1252,39 +1243,42 @@ void update_SP()
 			 }
 		    }
 	       }
-	  }
-	else if (SP_DMEM[0xFC0/4] == 2)
-	  {
-	     //processAList();
-	     rsp_register.rsp_pc &= 0xFFF;
-	     start_section(AUDIO_SECTION);
-	     doRspCycles(100);
-	     end_section(AUDIO_SECTION);
-	     rsp_register.rsp_pc |= save_pc;
-	     
-	     MI_register.mi_intr_reg &= ~0x1;
-	     sp_register.sp_status_reg &= ~0x303;
-	     update_count();
-	     //add_interupt_event(SP_INT, 500);
-	     add_interupt_event(SP_INT, 4000);
-	  }
-	else
-	  {
-	     //printf("other task\n");
-	     rsp_register.rsp_pc &= 0xFFF;
-	     doRspCycles(100);
-	     rsp_register.rsp_pc |= save_pc;
-	     
-	     MI_register.mi_intr_reg &= ~0x1;
-	     sp_register.sp_status_reg &= ~0x203;
-	     update_count();
-	     add_interupt_event(SP_INT, 0/*100*/);
-	  }
-	//printf("unknown task type\n");
-	/*if (hle) execute_dlist();
-	//if (hle) processDList();
-	else sp_register.halt = 0;*/
-     }
+        break;
+    case 2:  /* M_AUDTASK */
+        //processAList();
+        rsp_register.rsp_pc &= 0xFFF;
+        start_section(AUDIO_SECTION);
+        doRspCycles(100);
+        end_section(AUDIO_SECTION);
+        rsp_register.rsp_pc |= save_pc;
+
+        MI_register.mi_intr_reg &= ~0x1;
+        sp_register.sp_status_reg &= ~0x303;
+        update_count();
+        //add_interupt_event(SP_INT, 500);
+        add_interupt_event(SP_INT, 4000);
+        break;
+    default:
+        //printf("other task\n");
+        rsp_register.rsp_pc &= 0xFFF;
+        doRspCycles(100);
+        rsp_register.rsp_pc |= save_pc;
+
+        MI_register.mi_intr_reg &= ~0x1;
+        sp_register.sp_status_reg &= ~0x203;
+        update_count();
+        add_interupt_event(SP_INT, 0/*100*/);
+    }
+#if 0
+    printf("unknown task type\n");
+    if (hle)
+        execute_dlist();
+    if (hle)
+        processDList();
+    else
+        sp_register.halt = 0;
+#endif
+    return;
 }
 
 void update_DPC()
