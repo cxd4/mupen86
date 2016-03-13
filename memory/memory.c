@@ -1064,83 +1064,62 @@ static void update_MI_intr_mask_reg()
 
 void update_SP()
 {
+    const u32 SP_STATUS = sp_register.w_sp_status_reg;
     int save_pc = rsp_register.rsp_pc & ~0xFFF;
 
-   if (sp_register.w_sp_status_reg & 0x1)
-     sp_register.halt = 0;
-   if (sp_register.w_sp_status_reg & 0x2)
-     sp_register.halt = 1;
-   if (sp_register.w_sp_status_reg & 0x4)
-     sp_register.broke = 0;
-   if (sp_register.w_sp_status_reg & 0x8)
-     {
-	MI_register.mi_intr_reg &= 0xFFFFFFFE;
-	check_interupt();
-     }
-   if (sp_register.w_sp_status_reg & 0x10)
-     {
-	MI_register.mi_intr_reg |= 1;
-	check_interupt();
-     }
-   if (sp_register.w_sp_status_reg & 0x20)
-     sp_register.single_step = 0;
-   if (sp_register.w_sp_status_reg & 0x40)
-     sp_register.single_step = 1;
-   if (sp_register.w_sp_status_reg & 0x80)
-     sp_register.intr_break = 0;
-   if (sp_register.w_sp_status_reg & 0x100)
-     sp_register.intr_break = 1;
-   if (sp_register.w_sp_status_reg & 0x200)
-     sp_register.signal0 = 0;
-   if (sp_register.w_sp_status_reg & 0x400)
-     sp_register.signal0 = 1;
-   if (sp_register.w_sp_status_reg & 0x800)
-     sp_register.signal1 = 0;
-   if (sp_register.w_sp_status_reg & 0x1000)
-     sp_register.signal1 = 1;
-   if (sp_register.w_sp_status_reg & 0x2000)
-     sp_register.signal2 = 0;
-   if (sp_register.w_sp_status_reg & 0x4000)
-     sp_register.signal2 = 1;
-   if (sp_register.w_sp_status_reg & 0x8000)
-     sp_register.signal3 = 0;
-   if (sp_register.w_sp_status_reg & 0x10000)
-     sp_register.signal3 = 1;
-   if (sp_register.w_sp_status_reg & 0x20000)
-     sp_register.signal4 = 0;
-   if (sp_register.w_sp_status_reg & 0x40000)
-     sp_register.signal4 = 1;
-   if (sp_register.w_sp_status_reg & 0x80000)
-     sp_register.signal5 = 0;
-   if (sp_register.w_sp_status_reg & 0x100000)
-     sp_register.signal5 = 1;
-   if (sp_register.w_sp_status_reg & 0x200000)
-     sp_register.signal6 = 0;
-   if (sp_register.w_sp_status_reg & 0x400000)
-     sp_register.signal6 = 1;
-   if (sp_register.w_sp_status_reg & 0x800000)
-     sp_register.signal7 = 0;
-   if (sp_register.w_sp_status_reg & 0x1000000)
-     sp_register.signal7 = 1;
-   sp_register.sp_status_reg = ((sp_register.halt) |
-				(sp_register.broke << 1) |
-				(sp_register.dma_busy << 2) |
-				(sp_register.dma_full << 3) |
-				(sp_register.io_full << 4) |
-				(sp_register.single_step << 5) |
-				(sp_register.intr_break << 6) |
-				(sp_register.signal0 << 7) |
-				(sp_register.signal1 << 8) |
-				(sp_register.signal2 << 9) |
-				(sp_register.signal3 << 10) |
-				(sp_register.signal4 << 11) |
-				(sp_register.signal5 << 12) |
-				(sp_register.signal6 << 13) |
-				(sp_register.signal7 << 14)
-				);
+    sp_register.halt        &= (SP_STATUS & 0x00000001) ? 0 : 1;
+    sp_register.halt        |= (SP_STATUS & 0x00000002) ? 1 : 0;
+    sp_register.broke       &= (SP_STATUS & 0x00000004) ? 0 : 1;
+    MI_register.mi_intr_reg &= (SP_STATUS & 0x00000008) ? ~1 : ~0;
+    MI_register.mi_intr_reg |= (SP_STATUS & 0x00000010) ?  1 :  0;
+    sp_register.single_step &= (SP_STATUS & 0x00000020) ? 0 : 1;
+    sp_register.single_step |= (SP_STATUS & 0x00000040) ? 1 : 0;
+    sp_register.intr_break  &= (SP_STATUS & 0x00000080) ? 0 : 1;
+    sp_register.intr_break  |= (SP_STATUS & 0x00000100) ? 1 : 0;
+    sp_register.signal0     &= (SP_STATUS & 0x00000200) ? 0 : 1;
+    sp_register.signal0     |= (SP_STATUS & 0x00000400) ? 1 : 0;
+    sp_register.signal1     &= (SP_STATUS & 0x00000800) ? 0 : 1;
+    sp_register.signal1     |= (SP_STATUS & 0x00001000) ? 1 : 0;
+    sp_register.signal2     &= (SP_STATUS & 0x00002000) ? 0 : 1;
+    sp_register.signal2     |= (SP_STATUS & 0x00004000) ? 1 : 0;
+    sp_register.signal3     &= (SP_STATUS & 0x00008000) ? 0 : 1;
+    sp_register.signal3     |= (SP_STATUS & 0x00010000) ? 1 : 0;
+    sp_register.signal4     &= (SP_STATUS & 0x00020000) ? 0 : 1;
+    sp_register.signal4     |= (SP_STATUS & 0x00040000) ? 1 : 0;
+    sp_register.signal5     &= (SP_STATUS & 0x00080000) ? 0 : 1;
+    sp_register.signal5     |= (SP_STATUS & 0x00100000) ? 1 : 0;
+    sp_register.signal6     &= (SP_STATUS & 0x00200000) ? 0 : 1;
+    sp_register.signal6     |= (SP_STATUS & 0x00400000) ? 1 : 0;
+    sp_register.signal7     &= (SP_STATUS & 0x00800000) ? 0 : 1;
+    sp_register.signal7     |= (SP_STATUS & 0x01000000) ? 1 : 0;
+
+    sp_register.sp_status_reg = 0x00000000ul
+      | (sp_register.halt        <<  0)
+      | (sp_register.broke       <<  1)
+      | (sp_register.dma_busy    <<  2)
+      | (sp_register.dma_full    <<  3)
+      | (sp_register.io_full     <<  4)
+      | (sp_register.single_step <<  5)
+      | (sp_register.intr_break  <<  6)
+      | (sp_register.signal0     <<  7)
+      | (sp_register.signal1     <<  8)
+      | (sp_register.signal2     <<  9)
+      | (sp_register.signal3     << 10)
+      | (sp_register.signal4     << 11)
+      | (sp_register.signal5     << 12)
+      | (sp_register.signal6     << 13)
+      | (sp_register.signal7     << 14)
+    ;
+    if (SP_STATUS & 0xFE000000ul)
+        fprintf(
+            stderr,
+            "SP_STATUS_REG reserved bits set:  0x%08X\n", SP_STATUS
+        );
+    if (SP_STATUS & 0x00000018)
+        check_interupt();
 
     //if (get_event(SP_INT)) return;
-    if (!(sp_register.w_sp_status_reg & 0x1) && !(sp_register.w_sp_status_reg & 0x4))
+    if (!(SP_STATUS & 0x00000001) && !(SP_STATUS & 0x00000004))
         return;
     if (sp_register.halt || sp_register.broke)
         return;
