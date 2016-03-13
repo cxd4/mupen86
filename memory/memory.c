@@ -1235,7 +1235,6 @@ void update_SP()
     MI_register.mi_intr_reg &= ~0x1;
     sp_register.sp_status_reg &= ~0x203;
     update_count();
-    add_interupt_event(SP_INT, 0/*100*/);
 
     if (section_type == GFX_SECTION) {
         sp_register.sp_status_reg &= ~0x00000100;
