@@ -1144,6 +1144,7 @@ static void FB_protect_new(void)
 void update_SP()
 {
     int section_type;
+    unsigned long divisor;
     unsigned int task_resume_hack;
     const u32 SP_STATUS = sp_register.w_sp_status_reg;
     const u32 task_type = SP_DMEM[0xFC0 / sizeof(i32)];
@@ -1238,26 +1239,30 @@ void update_SP()
             "Experimental task resume support:  SP_STATUS_REG = 0x%08X\n",
             SP_STATUS
         );
+        divisor = 2;
     } else {
         if (section_type == GFX_SECTION)
             new_frame();
-        MI_register.mi_intr_reg &= ~0x1;
-        sp_register.sp_status_reg &= ~0x203;
-        update_count();
+        divisor = 1;
     }
+    MI_register.mi_intr_reg   &= ~0x00000001ul;
+    sp_register.sp_status_reg &= ~0x00000203ul;
 
     if (section_type == GFX_SECTION) {
         sp_register.sp_status_reg &= ~0x00000100;
         MI_register.mi_intr_reg   &= ~0x00000020;
 
-        add_interupt_event(SP_INT, 1000);
-        add_interupt_event(DP_INT, 1000);
+        update_count();
+        add_interupt_event(SP_INT, 1000 / divisor);
+        add_interupt_event(DP_INT, 1000 / divisor);
         FB_protect_new();
     } else if (section_type == AUDIO_SECTION) {
         sp_register.sp_status_reg &= ~0x00000100;
-        add_interupt_event(SP_INT, /* 500 */4000);
+        update_count();
+        add_interupt_event(SP_INT, /* 500 */4000 / divisor);
     } else {
-        add_interupt_event(SP_INT, 0/* 100 */);
+        update_count();
+        add_interupt_event(SP_INT, 0/* 100 */ / divisor);
     }
 #if 0
     printf("unknown task type\n");
