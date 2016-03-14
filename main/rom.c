@@ -47,7 +47,7 @@
 #include "guifuncs.h"
 
 static FILE *rom_file;
-static gzFile *z_rom_file;
+static gzFile z_rom_file;
 static unzFile zip;
 static unz_file_info pfile_info;
 static int i, tmp, z;
@@ -71,9 +71,8 @@ static void findsize()
      {
 	taille_rom=0;
 	rom=malloc(100000);
-	for(;;)
-	  {
-	     i = gzread(*z_rom_file, rom, 100000);
+        for (;;) {
+            i = gzread(z_rom_file, rom, 100000);
 	     taille_rom += i;
 	     printf ("rom size: %d bytes (or %d Mb or %d Megabits)\r",
 		     taille_rom, taille_rom/1024/1024, taille_rom/1024/1024*8);
@@ -83,8 +82,8 @@ static void findsize()
 	free(rom);
 	rom = NULL;
 	printf("\n");
-	gzseek(*z_rom_file, 0L, SEEK_SET);
-     }
+        gzseek(z_rom_file, 0L, SEEK_SET);
+    }
 }
 
 static int find_file(char *argv)
@@ -190,10 +189,8 @@ int rom_read(const char *argv)
 	       }
 	  }
      }
-   else if (z == 1)
-     {
-	for (i = 0; i < taille_rom; i += gzread(*z_rom_file, rom + i, 1000))
-	  {
+    else if (z == 1) {
+        for (i = 0; i < taille_rom; i += gzread(z_rom_file, rom + i, 1000)) {
 	     if (tmp!=(int)((i/(float)taille_rom)*100))
 	       {
 		  tmp=(int)(i/(float)(taille_rom)*100);
@@ -217,7 +214,7 @@ int rom_read(const char *argv)
     if (!z)
         fclose(rom_file);
     else if (z == 1)
-        gzclose(*z_rom_file);
+        gzclose(z_rom_file);
     else
         unzClose(zip);
 
@@ -387,23 +384,22 @@ int fill_header(const char *argv)
    findsize();
    if (rom) free(rom);
    rom = malloc(0x40);
-   
-   tmp=0;
-   
+
+    tmp = 0;
+
     if (!z)
         fread(rom, 1, 0x40, rom_file);
     else if (z == 1)
-        gzread(*z_rom_file, rom, 0x40);
-    else
-     {
+        gzread(z_rom_file, rom, 0x40);
+    else {
 	unzOpenCurrentFile(zip);
 	unzReadCurrentFile(zip, rom, 0x40);
 	unzCloseCurrentFile(zip);
-     }
+    }
     if (!z)
         fclose(rom_file);
     else if (z == 1)
-        gzclose(*z_rom_file);
+        gzclose(z_rom_file);
     else
         unzClose(zip);
 
@@ -472,7 +468,7 @@ void calculateMD5(const char *argv, unsigned char digest[16])
      }
    else if (z == 1)
      {
-        for (i = 0; i < taille_rom; i += gzread(*z_rom_file, rom + i, 1000))
+        for (i = 0; i < taille_rom; i += gzread(z_rom_file, rom + i, 1000))
 	  {
 	     if (tmp!=(int)((i/(float)taille_rom)*100))
 	       {
@@ -497,7 +493,7 @@ void calculateMD5(const char *argv, unsigned char digest[16])
     if (!z)
         fclose(rom_file);
     else if (z == 1)
-        gzclose(*z_rom_file);
+        gzclose(z_rom_file);
     else
         unzClose(zip);
 

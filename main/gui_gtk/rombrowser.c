@@ -152,7 +152,7 @@ void
 rombrowser_readCache( void )
 {
 	char filename[PATH_MAX];
-	gzFile *f;
+	gzFile f;
 	int i;
 	SRomEntry *entry;
 
@@ -201,7 +201,7 @@ void
 rombrowser_writeCache( void )
 {
 	char filename[PATH_MAX];
-	gzFile *f;
+	gzFile f;
 	int i;
 	SRomEntry *entry;
 
