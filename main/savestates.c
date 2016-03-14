@@ -47,10 +47,11 @@ int savestates_job = 0;
 static unsigned int slot = 0;
 static char fname[1024];
 
-void savestates_select_slot(unsigned int s)
+void savestates_select_slot(unsigned long s)
 {
-   if (s > 9) return;
-   slot = s;
+    if (s > 9)
+        return;
+    slot = s;
 }
 
 void savestates_select_filename(unsigned char *fn)

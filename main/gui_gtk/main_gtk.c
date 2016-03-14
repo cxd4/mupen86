@@ -694,10 +694,10 @@ callback_Default( GtkWidget *widget, gpointer data )
 }
 
 static void
-callback_slot( GtkWidget *widget, gpointer data )
+callback_slot(GtkWidget *widget, gpointer data)
 {
-	data = widget; // dunno why this is necessary
-	savestates_select_slot( (int)data );
+    data = widget; /* dunno why this is necessary */
+    savestates_select_slot((unsigned long)data);
 }
 
 /** configuration **/
