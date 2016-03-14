@@ -1144,9 +1144,10 @@ static void FB_protect_new(void)
 void update_SP()
 {
     int section_type;
+    unsigned int task_resume_hack;
     const u32 SP_STATUS = sp_register.w_sp_status_reg;
     const u32 task_type = SP_DMEM[0xFC0 / sizeof(i32)];
-    int save_pc = rsp_register.rsp_pc & ~0xFFF;
+    const u32 save_pc = rsp_register.rsp_pc & 0xFFFFF000ul;
 
     sp_register.halt        &= (SP_STATUS & 0x00000001) ? 0 : 1;
     sp_register.halt        |= (SP_STATUS & 0x00000002) ? 1 : 0;
@@ -1228,13 +1229,22 @@ void update_SP()
     doRspCycles(100);
     if (section_type > 0)
         end_section(section_type);
+    task_resume_hack = (sp_register.sp_status_reg & 0x00000001) ? 0 : 1;
     rsp_register.rsp_pc |= save_pc;
 
-    if (section_type == GFX_SECTION)
-        new_frame();
-    MI_register.mi_intr_reg &= ~0x1;
-    sp_register.sp_status_reg &= ~0x203;
-    update_count();
+    if (task_resume_hack) {
+        fprintf(
+            stderr,
+            "Experimental task resume support:  SP_STATUS_REG = 0x%08X\n",
+            SP_STATUS
+        );
+    } else {
+        if (section_type == GFX_SECTION)
+            new_frame();
+        MI_register.mi_intr_reg &= ~0x1;
+        sp_register.sp_status_reg &= ~0x203;
+        update_count();
+    }
 
     if (section_type == GFX_SECTION) {
         sp_register.sp_status_reg &= ~0x00000100;
