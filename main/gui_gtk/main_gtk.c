@@ -1793,7 +1793,7 @@ sighandler( int signal, siginfo_t *info, void *context )
 									"Maybe you have set a wrong ucode for one of the plugins!" );
 			printf( "SIGSEGV in core thread caught:\n" );
 			printf( "\terrno = %d (%s)\n", info->si_errno, strerror( info->si_errno ) );
-			printf( "\taddress = 0x%08X\n", (unsigned int)info->si_addr );
+			printf("\taddress = %p\n", info -> si_addr);
 #ifdef SEGV_MAPERR
 			switch( info->si_code )
 			{
@@ -1805,7 +1805,7 @@ sighandler( int signal, siginfo_t *info, void *context )
 		case SIGILL:
 			printf( "SIGILL in core thread caught:\n" );
 			printf( "\terrno = %d (%s)\n", info->si_errno, strerror( info->si_errno ) );
-			printf( "\taddress = 0x%08X\n", (unsigned int)info->si_addr );
+			printf("\taddress = %p\n", info -> si_addr);
 #ifdef ILL_ILLOPC
 			switch( info->si_code )
 			{
@@ -1823,7 +1823,7 @@ sighandler( int signal, siginfo_t *info, void *context )
 		case SIGFPE:
 			printf( "SIGFPE in core thread caught:\n" );
 			printf( "\terrno = %d (%s)\n", info->si_errno, strerror( info->si_errno ) );
-			printf( "\taddress = 0x%08X\n", (unsigned int)info->si_addr );
+			printf("\taddress = %p\n", info -> si_addr);
 			switch( info->si_code )
 			{
 			case FPE_INTDIV: printf( "\tinteger divide by zero\n" ); break;

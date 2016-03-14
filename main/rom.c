@@ -306,7 +306,8 @@ int rom_read(const char *argv)
    if ((entry = ini_search_by_md5(arg)) == NULL)
      {
 	char mycrc[1024];
-	printf("%x\n", (int)entry);
+
+        printf("%p\n", entry);
 	sprintf(mycrc, "%08X-%08X-C%02X",
 		(int)sl(ROM_HEADER->CRC1), (int)sl(ROM_HEADER->CRC2),
 		ROM_HEADER->Country_code);

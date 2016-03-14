@@ -61,15 +61,16 @@ void display_error(char *txt)
    printf("erreur @:%x\n", (s32)old_op);
    printf("erreur @:%x\n", (s32)op);
    
-   if (!strcmp(txt, "gpr"))
-       {
-	  for (i=0; i<32; i++)
-	    {
-	       if (reg[i] != comp_reg[i])
-		 printf("reg[%d]=%llx != reg[%d]=%llx\n",
-			i, reg[i], i, comp_reg[i]);
-	    }
-       }
+    if (!strcmp(txt, "gpr")) {
+        for (i = 0; i < 32; i++) {
+            if (reg[i] != comp_reg[i])
+                printf(
+                    "reg[%d] = 0x%08X%08X != reg[%d] = 0x%08X%08X\n",
+                    i, (u32)((u64)reg[i] >> 32), (u32)(u64)reg[i],
+                    i, (u32)((u64)comp_reg[i] >> 32), (u32)(u64)comp_reg[i]
+                );
+            }
+        }
    if (!strcmp(txt, "cop0"))
        {
 	  for (i=0; i<32; i++)
