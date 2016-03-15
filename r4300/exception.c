@@ -69,33 +69,24 @@ void TLB_refill_exception(u32 address, int w)
    BadVAddr = address;
    Context = (Context & 0xFF80000F) | ((address >> 9) & 0x007FFFF0);
    EntryHi = address & 0xFFFFE000;
-   if (Status & 0x2) // Test de EXL
-     {
-#if defined(HAVE_RECOMPILER)
-	if (interpcore)
-	  interp_addr = 0x80000180;
-	else
-	  jump_to(0x80000180);
-#else
-	interp_addr = 0x80000180;
-#endif
-	if(delay_slot==1 || delay_slot==3) Cause |= 0x80000000;
-	else Cause &= 0x7FFFFFFF;
-     }
-   else
-     {
-#if defined(HAVE_RECOMPILER)
-	if (!interpcore)
-	  {
-	     if (w!=2)
-	       EPC = PC->addr;
-	     else
-	       EPC = address;
-	  }
-	else
-#endif
-	  EPC = interp_addr;
-	     
+    if (Status & 0x2) { // Test de EXL
+        if (interpcore)
+            interp_addr = 0x80000180;
+        else
+            jump_to(0x80000180);
+        if (delay_slot == 1 || delay_slot == 3)
+            Cause |= 0x80000000;
+        else
+            Cause &= 0x7FFFFFFF;
+    } else {
+	if (!interpcore) {
+            if (w != 2)
+                EPC = PC->addr;
+            else
+                EPC = address;
+        } else
+            EPC = interp_addr;
+
 	Cause &= ~0x80000000;
 	Status |= 0x2; //EXL=1
 	
@@ -110,29 +101,18 @@ void TLB_refill_exception(u32 address, int w)
 		 address <= tlb_e[i].end_odd)
 	       usual_handler = 1;
 	  }
-	if (usual_handler)
-	  {
-#if defined(HAVE_RECOMPILER)
-	     if (interpcore)
-	       interp_addr = 0x80000180;
-	     else
-	       jump_to(0x80000180);
-#else
-	     interp_addr = 0x80000180;
-#endif
-	  }
-	else
-	  {
-#if defined(HAVE_RECOMPILER)
-	     if (interpcore)
-	       interp_addr = 0x80000000;
-	     else
-	       jump_to(0x80000000);
-#else
-	     interp_addr = 0x80000000;
-#endif
-	  }
-     }
+        if (usual_handler) {
+            if (interpcore)
+                interp_addr = 0x80000180;
+            else
+                jump_to(0x80000180);
+        } else {
+            if (interpcore)
+                interp_addr = 0x80000000;
+            else
+                jump_to(0x80000000);
+        }
+    }
    if(delay_slot==1 || delay_slot==3)
      {
 	Cause |= 0x80000000;
@@ -144,21 +124,17 @@ void TLB_refill_exception(u32 address, int w)
      }
    if(w != 2) EPC-=4;
 
-#if defined(HAVE_RECOMPILER)
-   if (interpcore)
-     last_addr = interp_addr;
-   else
-     last_addr = PC->addr;
-#else
-   last_addr = interp_addr;
-#endif
+    if (interpcore)
+        last_addr = interp_addr;
+    else
+        last_addr = PC->addr;
 
 #if defined(HAVE_RECOMPILER)
-   if (dynacore) 
-     {
-	dyna_jump();
-	if (!dyna_interp) delay_slot = 0;
-     }
+    if (dynacore) {
+        dyna_jump();
+        if (!dyna_interp)
+            delay_slot = 0;
+    }
 #endif
 
    if (!dynacore || dyna_interp)
@@ -196,13 +172,11 @@ void exception_general()
    update_count();
    Status |= 2;
 
-#if defined(HAVE_RECOMPILER)
-   if (!interpcore)
-     EPC = PC->addr;
-   else
-#endif
-     EPC = interp_addr;
-   
+    if (!interpcore)
+        EPC = PC->addr;
+    else
+        EPC = interp_addr;
+
    if(delay_slot==1 || delay_slot==3)
      {
 	Cause |= 0x80000000;
@@ -213,42 +187,30 @@ void exception_general()
 	Cause &= 0x7FFFFFFF;
      }
 
-#if defined(HAVE_RECOMPILER)
-   if (interpcore)
-     {
-	interp_addr = 0x80000180;
-	last_addr = interp_addr;
-     }
-   else
-     {
-	jump_to(0x80000180);
-	last_addr = PC->addr;
-     }
+    if (interpcore) {
+        interp_addr = 0x80000180;
+        last_addr = interp_addr;
+    } else {
+        jump_to(0x80000180);
+        last_addr = PC->addr;
+    }
 
-   if (dynacore)
-     {
-	dyna_jump();
-	if (!dyna_interp) delay_slot = 0;
-     }
-#else
-   interp_addr = 0x80000180;
-   last_addr = interp_addr;
+#if defined(HAVE_RECOMPILER)
+    if (dynacore) {
+        dyna_jump();
+        if (!dyna_interp)
+            delay_slot = 0;
+    }
 #endif
 
-   if (!dynacore || dyna_interp)
-     {
-	dyna_interp = 0;
-	if (delay_slot)
-	  {
-#if defined(HAVE_RECOMPILER)
-	     if (interpcore)
-	       skip_jump = interp_addr;
-	     else
-	       skip_jump = PC->addr;
-#else
-	     skip_jump = interp_addr;
-#endif
-	     next_interupt = 0;
-	  }
-     }
+    if (!dynacore || dyna_interp) {
+        dyna_interp = 0;
+        if (delay_slot) {
+            if (interpcore)
+                skip_jump = interp_addr;
+            else
+                skip_jump = PC->addr;
+            next_interupt = 0;
+        }
+    }
 }
