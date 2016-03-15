@@ -1090,16 +1090,24 @@ callback_mainWindowDeleteEvent(GtkWidget *widget, GdkEvent *event, gpointer data
  */
 // create a menu item with an accelerator
 static GtkWidget *
-menu_item_new_with_accelerator( GtkAccelGroup *group, const char *label )
+menu_item_new_with_accelerator(GtkAccelGroup *group, const char *label)
 {
-	GtkWidget *item;
-	gint key;
+#if 0
+    GtkWidget *item;
+    gint key;
 
-	item = gtk_menu_item_new_with_label( "" );
-	key = gtk_label_parse_uline( GTK_LABEL(GTK_BIN(item)->child), label );
-//  gtk_widget_add_accelerator( item, "activate_item", group, key, GDK_MOD1_MASK, 0 );
+    item = gtk_menu_item_new_with_label("");
+    key = gtk_label_parse_uline(GTK_LABEL(GTK_BIN(item) -> child), label);
+    gtk_widget_add_accelerator(
+        item, "activate_item", group, key, GDK_MOD1_MASK, 0
+    );
+#else
+    GtkWidget *item;
 
-	return item;
+    item = gtk_menu_item_new_with_label("");
+    gtk_label_parse_uline(GTK_LABEL(GTK_BIN(item) -> child), label);
+#endif
+    return (item);
 }
 
 // static widgets to change their state from emulation thread
