@@ -22,22 +22,21 @@
 
 #include "rombrowser.h"
 
-typedef struct
-{
-	GtkWidget *dialog;
+typedef struct {
+    GtkWidget *dialog;
 
-	// entries
-	GtkWidget *romNameEntry;
-	GtkWidget *fileNameEntry;
-	GtkWidget *sizeEntry;
-	GtkWidget *countryEntry;
-	GtkWidget *iniCodeEntry;
-	GtkWidget *md5Entry;
-	GtkWidget *commentsEntry;
+    /* entries */
+    GtkWidget *romNameEntry;
+    GtkWidget *fileNameEntry;
+    GtkWidget *sizeEntry;
+    GtkWidget *countryEntry;
+    GtkWidget *iniCodeEntry;
+    GtkWidget *md5Entry;
+    GtkWidget *commentsEntry;
 } SRomPropertiesDialog;
 extern SRomPropertiesDialog g_RomPropDialog;
 
-int create_romPropDialog( void );
-void show_romPropDialog( SRomEntry *entry );
+int create_romPropDialog(void);
+void show_romPropDialog(SRomEntry *entry);
 
-#endif // __ROMPROPERTIES_H__
+#endif /* __ROMPROPERTIES_H__ */

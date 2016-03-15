@@ -73,8 +73,7 @@ typedef struct _precomp_instr
    reg_cache_struct reg_cache_infos;
 } precomp_instr;
 
-typedef struct _precomp_block
-{
+typedef struct _precomp_block {
    precomp_instr *block;
    unsigned int start;
    unsigned int end;
@@ -83,7 +82,9 @@ typedef struct _precomp_block
    unsigned int max_code_length;
    void *jumps_table;
    int jumps_number;
-   //unsigned char md5[16];
+#if 0
+    u8 md5[16];
+#endif
    u32 adler32;
 } precomp_block;
 

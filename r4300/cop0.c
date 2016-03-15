@@ -50,7 +50,7 @@ void MTC0()
 {
    switch(PC->f.r.nrd)
      {
-      case 0:    // Index
+      case 0: /* Index */
 	Index = rrt & 0x8000003F;
 	if ((Index & 0x3F) > 31) 
 	  {
@@ -58,27 +58,27 @@ void MTC0()
 	     stop=1;
 	  }
 	break;
-      case 1:    // Random
+      case 1: /* Random */
 	break;
-      case 2:    // EntryLo0
+      case 2: /* EntryLo0 */
 	EntryLo0 = rrt & 0x3FFFFFFF;
 	break;
-      case 3:    // EntryLo1
+      case 3: /* EntryLo1 */
  	EntryLo1 = rrt & 0x3FFFFFFF;
 	break;
-      case 4:    // Context
+      case 4: /* Context */
 	Context = (rrt & 0xFF800000) | (Context & 0x007FFFF0);
 	break;
-      case 5:    // PageMask
+      case 5: /* PageMask */
 	PageMask = rrt & 0x01FFE000;
 	break;
-      case 6:    // Wired
+      case 6: /* Wired */
 	Wired = rrt;
 	Random = 31;
 	break;
-      case 8:    // BadVAddr
+      case 8: /* BadVAddr */
 	break;
-      case 9:    // Count
+      case 9: /* Count */
 	update_count();
 	if (next_interupt <= Count) gen_interupt();
 	debug_count += Count;
@@ -86,17 +86,17 @@ void MTC0()
 	Count = rrt & 0xFFFFFFFF;
 	debug_count -= Count;
 	break;
-      case 10:   // EntryHi
+      case 10: /* EntryHi */
 	EntryHi = rrt & 0xFFFFE0FF;
 	break;
-      case 11:   // Compare
+      case 11: /* Compare */
 	update_count();
 	remove_event(COMPARE_INT);
 	add_interupt_event_count(COMPARE_INT, (u32)rrt);
 	Compare = rrt;
-	Cause = Cause & 0xFFFF7FFF; //Timer interupt is clear
+	Cause = Cause & 0xFFFF7FFF; /* Timer interupt is clear. */
 	break;
-      case 12:   // Status
+      case 12: /* Status */
 	if((rrt & 0x04000000) != (Status & 0x04000000))
 	  {
 	     if (rrt & 0x04000000)
@@ -130,7 +130,7 @@ void MTC0()
 	if (next_interupt <= Count) gen_interupt();
 	PC--;
 	break;
-      case 13:   // Cause
+      case 13: /* Cause */
 	if (rrt!=0)
 	  {
 	     printf("écriture dans Cause\n");
@@ -138,26 +138,26 @@ void MTC0()
 	  }
 	else Cause = rrt;
 	break;
-      case 14:   // EPC
+      case 14: /* EPC */
 	EPC = rrt;
 	break;
-      case 15:  // PRevID
+      case 15: /* PRevID */
 	break;
-      case 16:  // Config
+      case 16: /* Config */
 	Config = rrt;
 	break;
-      case 18:  // WatchLo
+      case 18: /* WatchLo */
 	WatchLo = rrt & 0xFFFFFFFF;
 	break;
-      case 19:  // WatchHi
+      case 19: /* WatchHi */
 	WatchHi = rrt & 0xFFFFFFFF;
 	break;
-      case 27:  // CacheErr
+      case 27: /* CacheErr */
 	break;
-      case 28:  // TagLo
+      case 28: /* TagLo */
 	TagLo = rrt & 0x0FFFFFC0;
 	break;
-      case 29: // TagHi
+      case 29: /* TagHi */
 	TagHi =0;
 	break;
       default:

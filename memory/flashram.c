@@ -97,7 +97,7 @@ void flashram_command(u32 command)
       case 0xb4000000:
 	mode = WRITE_MODE;
 	break;
-      case 0xd2000000:  // execute
+      case 0xd2000000:  /* execute */
 	switch (mode)
 	  {
 	   case NOPES_MODE:
@@ -171,8 +171,8 @@ void flashram_command(u32 command)
 	break;
       default:
 	printf("unknown flashram command:%x\n", (int)command);
-	//stop=1;
-     }
+     /* stop = 1; */
+    }
 }
 
 void dma_read_flashram()

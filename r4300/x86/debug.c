@@ -38,43 +38,46 @@
 void debug()
 {
 #ifdef COMPARE_CORE
-   compare_core();
+    compare_core();
 #endif
-   //if (Count > 0x8000000)
-     //printf("PC->addr:%x:%x\n",(int)PC->addr, 
-	  /*(int)SP_DMEM[(PC->addr - 0xa4000000)/4]*/
-	  //(int)rdram[(PC->addr & 0xFFFFFF)/4]);
-   //printf("count:%x\n", (int)(Count));
-   /*if (debug_count + Count >= 0x80000000) 
-     printf("debug : %x: %x\n", 
-	    (unsigned int)(PC->addr),
-	    (unsigned int)rdram[(PC->addr&0xFFFFFF)/4]);*/
-   /*if (debug_count + Count >= 0x8000000) {
-      printf("debug : %x\n", (unsigned int)(PC->addr));
-      if (0x8018ddd8>actual->debut && 0x8018ddd8<actual->fin) {
-	 printf("ff: %x\n", //rdram[0x18ddd8/4]
-	       actual->code[actual->block[(0x8018ddd8-actual->debut)/4].local_addr]);
-	 getchar();
-      }
-   }*/
-   //if (debug_count + Count >= 0x8000000) actual->code[(PC+1)->local_addr] = 0xC3;
-   //if ((debug_count + Count) >= 0x5f66c82)
-   //if ((debug_count + Count) >= 0x5f61bc0)
-   /*if ((debug_count + Count) == 0xf203ae0)
-     {
+#if 0
+    if (Count > 0x8000000)
+        printf("PC->addr:%x:%x\n",(int)PC->addr, 
+            (int)SP_DMEM[(PC->addr - 0xa4000000)/4]
+            (int)rdram[(PC->addr & 0xFFFFFF)/4]
+        );
+    printf("count:%x\n", (int)(Count));
+    if (debug_count + Count >= 0x80000000) 
+        printf("debug : %x: %x\n", 
+            (unsigned int)(PC->addr),
+            (unsigned int)rdram[(PC->addr&0xFFFFFF)/4]
+        );
+    if (debug_count + Count >= 0x8000000) {
+        printf("debug : %x\n", (unsigned int)(PC->addr));
+        if (0x8018ddd8>actual->debut && 0x8018ddd8<actual->fin) {
+            printf("ff: %x\n", /* rdram[0x18ddd8/4] */
+                actual->code[actual->block[(0x8018ddd8-actual->debut)/4].local_addr]
+            );
+            getchar();
+        }
+    }
+    if (debug_count + Count >= 0x8000000)
+        actual->code[(PC + 1)->local_addr] = 0xC3;
+    if (debug_count + Count >= 0x5f66c82)
+    if (debug_count + Count >= 0x5f61bc0)
+    if (debug_count + Count == 0xf203ae0) {
 	int j;
-	for (j=0; j<NBR_BLOCKS; j++)
-	  {
-	     if (aux[j].debut) {
+
+	for (j = 0; j < NBR_BLOCKS; j++) {
+	    if (aux[j].debut) {
 		printf("deb:%x\n", aux[j].debut);
 		printf("fin:%x\n", aux[j].fin);
 		printf("valide:%x\n", aux[j].valide);
 		getchar();
-	     }
-	  }
-     }
-   if ((debug_count + Count) >= 0xf203ae0)
-     {
+	    }
+	}
+    }
+    if ((debug_count + Count) >= 0xf203ae0) {
 	int j;
 	printf ("inst:%x\n", 
 		(unsigned int)rdram[(PC->addr&0xFFFFFF)/4]);
@@ -96,10 +99,11 @@ void debug()
 	       (unsigned int)(debug_count+Count),
 	       (unsigned int)(debug_count+Count));
 	getchar();  
-     }*/
+    }
+#endif
 }
 
-//static void dyna_stop() {}
+/* static void dyna_stop() {} */
 
 void stop_it()
 {

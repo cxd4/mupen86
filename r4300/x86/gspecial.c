@@ -217,8 +217,8 @@ void genjr()
    cmp_reg32_imm32(EBX, 1);
    jne_rj(7);
    
-   add_eax_imm32((u32)(dst_block->block)+diff_wrap); // 5
-   jmp_reg32(EAX); // 2
+   add_eax_imm32((u32)(dst_block->block)+diff_wrap); /* 5 */
+   jmp_reg32(EAX); /* 2 */
    
    mov_reg32_preg32pimm32(EAX, EAX, (u32)(dst_block->block)+diff);
    add_reg32_m32(EAX, (u32 *)(&dst_block->code));
@@ -292,8 +292,8 @@ void genjalr()
    cmp_reg32_imm32(EBX, 1);
    jne_rj(7);
    
-   add_eax_imm32((u32)(dst_block->block)+diff_wrap); // 5
-   jmp_reg32(EAX); // 2
+   add_eax_imm32((u32)(dst_block->block)+diff_wrap); /* 5 */
+   jmp_reg32(EAX); /* 2 */
    
    mov_reg32_preg32pimm32(EAX, EAX, (u32)(dst_block->block)+diff);
    add_reg32_m32(EAX, (u32 *)(&dst_block->code));
@@ -399,8 +399,8 @@ void gendsllv()
 	shl_reg32_cl(rd1);
 	test_reg32_imm32(ECX, 0x20);
 	je_rj(4);
-	mov_reg32_reg32(rd2, rd1); // 2
-	xor_reg32_reg32(rd1, rd1); // 2
+	mov_reg32_reg32(rd2, rd1); /* 2 */
+	xor_reg32_reg32(rd1, rd1); /* 2 */
      }
    else
      {
@@ -417,8 +417,8 @@ void gendsllv()
 	shl_reg32_cl(temp1);
 	test_reg32_imm32(ECX, 0x20);
 	je_rj(4);
-	mov_reg32_reg32(temp2, temp1); // 2
-	xor_reg32_reg32(temp1, temp1); // 2
+	mov_reg32_reg32(temp2, temp1); /* 2 */
+	xor_reg32_reg32(temp1, temp1); /* 2 */
 	
 	mov_reg32_reg32(rd1, temp1);
 	mov_reg32_reg32(rd2, temp2);
@@ -447,8 +447,8 @@ void gendsrlv()
 	shr_reg32_cl(rd2);
 	test_reg32_imm32(ECX, 0x20);
 	je_rj(4);
-	mov_reg32_reg32(rd1, rd2); // 2
-	xor_reg32_reg32(rd2, rd2); // 2
+	mov_reg32_reg32(rd1, rd2); /* 2 */
+	xor_reg32_reg32(rd2, rd2); /* 2 */
      }
    else
      {
@@ -465,8 +465,8 @@ void gendsrlv()
 	shr_reg32_cl(temp2);
 	test_reg32_imm32(ECX, 0x20);
 	je_rj(4);
-	mov_reg32_reg32(temp1, temp2); // 2
-	xor_reg32_reg32(temp2, temp2); // 2
+	mov_reg32_reg32(temp1, temp2); /* 2 */
+	xor_reg32_reg32(temp2, temp2); /* 2 */
 	
 	mov_reg32_reg32(rd1, temp1);
 	mov_reg32_reg32(rd2, temp2);
@@ -495,8 +495,8 @@ void gendsrav()
 	sar_reg32_cl(rd2);
 	test_reg32_imm32(ECX, 0x20);
 	je_rj(5);
-	mov_reg32_reg32(rd1, rd2); // 2
-	sar_reg32_imm8(rd2, 31); // 3
+	mov_reg32_reg32(rd1, rd2); /* 2 */
+	sar_reg32_imm8(rd2, 31); /* 3 */
      }
    else
      {
@@ -513,8 +513,8 @@ void gendsrav()
 	sar_reg32_cl(temp2);
 	test_reg32_imm32(ECX, 0x20);
 	je_rj(5);
-	mov_reg32_reg32(temp1, temp2); // 2
-	sar_reg32_imm8(temp2, 31); // 3
+	mov_reg32_reg32(temp1, temp2); /* 2 */
+	sar_reg32_imm8(temp2, 31); /* 3 */
 	
 	mov_reg32_reg32(rd1, temp1);
 	mov_reg32_reg32(rd2, temp2);
@@ -564,9 +564,9 @@ void gendiv()
    rt = allocate_register((u32*)dst->f.r.rt);
    cmp_reg32_imm32(rt, 0);
    je_rj((rs == EAX ? 0 : 2) + 1 + 2);
-   mov_reg32_reg32(EAX, rs); // 0 or 2
-   cdq(); // 1
-   idiv_reg32(rt); // 2
+   mov_reg32_reg32(EAX, rs); /* 0 or 2 */
+   cdq(); /* 1 */
+   idiv_reg32(rt); /* 2 */
 #endif
 }
 
@@ -582,9 +582,9 @@ void gendivu()
    rt = allocate_register((u32*)dst->f.r.rt);
    cmp_reg32_imm32(rt, 0);
    je_rj((rs == EAX ? 0 : 2) + 2 + 2);
-   mov_reg32_reg32(EAX, rs); // 0 or 2
-   xor_reg32_reg32(EDX, EDX); // 2
-   div_reg32(rt); // 2
+   mov_reg32_reg32(EAX, rs); /* 0 or 2 */
+   xor_reg32_reg32(EDX, EDX); /* 2 */
+   div_reg32(rt); /* 2 */
 #endif
 }
 
@@ -602,31 +602,31 @@ void gendmultu()
    simplify_access();
    
    mov_eax_memoffs32((u32 *)dst->f.r.rs);
-   mul_m32((u32 *)dst->f.r.rt); // EDX:EAX = temp1
+   mul_m32((u32 *)dst->f.r.rt); /* EDX:EAX = temp1 */
    mov_memoffs32_eax((u32 *)(&lo));
    
-   mov_reg32_reg32(EBX, EDX); // EBX = temp1>>32
+   mov_reg32_reg32(EBX, EDX); /* EBX = temp1 >> 32 */
    mov_eax_memoffs32((u32 *)dst->f.r.rs);
    mul_m32((u32 *)(dst->f.r.rt)+1);
    add_reg32_reg32(EBX, EAX);
    adc_reg32_imm32(EDX, 0);
-   mov_reg32_reg32(ECX, EDX); // ECX:EBX = temp2
+   mov_reg32_reg32(ECX, EDX); /* ECX:EBX = temp2 */
    
    mov_eax_memoffs32((u32 *)(dst->f.r.rs)+1);
-   mul_m32((u32 *)dst->f.r.rt); // EDX:EAX = temp3
+   mul_m32((u32 *)dst->f.r.rt); /* EDX:EAX = temp3 */
    
    add_reg32_reg32(EBX, EAX);
-   adc_reg32_imm32(ECX, 0); // ECX:EBX = result2
+   adc_reg32_imm32(ECX, 0); /* ECX:EBX = result2 */
    mov_m32_reg32((u32*)(&lo)+1, EBX);
    
-   mov_reg32_reg32(ESI, EDX); // ESI = temp3>>32
+   mov_reg32_reg32(ESI, EDX); /* ESI = temp3 >> 32 */
    mov_eax_memoffs32((u32 *)(dst->f.r.rs)+1);
    mul_m32((u32 *)(dst->f.r.rt)+1);
    add_reg32_reg32(EAX, ESI);
-   adc_reg32_imm32(EDX, 0); // EDX:EAX = temp4
+   adc_reg32_imm32(EDX, 0); /* EDX:EAX = temp4 */
    
    add_reg32_reg32(EAX, ECX);
-   adc_reg32_imm32(EDX, 0); // EDX:EAX = result3
+   adc_reg32_imm32(EDX, 0); /* EDX:EAX = result3 */
    mov_memoffs32_eax((u32 *)(&hi));
    mov_m32_reg32((u32 *)(&hi)+1, EDX);
 #endif
@@ -891,12 +891,12 @@ void genslt()
    
    cmp_reg32_reg32(rs2, rt2);
    jl_rj(13);
-   jne_rj(4); // 2
-   cmp_reg32_reg32(rs1, rt1); // 2
-   jl_rj(7); // 2
-   mov_reg32_imm32(rd, 0); // 5
-   jmp_imm_short(5); // 2
-   mov_reg32_imm32(rd, 1); // 5
+   jne_rj(4); /* 2 */
+   cmp_reg32_reg32(rs1, rt1); /* 2 */
+   jl_rj(7); /* 2 */
+   mov_reg32_imm32(rd, 0); /* 5 */
+   jmp_imm_short(5); /* 2 */
+   mov_reg32_imm32(rd, 1); /* 5 */
 #endif
 }
 
@@ -913,12 +913,12 @@ void gensltu()
    
    cmp_reg32_reg32(rs2, rt2);
    jb_rj(13);
-   jne_rj(4); // 2
-   cmp_reg32_reg32(rs1, rt1); // 2
-   jb_rj(7); // 2
-   mov_reg32_imm32(rd, 0); // 5
-   jmp_imm_short(5); // 2
-   mov_reg32_imm32(rd, 1); // 5
+   jne_rj(4); /* 2 */
+   cmp_reg32_reg32(rs1, rt1); /* 2 */
+   jb_rj(7); /* 2 */
+   mov_reg32_imm32(rd, 0); /* 5 */
+   jmp_imm_short(5); /* 2 */
+   mov_reg32_imm32(rd, 1); /* 5 */
 #endif
 }
 

@@ -52,4 +52,4 @@ extern SConfigDialog g_ConfigDialog;
 
 int create_configDialog( void );
 
-#endif // __CONFIGDIALOG_H__
+#endif /* __CONFIGDIALOG_H__ */

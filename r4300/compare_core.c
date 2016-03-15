@@ -104,9 +104,9 @@ void check_input_sync(unsigned char *value)
 }
 
 void compare_core()
-{   
-   //static int wait=1;
-   
+{
+ /* static int wait = 1; */
+
    if (dynacore || interpcore)
      {
 	if (!pipe_opened)
@@ -115,9 +115,13 @@ void compare_core()
 	     f = fopen("compare_pipe", "r");
 	     pipe_opened = 1;
 	  }
-	/*if(wait == 1 && reg_cop0[9] > 0x35000000) wait=0;
-	if(wait) return;*/
-	
+#if 0
+        if (wait == 1 && reg_cop0[9] > 0x35000000)
+            wait = 0;
+        if (wait)
+            return;
+#endif
+
 	fread(comp_reg, 4, sizeof(i32), f);
 	if (interpcore)
 	  {
@@ -145,10 +149,11 @@ void compare_core()
 	if (memcmp(&FCR31, comp_reg, 4))
 	  display_error();*/
 	old_op = op;
-     }
-   else
-     {
-	//if (reg_cop0[9] > 0x6800000) printf("PC=%x\n", (int)PC->addr);
+    } else {
+#if 1
+        if (reg_cop0[9] > 0x6800000)
+            printf("PC = %p\n", PC->addr);
+#endif
 	if (!pipe_opened)
 	  {
 	     f = fopen("compare_pipe", "w");
@@ -161,7 +166,9 @@ void compare_core()
 	fwrite(reg, 32, sizeof(i64), f);
 	fwrite(reg_cop0, 32, sizeof(i32), f);
 	fwrite(reg_cop1_fgr_64, 32, sizeof(i64), f);
-	//fwrite(&rdram[0x31280/4], 1, sizeof(i32), f);
-	/*fwrite(&FCR31, 4, 1, f);*/
+#if 0
+	fwrite(&rdram[0x031280 / sizeof(i32)], 1, sizeof(i32), f);
+	fwrite(&FCR31, 4, 1, f);
+#endif
      }
 }

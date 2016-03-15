@@ -28,36 +28,34 @@
 #include <string.h>
 #include <sys/types.h>
 
-// types
-typedef struct
-{
-	char *orig;				// original, english string
-	char *trans;			// translated string to find entry
+/* types */
+typedef struct {
+    char *orig;         /* original, English string */
+    char *trans;        /* translated string to find entry */
 } translation_t;
 
-typedef struct
-{
+typedef struct {
 	char *name;
 	GList *translations;
 } language_t;
 
-// globals
+/* globals */
 static GList      *g_LanguageGList = NULL;
 static language_t *g_Language = NULL;
 
-// static functions
+/* static functions */
 static char *
 trim( char *str )
 {
 	char *p;
 
-	// leading whitespace
+	/* leading whitespace */
 	p = str;
 	while( *p == ' ' || *p == '\n' || *p == '\r' || *p == '\t' )
 		p++;
 	strcpy( str, p );
 
-	// trailing whitespace
+	/* trailing whitespace */
 	p = str + strlen( str ) - 1;
 	while( *p == ' ' || *p == '\n' || *p == '\r' || *p == '\t' )
 		p--;
@@ -112,15 +110,15 @@ tr_load_language( const char *filename )
 		p = strchr( line, '=' );
 		if( p )
 		{
-			// replace "\\n" by '\n'
+			/* Replace "\\n" by '\n'. */
 			while( (p2 = strstr( line, "\\n" )) )
 			{
-				*p2 = '\n';	// replace '\\' by '\n'
+				*p2 = '\n'; /* Replace '\\' by '\n'. */
 				p2++;
-				strcpy( p2, p2 + 1 );	// remove 'n'
+				strcpy( p2, p2 + 1 ); /* Remove 'n'. */
 			}
 
-			p = strchr( line, '=' );	// line may have changed
+			p = strchr(line, '='); /* Line may have changed. */
 			*p = '\0'; p++;
 			trim( line );
 			trim( p );
@@ -146,7 +144,7 @@ tr_load_language( const char *filename )
 	return lang;
 }
 
-// functions
+/* functions */
 void
 tr_load_languages( void )
 {
@@ -158,7 +156,7 @@ tr_load_languages( void )
 	language_t *lang;
 	translation_t *trans;
 
-	// free list
+	/* Free list. */
 	for( i = 0; i < g_list_length( g_LanguageGList ); i++ )
 	{
 		lang = (language_t *)g_list_nth_data( g_LanguageGList, i );
@@ -175,7 +173,7 @@ tr_load_languages( void )
 	g_list_free( g_LanguageGList );
 	g_LanguageGList = NULL;
 
-	// list languages
+	/* List languages. */
 	snprintf( langdir, PATH_MAX, "%slang/", g_WorkingDir );
 	dir = opendir( langdir );
 	if( !dir )

@@ -25,47 +25,47 @@
 int create_romBrowser( void );
 void rombrowser_refresh( void );
 
-// cache
+/* cache */
 void rombrowser_readCache( void );
 void rombrowser_writeCache( void );
 
 /** global rom list */
-typedef struct
-{
-	char cFilename[PATH_MAX];
+typedef struct {
+    char cFilename[PATH_MAX];
 
-	char cName[100];
-	char cSize[20];
-	char cCountry[20];
+    char cName[100];
+    char cSize[20];
+    char cCountry[20];
 
-	// rom info
-	struct
-	{
-		char          cName[21];					// rom name
-		int           iSize;							// size in bytes
-		short         sCartID;						// cartridge id
-		int           iManufacturer;			// manufacturer
-		unsigned char cCountry;						// country id
-		unsigned int  iCRC1;							// crc part 1
-		unsigned int  iCRC2;							// crc part 2
-		char          cMD5[33];						// md5 code
-		char          cGoodName[100];			// from ini
-		char          cComments[200];			// from ini
+    /* ROM info */
+    struct {
+        char          cName[21];		/* ROM name */
+        int           iSize;			/* size in bytes */
+        short         sCartID;			/* cartridge ID */
+        int           iManufacturer;		/* manufacturer */
+        unsigned char cCountry;			/* country ID */
+        unsigned int  iCRC1;			/* CRC part 1 */
+        unsigned int  iCRC2;			/* CRC part 2 */
+        char          cMD5[33];			/* MD5 code */
+        char          cGoodName[100];		/* from INI */
+        char          cComments[200];		/* from INI */
 
-//		char     Status[60];				// from ini
-//		char     FileName[200];
-//		char     PluginNotes[250];	// from ini
-//		char     CoreNotes[250];		// from ini
-//		char     UserNotes[250];		// from ini
-//		char     Developer[30];			// from ini
-//		char     ReleaseDate[30];		// from ini
-//		char     Genre[15];					// from ini
-	} info;	// data saved in cache
+#if 0
+        char     Status[60];                    /* from INI */
+        char     FileName[200];
+        char     PluginNotes[250];              /* from INI */
+        char     CoreNotes[250];                /* from INI */
+        char     UserNotes[250];                /* from INI */
+        char     Developer[30];                 /* from INI */
+        char     ReleaseDate[30];               /* from INI */
+        char     Genre[15];                     /* from INI */
+#endif
+    } info;	/* data saved in cache */
 
-	// other data
-	GtkWidget  *flag;			// flag GtkPixmap
-	mupenEntry *iniEntry;	// ini entry of this rom
+    /* other data */
+    GtkWidget  *flag;                   /* flag GtkPixmap */
+    mupenEntry *iniEntry;               /* INI entry of this ROM */
 } SRomEntry;
 extern GList *g_RomList;
 
-#endif // __ROMBROWSER_H__
+#endif /* __ROMBROWSER_H__ */

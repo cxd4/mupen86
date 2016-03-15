@@ -19,7 +19,7 @@
 
 #include <gtk/gtk.h>
 
-// function to create pixmaps from buffers
+/* function to create pixmaps from buffers */
 GtkWidget *
 create_pixmap_d                        (GtkWidget       *widget,
                                         gchar          **data)

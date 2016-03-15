@@ -61,15 +61,16 @@ void XTLB_refill_exception(u64 addresse)
 
 void TLB_refill_exception(u32 address, int w)
 {
-   int usual_handler = 0, i;
-   //printf("TLB_refill_exception:%x\n", address);
+    int usual_handler = 0, i;
+
+ /* printf("TLB_refill_exception:%x\n", address); */
    if (!dynacore && w != 2) update_count();
    if (w == 1) Cause = (3 << 2);
    else Cause = (2 << 2);
    BadVAddr = address;
    Context = (Context & 0xFF80000F) | ((address >> 9) & 0x007FFFF0);
    EntryHi = address & 0xFFFFE000;
-    if (Status & 0x2) { // Test de EXL
+    if (Status & 0x2) { /* Test de EXL */
         if (interpcore)
             interp_addr = 0x80000180;
         else
@@ -88,7 +89,7 @@ void TLB_refill_exception(u32 address, int w)
             EPC = interp_addr;
 
 	Cause &= ~0x80000000;
-	Status |= 0x2; //EXL=1
+	Status |= 0x2; /* EXL = 1 */
 	
 	if (address >= 0x80000000 && address < 0xc0000000)
 	  usual_handler = 1;

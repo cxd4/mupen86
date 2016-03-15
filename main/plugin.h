@@ -54,9 +54,9 @@ void  plugin_exec_about(const char *name);
 /*** Controller plugin's ****/
 #define PLUGIN_NONE                             1
 #define PLUGIN_MEMPAK                           2
-#define PLUGIN_RUMBLE_PAK			3 // not implemeted for non raw data
-#define PLUGIN_TANSFER_PAK			4 // not implemeted for non raw data
-#define PLUGIN_RAW				5 // the controller plugin is passed in raw data
+#define PLUGIN_RUMBLE_PAK			3 /* not implemeted for non raw data */
+#define PLUGIN_TANSFER_PAK			4 /* not implemeted for non raw data */
+#define PLUGIN_RAW				5 /* the controller plugin is passed in raw data */
 
 /*** Audio plugin system types ***/
 #define SYSTEM_NTSC					0
@@ -116,13 +116,13 @@ typedef struct {
 	HWND hWnd;	       /* Render window */
 	HWND hStatusBar;       /* if render window does not have a status bar then this is NULL */
 
-	Boolean MemoryBswaped;    // If this is set to TRUE, then the memory has been pre
-	                       //   bswap on a dword (32 bits) boundry 
-						   //	eg. the first 8 bytes are stored like this:
-	                       //        4 3 2 1   8 7 6 5
+	Boolean MemoryBswaped; /* If this is set to TRUE, then the memory has been pre-
+	                        *   bswap on a dword (32 bits) boundary.
+			   	* e.g., the first 8 bytes are stored like this:
+	                        *        4 3 2 1   8 7 6 5 */
 
-	u8 * HEADER;	       // This is the rom header (first 40h bytes of the rom
-			       // This will be in the same memory format as the rest of the memory.
+	u8 * HEADER;	       /* This is the rom header (first 40h bytes of the rom). */
+			       /* This will be in the same memory format as the rest of the memory. */
 	u8 * RDRAM;
 	u8 * DMEM;
 	u8 * IMEM;
@@ -160,12 +160,12 @@ typedef struct {
 	HWND hwnd;
 	HINSTANCE hinst;
 
-	Boolean MemoryBswaped;    // If this is set to TRUE, then the memory has been pre
-	                       //   bswap on a dword (32 bits) boundry 
-						   //	eg. the first 8 bytes are stored like this:
-	                       //        4 3 2 1   8 7 6 5
-	u8 * HEADER;	// This is the rom header (first 40h bytes of the rom
-					// This will be in the same memory format as the rest of the memory.
+	Boolean MemoryBswaped; /* If this is set to TRUE, then the memory has been pre-
+	                        *   bswap on a dword (32 bits) boundary.
+				* e.g., the first 8 bytes are stored like this:
+	                        *        4 3 2 1   8 7 6 5 */
+	u8 * HEADER;	/* This is the rom header (first 40h bytes of the rom */
+				/* This will be in the same memory format as the rest of the memory. */
 	u8 * RDRAM;
 	u8 * DMEM;
 	u8 * IMEM;
@@ -219,13 +219,13 @@ typedef struct {
 	HWND hMainWindow;
 	HINSTANCE hinst;
 
-	Boolean MemoryBswaped;		// If this is set to TRUE, then the memory has been pre
-							//   bswap on a dword (32 bits) boundry, only effects header. 
-							//	eg. the first 8 bytes are stored like this:
-							//        4 3 2 1   8 7 6 5
-	u8 * HEADER;			// This is the rom header (first 40h bytes of the rom)
-	CONTROL *Controls;		// A pointer to an array of 4 controllers .. eg:
-							// CONTROL Controls[4];
+	Boolean MemoryBswaped;		/* If this is set to TRUE, then the memory has been pre-
+					 *   bswap on a dword (32 bits) boundary, only effects header.
+					 * e.g., the first 8 bytes are stored like this:
+					 *        4 3 2 1   8 7 6 5 */
+	u8 * HEADER;			/* This is the rom header (first 40h bytes of the rom). */
+	CONTROL *Controls;		/* A pointer to an array of 4 controllers .. e.g.:
+					 * CONTROL Controls[4]; */
 } CONTROL_INFO;
 
 extern CONTROL Controls[4];
@@ -251,7 +251,9 @@ extern void (*readScreen)(void **dest, long *width, long *height);
 extern void (*aiDacrateChanged)(int SystemType);
 extern void (*aiLenChanged)();
 extern u32 (*aiReadLength)();
-//extern void (*aiUpdate)(Boolean Wait);
+#if 0
+extern void (*aiUpdate)(Boolean Wait);
+#endif
 extern void (*closeDLL_audio)();
 extern Boolean (*initiateAudio)(AUDIO_INFO Audio_Info);
 extern void (*processAList)();
@@ -273,14 +275,13 @@ extern u32 (*doRspCycles)(u32 Cycles);
 extern void (*initiateRSP)(RSP_INFO Rsp_Info, u32 * CycleCount);
 extern void (*romClosed_RSP)();
 
-// frame buffer plugin spec extension
+/* frame buffer plugin spec extension */
 
-typedef struct
-{
-   u32 addr;
-   u32 size;
-   u32 width;
-   u32 height;
+typedef struct {
+    u32 addr;
+    u32 size;
+    u32 width;
+    u32 height;
 } FrameBufferInfo;
 
 extern void (*fBRead)(u32 addr);

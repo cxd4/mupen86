@@ -20,12 +20,11 @@
 
 #include <gtk/gtk.h>
 
-typedef struct
-{
-	GtkWidget *dialog;
+typedef struct {
+    GtkWidget *dialog;
 } SAboutDialog;
 extern SAboutDialog g_AboutDialog;
 
-int create_aboutDialog( void );
+int create_aboutDialog(void);
 
-#endif // __ABOUTDIALOG_H__
+#endif /* __ABOUTDIALOG_H__ */

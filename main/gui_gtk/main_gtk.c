@@ -27,8 +27,8 @@
 #include "romproperties.h"
 #include "config.h"
 #include "messagebox.h"
-#include "translate.h"	// translation
-#include "support.h"	// create_pixmap_d()
+#include "translate.h"  /* translation */
+#include "support.h"    /* create_pixmap_d() */
 #include "vcrcomp_dialog.h"
 
 #include "../plugin.h"
@@ -58,8 +58,8 @@
 #include <sys/types.h>
 #include <sys/time.h>
 #include <time.h>
-#include <pthread.h>	// POSIX Thread library
-#include <signal.h>	// signals
+#include <pthread.h>	/* POSIX Thread library */
+#include <signal.h>	/* signals */
 #include <sys/stat.h>
 
 #ifdef WITH_HOME
@@ -76,7 +76,7 @@
 
 /** function prototypes **/
 static void *emulationThread( void *_arg );
-static void sighandler( int signal, siginfo_t *info, void *context ); // signal handler
+static void sighandler( int signal, siginfo_t *info, void *context ); /* signal handler */
 static void callback_startEmulation( GtkWidget *widget, gpointer data );
 static void callback_stopEmulation( GtkWidget *widget, gpointer data );
 static int create_mainWindow( void );
@@ -84,14 +84,14 @@ static int create_mainWindow( void );
 /** globals **/
 char		g_WorkingDir[PATH_MAX];
 SMainWindow	g_MainWindow;
-static int	g_EmulationRunning = 0;		// core running?
-static pthread_t	g_EmulationThread = 0;	// core thread handle
+static int	g_EmulationRunning = 0;		/* core running? */
+static pthread_t	g_EmulationThread = 0;	/* core thread handle */
 #ifdef DBG
-static int	g_DebuggerEnabled = 0;		// wether the debugger is enabled or not
+static int	g_DebuggerEnabled = 0;		/* whether the debugger is enabled or not */
 #endif
-static int	g_GuiEnabled = 1;			// wether the gui is enabled or not
-static int	g_Fullscreen = 0;			// wether fullscreen was enabled via command line
-static char	*g_Filename = 0;			// filename to load & run at startup (if given at command line)
+static int	g_GuiEnabled = 1;		/* whether the gui is enabled or not */
+static int	g_Fullscreen = 0;		/* whether fullscreen was enabled via command line */
+static char	*g_Filename = 0;		/* filename to load & run at startup (if given at command line) */
 
 extern int *autoinc_save_slot;
 
@@ -149,8 +149,8 @@ display_loading_progress( int p )
 		gtk_window_set_title( GTK_WINDOW(g_MainWindow.window), buf );
 	}
 
-	// update status bar
-	while( g_main_iteration( FALSE ) );
+	/* Update status bar. */
+	while (g_main_iteration(FALSE));
 }
 
 void
@@ -199,7 +199,9 @@ unsigned int gettimeofday_msec()
 	
 	gettimeofday(&tv, NULL);
 	foo = ((tv.tv_sec % 1000000) * 1000) + (tv.tv_usec / 1000);
-	//fprintf(stderr, "time: %d\n", foo);
+#if 0
+	fprintf(stderr, "time: %d\n", foo);
+#endif
 	return foo;
 }
 
@@ -289,7 +291,7 @@ ask_bad()
 		   "Be warned that this will probably give unexpected results.\n"
 		   "Do you still want to run it?") );
 
-	if( button == 1 ) // yes
+	if (button == 1) /* yes */
 		return 1;
 	else
 		return 0;
@@ -312,7 +314,7 @@ ask_hack()
 		   "Be warned that this will probably give unexpected results.\n"
 		   "Do you still want to run it?") );
 
-	if( button == 1 ) // yes
+	if (button == 1) /* yes */
 		return 1;
 	else
 		return 0;
@@ -350,7 +352,7 @@ warn_savestate_not_exist()
 /*********************************************************************************************************
  * internal gui funcs
  */
-// status bar
+/* status bar */
 void
 statusbar_message( const char *section, const char *fmt, ... )
 {
@@ -420,15 +422,15 @@ run_rom( void )
  * callbacks
  */
 /** rom **/
-// open rom
+/* open ROM */
 static void
 callback_openRomFileSelected( GtkWidget *widget, gpointer data )
 {
 	const gchar *filename = gtk_file_selection_get_filename( GTK_FILE_SELECTION(data) );
 
 	gtk_widget_hide( GTK_WIDGET(data) );
-	// really hide dialog (let gtk work)
-	while( g_main_iteration( FALSE ) );
+	/* Really hide dialog (let GTK work). */
+	while (g_main_iteration(FALSE));
 
 	open_rom( filename );
 }
@@ -462,7 +464,7 @@ callback_openRom( GtkWidget *widget, gpointer data )
 	gtk_widget_show( file_selector );
 }
 
-// close rom
+/* Close ROM. */
 static void
 callback_closeRom( GtkWidget *widget, gpointer data )
 {
@@ -488,12 +490,12 @@ callback_closeRom( GtkWidget *widget, gpointer data )
 	gtk_window_set_title( GTK_WINDOW(g_MainWindow.window), NAME" v"VERSION );
 }
 
-// language selected
+/* language selected */
 static void
 callback_languageSelected( GtkWidget *widget, gpointer data )
 {
 	const char *name;
-	widget = data; // ToDo: find out why this is needed
+	widget = data; /* to do:  Find out why this is needed. */
 
 	if( !GTK_CHECK_MENU_ITEM(widget)->active )
 		return;
@@ -501,7 +503,7 @@ callback_languageSelected( GtkWidget *widget, gpointer data )
 	tr_set_language( name );
 	config_put_string( "Language", name );
 
-	// recreate gui
+	/* Recreate GUI */
 	gtk_signal_disconnect_by_func( GTK_OBJECT(g_MainWindow.window),
 	                               GTK_SIGNAL_FUNC(gtk_main_quit), NULL );
 	gtk_widget_destroy( g_MainWindow.window );
@@ -514,23 +516,21 @@ callback_languageSelected( GtkWidget *widget, gpointer data )
 }
 
 /** emulation **/
-// start emulation
+/* start emulation. */
 static void
 callback_startEmulation( GtkWidget *widget, gpointer data )
 {
 	if( !g_EmulationThread )
 	{
-		// check if rom is loaded
-		if( !rom )
-		{
-			if( messagebox( tr("No Rom Loaded"), MB_YESNO | MB_ICONQUESTION, tr("There is no Rom loaded.\nDo you want to load one?") ) == 1 )
-				callback_openRom( NULL, NULL );
+		/* Check if ROM is loaded. */
+		if (!rom) {
+			if (messagebox(tr("No Rom Loaded"), MB_YESNO | MB_ICONQUESTION, tr("There is no Rom loaded.\nDo you want to load one?")) == 1)
+				callback_openRom(NULL, NULL);
 			return;
 		}
 
-		// spawn emulation thread
-		if( pthread_create( &g_EmulationThread, NULL, emulationThread, NULL ) )
-		{
+		/* Spawn emulation thread. */
+		if (pthread_create(&g_EmulationThread, NULL, emulationThread, NULL)) {
 			g_EmulationThread = 0;
 			messagebox( tr("Error"), MB_OK | MB_ICONERROR, tr("Couldn't spawn core thread!") );
 			return;
@@ -540,7 +540,7 @@ callback_startEmulation( GtkWidget *widget, gpointer data )
 	}
 }
 
-// pause/continue emulation
+/* Pause/continue emulation. */
 static void
 callback_pauseContinueEmulation( GtkWidget *widget, gpointer data )
 {
@@ -569,7 +569,7 @@ callback_pauseContinueEmulation( GtkWidget *widget, gpointer data )
 	}
 }
 
-// stop emulation
+/* Stop emulation. */
 static void
 callback_stopEmulation( GtkWidget *widget, gpointer data )
 {
@@ -586,7 +586,7 @@ callback_stopEmulation( GtkWidget *widget, gpointer data )
 	}
 }
 
-// Save State
+/* Save State */
 static void
 callback_Save( GtkWidget *widget, gpointer data )
 {
@@ -594,7 +594,7 @@ callback_Save( GtkWidget *widget, gpointer data )
 		savestates_job |= SAVESTATE;
 }
 
-// Save As
+/* Save As */
 static void
 callback_saveAsFileSelected( GtkWidget *widget, gpointer data )
 {
@@ -603,7 +603,7 @@ callback_saveAsFileSelected( GtkWidget *widget, gpointer data )
 		const gchar *filename = gtk_file_selection_get_filename( GTK_FILE_SELECTION(data) );
 
 		gtk_widget_hide( GTK_WIDGET(data) );
-		// really hide dialog (let gtk work)
+		/* Really hide dialog (let GTK work). */
 		while( g_main_iteration( FALSE ) );
 
 		savestates_select_filename( filename );
@@ -636,7 +636,7 @@ callback_SaveAs( GtkWidget *widget, gpointer data )
 	}
 }
 
-// Restore
+/* Restore */
 static void
 callback_Restore( GtkWidget *widget, gpointer data )
 {
@@ -644,7 +644,7 @@ callback_Restore( GtkWidget *widget, gpointer data )
 		savestates_job |= LOADSTATE;
 }
 
-// Load
+/* Load */
 static void
 callback_loadFileSelected( GtkWidget *widget, gpointer data )
 {
@@ -652,9 +652,9 @@ callback_loadFileSelected( GtkWidget *widget, gpointer data )
 	{
 		const gchar *filename = gtk_file_selection_get_filename( GTK_FILE_SELECTION(data) );
 
-		gtk_widget_hide( GTK_WIDGET(data) );
-		// really hide dialog (let gtk work)
-		while( g_main_iteration( FALSE ) );
+		gtk_widget_hide(GTK_WIDGET(data));
+		/* Really hide dialog (let GTK work). */
+		while (g_main_iteration(FALSE));
 
 		savestates_select_filename( filename );
 		savestates_job |= LOADSTATE;
@@ -701,7 +701,7 @@ callback_slot(GtkWidget *widget, gpointer data)
 }
 
 /** configuration **/
-// configure
+/* Configure. */
 static void
 callback_configure( GtkWidget *widget, gpointer data )
 {
@@ -709,7 +709,7 @@ callback_configure( GtkWidget *widget, gpointer data )
 		gtk_widget_show_all( g_ConfigDialog.dialog );
 }
 
-// configure gfx
+/* Configure gfx. */
 static void
 callback_configureVideo( GtkWidget *widget, gpointer data )
 {
@@ -730,7 +730,7 @@ callback_configureVideo( GtkWidget *widget, gpointer data )
 	/*}*/
 }
 
-// configure audio
+/* Configure audio. */
 static void
 callback_configureAudio( GtkWidget *widget, gpointer data )
 {
@@ -751,7 +751,7 @@ callback_configureAudio( GtkWidget *widget, gpointer data )
 	/*}*/
 }
 
-// configure input
+/* Configure input. */
 static void
 callback_configureInput( GtkWidget *widget, gpointer data )
 {
@@ -772,7 +772,7 @@ callback_configureInput( GtkWidget *widget, gpointer data )
 	/*}*/
 }
 
-// configure RSP
+/* Configure RSP. */
 static void
 callback_configureRSP( GtkWidget *widget, gpointer data )
 {
@@ -793,7 +793,7 @@ callback_configureRSP( GtkWidget *widget, gpointer data )
 	/*}*/
 }
 
-// full screen
+/* full screen */
 static void
 callback_fullScreen( GtkWidget *widget, gpointer data )
 {
@@ -814,7 +814,7 @@ callback_vcrStartRecord_fileSelected( GtkWidget *widget, gpointer data )
 		gchar *filename = gtk_file_selection_get_filename( GTK_FILE_SELECTION(data) );
 
 		gtk_widget_hide( GTK_WIDGET(data) );
-		// really hide dialog (let gtk work)
+		/* Really hide dialog (let GTK work). */
 		while( g_main_iteration( FALSE ) );
 
 		if (VCR_startRecord( filename ) < 0)
@@ -847,7 +847,7 @@ callback_vcrStartRecord( GtkWidget *widget, gpointer data )
 		/* Display that dialog */
 		gtk_widget_show( file_selector );
 	}
-	// else maybe display messagebox
+	/* else maybe display messagebox */
 }
 
 
@@ -871,7 +871,7 @@ callback_vcrStartPlayback_fileSelected( GtkWidget *widget, gpointer data )
 		gchar *filename = gtk_file_selection_get_filename( GTK_FILE_SELECTION(data) );
 
 		gtk_widget_hide( GTK_WIDGET(data) );
-		// really hide dialog (let gtk work)
+		/* Really hide dialog (let GTK work). */
 		while( g_main_iteration( FALSE ) );
 
 		if (VCR_startPlayback( filename ) < 0)
@@ -904,7 +904,7 @@ callback_vcrStartPlayback( GtkWidget *widget, gpointer data )
 		/* Display that dialog */
 		gtk_widget_show( file_selector );
 	}
-	// else maybe display messagebox
+	/* else maybe display messagebox */
 }
 
 
@@ -930,7 +930,7 @@ callback_vcrStartCapture_aviFileSelected( GtkWidget *widget, gpointer data )
 		gchar *filename = gtk_file_selection_get_filename( GTK_FILE_SELECTION(data) );
 
 		gtk_widget_hide( GTK_WIDGET(data) );
-		// really hide dialog (let gtk work)
+		/* Really hide dialog (let GTK work). */
 		while( g_main_iteration( FALSE ) );
 
 		if (VCR_startCapture( m_startCaptureRecFilename, filename ) < 0)
@@ -948,9 +948,9 @@ callback_vcrStartCapture_recFileSelected( GtkWidget *widget, gpointer data )
 	{
 		gchar *filename = gtk_file_selection_get_filename( GTK_FILE_SELECTION(data) );
 
-		gtk_widget_hide( GTK_WIDGET(data) );
-		// really hide dialog (let gtk work)
-		while( g_main_iteration( FALSE ) );
+		gtk_widget_hide(GTK_WIDGET(data));
+		/* Really hide dialog (let GTK work). */
+		while (g_main_iteration(FALSE));
 
 		strncpy( m_startCaptureRecFilename, filename, PATH_MAX );
 
@@ -996,7 +996,7 @@ callback_vcrStartCapture( GtkWidget *widget, gpointer data )
 		/* Display that dialog */
 		gtk_widget_show( file_selector );
 	}
-	// else maybe display messagebox
+	/* else maybe display messagebox */
 }
 
 
@@ -1017,11 +1017,11 @@ callback_vcrSetup( GtkWidget *widget, gpointer data )
 {
 	gtk_widget_show_all( g_VcrCompDialog.dialog );
 }
-#endif // VCR_SUPPORT
+#endif /* VCR_SUPPORT */
 
 /** debugger **/
 #ifdef DBG
-// show
+/* show */
 static void
 callback_debuggerEnableToggled( GtkWidget *widget, gpointer data )
 {
@@ -1038,10 +1038,10 @@ callback_debuggerEnableToggled( GtkWidget *widget, gpointer data )
 
 	g_DebuggerEnabled = GTK_CHECK_MENU_ITEM(widget)->active;
 }
-#endif // DBG
+#endif /* DBG */
 
 /** help **/
-// about
+/* about */
 static void
 callback_aboutMupen( GtkWidget *widget, gpointer data )
 {
@@ -1050,7 +1050,7 @@ callback_aboutMupen( GtkWidget *widget, gpointer data )
 }
 
 /** misc **/
-// hide on delete
+/* Hide on delete. */
 static gint
 callback_mainWindowDeleteEvent(GtkWidget *widget, GdkEvent *event, gpointer data)
 {
@@ -1058,7 +1058,7 @@ callback_mainWindowDeleteEvent(GtkWidget *widget, GdkEvent *event, gpointer data
 
 	gtk_widget_hide( widget );
 
-	// save configuration
+	/* Save configuration. */
 	w = g_MainWindow.window->allocation.width;
 	h = g_MainWindow.window->allocation.height;
 	if (w != 0 && h != 0)
@@ -1082,13 +1082,13 @@ callback_mainWindowDeleteEvent(GtkWidget *widget, GdkEvent *event, gpointer data
 
 	gtk_main_quit();
 
-	return TRUE; // undeleteable
+	return TRUE; /* un-deleteable */
 }
 
 /*********************************************************************************************************
  * gui creation
  */
-// create a menu item with an accelerator
+/* Create a menu item with an accelerator. */
 static GtkWidget *
 menu_item_new_with_accelerator(GtkAccelGroup *group, const char *label)
 {
@@ -1110,11 +1110,11 @@ menu_item_new_with_accelerator(GtkAccelGroup *group, const char *label)
     return (item);
 }
 
-// static widgets to change their state from emulation thread
+/* static widgets to change their state from emulation thread */
 static GtkWidget       *slotDefaultItem;
 static GtkWidget       *slotItem[9];
 
-// menuBar
+/* menu bar */
 static int
 create_menuBar( void )
 {
@@ -1204,12 +1204,12 @@ create_menuBar( void )
 	int i, lang_found;
 	char buffer[1000];
 
-	// menubar
+	/* menu bar */
 	g_MainWindow.menuBar = gtk_menu_bar_new();
 	gtk_box_pack_start( GTK_BOX(g_MainWindow.toplevelVBox), g_MainWindow.menuBar, FALSE, FALSE, 0 );
 	menuAccelGroup = gtk_accel_group_new();
 
-	// file menu
+	/* file menu */
 	fileAccelGroup = gtk_accel_group_new();
 	fileMenu = gtk_menu_new();
 	fileMenuItem = menu_item_new_with_accelerator( menuAccelGroup, tr("_File") );
@@ -1237,7 +1237,7 @@ create_menuBar( void )
 	gtk_signal_connect_object( GTK_OBJECT(fileExitItem), "activate",
 			GTK_SIGNAL_FUNC(gtk_main_quit), (gpointer)NULL );
 
-	// language menu
+	/* language menu */
 	fileLanguageMenu = gtk_menu_new();
 	gtk_menu_item_set_submenu( GTK_MENU_ITEM(fileLanguageItem), fileLanguageMenu );
 
@@ -1263,13 +1263,12 @@ create_menuBar( void )
 				GTK_SIGNAL_FUNC(callback_languageSelected), (gpointer)NULL );
 		gtk_menu_append( GTK_MENU(fileLanguageMenu), fileLanguageItem );
 	}
-	if( !lang_found )
-	{
-		tr_set_language( "English" );
-		// ToDo: update selected radio menu item
+	if (!lang_found) {
+		tr_set_language("English");
+		/* to do: update selected radio menu item */
 	}
 
-	// emulation menu
+	/* emulation menu */
 	emulationAccelGroup = gtk_accel_group_new();
 	emulationMenu = gtk_menu_new();
 	emulationMenuItem = menu_item_new_with_accelerator( menuAccelGroup, tr("_Emulation") );
@@ -1311,7 +1310,7 @@ create_menuBar( void )
 	gtk_signal_connect_object( GTK_OBJECT(emulationLoadItem), "activate",
 			GTK_SIGNAL_FUNC(callback_Load), (gpointer)NULL );
 
-	// slot menu
+	/* slot menu */
 	emulationSlotMenu = gtk_menu_new();
 	gtk_menu_item_set_submenu( GTK_MENU_ITEM(emulationSlotItem), emulationSlotMenu );
 	slotDefaultItem = gtk_radio_menu_item_new_with_label( slot_group, tr("Default") );
@@ -1336,7 +1335,7 @@ create_menuBar( void )
 		gtk_signal_connect_object( GTK_OBJECT(slotItem[i]), "activate",
 				GTK_SIGNAL_FUNC(callback_slot), (gpointer)i );
 
-	// options menu
+	/* options menu */
 	optionsMenu = gtk_menu_new();
 	optionsMenuItem = menu_item_new_with_accelerator( menuAccelGroup, tr("_Options") );
 	gtk_menu_item_set_submenu( GTK_MENU_ITEM(optionsMenuItem), optionsMenu );
@@ -1370,7 +1369,7 @@ create_menuBar( void )
 	gtk_signal_connect_object( GTK_OBJECT(optionsFullScreenItem), "activate",
 			GTK_SIGNAL_FUNC(callback_fullScreen), (gpointer)NULL );
 
-	// vcr menu
+	/* VCR menu */
 #ifdef VCR_SUPPORT
 	vcrAccelGroup = gtk_accel_group_new();
 	vcrMenu = gtk_menu_new();
@@ -1412,9 +1411,9 @@ create_menuBar( void )
 			GTK_SIGNAL_FUNC(callback_vcrStopCapture), (gpointer)NULL );
 	gtk_signal_connect_object( GTK_OBJECT(vcrSetupItem), "activate",
 			GTK_SIGNAL_FUNC(callback_vcrSetup), (gpointer)NULL );
-#endif // VCR_SUPPORT
+#endif /* VCR_SUPPORT */
 
-	// debugger menu
+	/* debugger menu */
 #ifdef DBG
 	debuggerAccelGroup = gtk_accel_group_new();
 	debuggerMenu = gtk_menu_new();
@@ -1425,9 +1424,9 @@ create_menuBar( void )
 
 	gtk_signal_connect_object( GTK_OBJECT(debuggerEnableItem), "toggled",
 			GTK_SIGNAL_FUNC(callback_debuggerEnableToggled), (gpointer)NULL );
-#endif // DBG
+#endif /* DBG */
 
-	// help menu
+	/* help menu */
 	helpAccelGroup = gtk_accel_group_new();
 	helpMenu = gtk_menu_new();
 	helpMenuItem = menu_item_new_with_accelerator( menuAccelGroup, tr("_Help") );
@@ -1439,7 +1438,7 @@ create_menuBar( void )
 	gtk_signal_connect_object( GTK_OBJECT(helpAboutItem), "activate",
 			GTK_SIGNAL_FUNC(callback_aboutMupen), (gpointer)NULL );
 
-	// add menus to menubar
+	/* add menus to menu bar */
 	gtk_menu_bar_append( GTK_MENU_BAR(g_MainWindow.menuBar), fileMenuItem );
 	gtk_menu_bar_append( GTK_MENU_BAR(g_MainWindow.menuBar), emulationMenuItem );
 	gtk_menu_bar_append( GTK_MENU_BAR(g_MainWindow.menuBar), optionsMenuItem );
@@ -1451,7 +1450,7 @@ create_menuBar( void )
 #endif
 	gtk_menu_bar_append( GTK_MENU_BAR(g_MainWindow.menuBar), helpMenuItem );
 
-	// add accelerators to window
+	/* add accelerators to window */
 /*	gtk_menu_set_accel_group( GTK_MENU(fileMenu), menuAccelGroup );
 	gtk_menu_set_accel_group( GTK_MENU(fileMenu), fileAccelGroup );
 	gtk_menu_set_accel_group( GTK_MENU(emulationMenu), emulationAccelGroup );
@@ -1467,7 +1466,7 @@ create_menuBar( void )
 	return 0;
 }
 
-// toolbar
+/* toolbar */
 static int
 create_toolBar( void )
 {
@@ -1490,7 +1489,7 @@ create_toolBar( void )
 #endif
 	gtk_box_pack_start( GTK_BOX(g_MainWindow.toplevelVBox), g_MainWindow.toolBar, FALSE, FALSE, 0 );
 
-	// load icons from memory
+	/* Load icons from memory. */
 	openPixmap = create_pixmap_d( g_MainWindow.window, open_xpm );
 	playPixmap = create_pixmap_d( g_MainWindow.window, play_xpm );
 	pausePixmap = create_pixmap_d( g_MainWindow.window, pause_xpm );
@@ -1498,7 +1497,7 @@ create_toolBar( void )
 	fullscreenPixmap = create_pixmap_d( g_MainWindow.window, fullscreen_xpm );
 	configurePixmap = create_pixmap_d( g_MainWindow.window, configure_xpm );
 
-	// add icons to toolbar
+	/* Add icons to toolbar. */
 	gtk_toolbar_append_item( GTK_TOOLBAR(g_MainWindow.toolBar),
 				NULL,
 				tr("Open Rom"),
@@ -1548,19 +1547,18 @@ create_toolBar( void )
 	return 0;
 }
 
-// status bar
+/* status bar */
 static int
 create_statusBar( void )
 {
 	int i;
 
-	// create status bar
+	/* create status bar */
 	g_MainWindow.statusBarHBox = gtk_hbox_new( FALSE, 5 );
 	gtk_box_pack_start( GTK_BOX(g_MainWindow.toplevelVBox), g_MainWindow.statusBarHBox, FALSE, FALSE, 0 );
 
-	// request context ids
-	for( i = 0; statusBarSections[i].name; i++ )
-	{
+	/* request context ids */
+	for (i = 0; statusBarSections[i].name; i++) {
 		statusBarSections[i].bar = gtk_statusbar_new();
 		gtk_box_pack_start( GTK_BOX(g_MainWindow.statusBarHBox), statusBarSections[i].bar, (i == 0) ? TRUE : FALSE, TRUE, 0 );
 		statusBarSections[i].id = gtk_statusbar_get_context_id( GTK_STATUSBAR(statusBarSections[i].bar), statusBarSections[i].name );
@@ -1569,7 +1567,7 @@ create_statusBar( void )
 	return 0;
 }
 
-// main window
+/* main window */
 static int
 create_mainWindow( void )
 {
@@ -1578,35 +1576,37 @@ create_mainWindow( void )
 	width = config_get_number( "MainWindow Width", 600 );
 	height = config_get_number( "MainWindow Height", 400 );
 
-	// window
+	/* window */
 	g_MainWindow.window = gtk_window_new( GTK_WINDOW_TOPLEVEL );
 	gtk_window_set_title( GTK_WINDOW(g_MainWindow.window), NAME" v"VERSION );
 	gtk_window_set_default_size( GTK_WINDOW(g_MainWindow.window), width, height  );
 	gtk_signal_connect(GTK_OBJECT(g_MainWindow.window), "delete_event",
 				GTK_SIGNAL_FUNC(callback_mainWindowDeleteEvent), (gpointer)NULL );
-//	gtk_signal_connect( GTK_OBJECT(g_MainWindow.window), "destroy",
-//				GTK_SIGNAL_FUNC(gtk_main_quit), NULL );
+#if 0
+	gtk_signal_connect(GTK_OBJECT(g_MainWindow.window), "destroy",
+				GTK_SIGNAL_FUNC(gtk_main_quit), NULL);
+#endif
 
-	// toplevel vbox
+	/* top-level vbox */
 	g_MainWindow.toplevelVBox = gtk_vbox_new( FALSE, 5 );
 	gtk_container_add( GTK_CONTAINER(g_MainWindow.window), g_MainWindow.toplevelVBox );
 
-	// menu
+	/* menu */
 	create_menuBar();
 
-	// toolbar
+	/* toolbar */
 	create_toolBar();
 
-	// rombrowser
+	/* ROM browser */
 	create_romBrowser();
 
-	// rom properties
+	/* ROM properties */
 	create_romPropDialog();
 
-	// statusbar
+	/* status bar */
 	create_statusBar();
 
-	// fill rom browser
+	/* Fill ROM browser. */
 	rombrowser_refresh();
 	return 0;
 }
@@ -1699,8 +1699,8 @@ emulationThread( void *_arg )
 	const char *gfx_plugin, *audio_plugin, *input_plugin, *RSP_plugin;
 	struct sigaction sa;
 
-	// install signal handler
-	memset( &sa, 0, sizeof( struct sigaction ) );
+	/* Install signal handler. */
+	memset(&sa, 0, sizeof(struct sigaction));
 	sa.sa_sigaction = sighandler;
 	sa.sa_flags = SA_SIGINFO;
 	sigaction( SIGSEGV, &sa, NULL );
@@ -1714,16 +1714,16 @@ emulationThread( void *_arg )
         no_audio_delay = config_get_bool("NoAudioDelay", FALSE);
         no_compiled_jump = config_get_bool("NoCompiledJump", FALSE);
    
-	// init sdl
-	SDL_Init( SDL_INIT_VIDEO );
-//	SDL_SetVideoMode( 10, 10, 0, 0 );
-	SDL_ShowCursor( 0 );
-	SDL_EnableKeyRepeat( 0, 0 );
+	/* init SDL. */
+	SDL_Init(SDL_INIT_VIDEO);
+/*	SDL_SetVideoMode(10, 10, 0, 0); */
+	SDL_ShowCursor(0);
+	SDL_EnableKeyRepeat(0, 0);
 
 	SDL_SetEventFilter( sdl_event_filter );
 	SDL_EnableUNICODE(1);
 
-	// plugins
+	/* plugins */
 	if (g_GuiEnabled)
 	{
 		gfx_plugin = gtk_entry_get_text( GTK_ENTRY(GTK_COMBO(g_ConfigDialog.gfxCombo)->entry) );
@@ -1739,7 +1739,7 @@ emulationThread( void *_arg )
 		RSP_plugin = plugin_name_by_filename( config_get_string( "RSP Plugin", "" ) );
 	}
 
-	// run core
+	/* Run core. */
 	init_memory();
 	plugin_load_plugins( gfx_plugin, audio_plugin, input_plugin, RSP_plugin );
 	romOpen_gfx();
@@ -1766,22 +1766,23 @@ emulationThread( void *_arg )
 	closeDLL_gfx();
 	free_memory();
 
-	// clean up
+	/* clean-up */
 	g_EmulationRunning = 0;
 	g_EmulationThread = 0;
 
 	SDL_Quit();
 
-	if (g_Filename != 0)
-	{
-		// the following doesn't work - it wouldn't exit immediately but when the next event is
-		// recieved (i.e. mouse movement)
-/*		gdk_threads_enter();
-		gtk_main_quit();
-		gdk_threads_leave();*/
-	}
+    if (g_Filename != 0) {
+        /* The following doesn't work:  It wouldn't exit immediately but when the next event is
+         * recieved (i.e., mouse movement). */
+#if 0
+        gdk_threads_enter();
+        gtk_main_quit();
+        gdk_threads_leave();
+#endif
+    }
 
-	return NULL;
+    return NULL;
 }
 
 /*********************************************************************************************************
@@ -1984,8 +1985,10 @@ main( int argc, char *argv[] )
 			{
  				if (!strcmp( argv[i], "--fullscreen" ))
 					g_Fullscreen = 1;
-//				else if (!strcmp( argv[i], "--nogui" ))
-//					g_GuiEnabled = 0;
+#if 0
+				else if (!strcmp( argv[i], "--nogui" ))
+					g_GuiEnabled = 0;
+#endif
 				else if (!strcmp( argv[i], "--" ))
 					scanargs = 0;
 				else
@@ -2021,8 +2024,8 @@ main( int argc, char *argv[] )
 		return EXIT_SUCCESS;
 	}*/
 
-	// init gtk
-	gtk_init( &argc, &argv );
+	/* init GTK. */
+	gtk_init(&argc, &argv);
 #ifdef VCR_SUPPORT
 	VCRComp_init();
 	p = config_get_string( "VCR Video Codec", "XviD" );
@@ -2075,7 +2078,7 @@ main( int argc, char *argv[] )
 		gtk_widget_show_all( g_MainWindow.window );
 	}
 
-	// install signal handler
+	/* Install signal handler. */
 /*	memset( &sa, 0, sizeof( struct sigaction ) );
 	sa.sa_sigaction = sighandler;
 	sa.sa_flags = SA_SIGINFO;
@@ -2084,19 +2087,18 @@ main( int argc, char *argv[] )
 	if( sigaction( SIGFPE, &sa, NULL ) ) printf( "sigaction(): %s\n", strerror( errno ) );
 	if( sigaction( SIGCHLD, &sa, NULL ) ) printf( "sigaction(): %s\n", strerror( errno ) );
 */
-	// go!
-	if (g_Filename)
-	{
-		// let gtk do initial tasks
-		while( g_main_iteration( FALSE ) );
+	/* Go! */
+	if (g_Filename) {
+		/* Let GTK do initial tasks. */
+		while (g_main_iteration(FALSE));
 
-		// now load the rom
-		open_rom( g_Filename );
+		/* Now load the ROM. */
+		open_rom(g_Filename);
 
-		// and start emulation
-		callback_startEmulation( 0, 0 );
+		/* And start emulation. */
+		callback_startEmulation(0, 0);
 
-		// and finally give control for this thread to gtk
+		/* And finally give control for this thread to GTK. */
 	}
 	gtk_main();
 

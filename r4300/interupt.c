@@ -73,8 +73,12 @@ void clear_queue()
 
 void print_queue()
 {
-   interupt_queue *aux;
-   //if (Count < 0x7000000) return;
+    interupt_queue *aux;
+
+#if 0
+    if (Count < 0x7000000)
+        return;
+#endif
    printf("------------------ %x\n", (unsigned int)Count);
    aux = q;
    while (aux != NULL)
@@ -83,7 +87,7 @@ void print_queue()
 	aux = aux->next;
      }
    printf("------------------\n");
-   //getchar();
+/* getchar(); */
 }
 
 static int SPECIAL_done = 0;
@@ -129,35 +133,34 @@ void add_interupt_event(int type, u32 delay)
       printf("two events of type %x in queue\n", type);
    }
    interupt_queue *aux = q;
-   
-   //if (type == PI_INT)
-     //{
-	//delay = 0;
-	//count = Count + delay/**2*/;
-     //}
-   
-   if (q == NULL)
-     {
+
+#if 0
+    if (type == PI_INT) {
+        delay = 0;
+        count = Count + delay/* * 2 */;
+    }
+#endif
+
+    if (q == NULL) {
 	q = malloc(sizeof(interupt_queue));
 	q->next = NULL;
 	q->count = count;
 	q->type = type;
 	next_interupt = q->count;
-	//print_queue();
+     /* print_queue(); */
 	return;
      }
-   
-   if(before_event(count, q->count, q->type) && !special)
-     {
+
+    if (before_event(count, q->count, q->type) && !special) {
 	q = malloc(sizeof(interupt_queue));
 	q->next = aux;
 	q->count = count;
 	q->type = type;
 	next_interupt = q->count;
-	//print_queue();
+     /* print_queue(); */
 	return;
      }
-   
+
    while (aux->next != NULL && (!before_event(count, aux->next->count, aux->next->type)
 				|| special))
      aux = aux->next;
@@ -183,11 +186,13 @@ void add_interupt_event(int type, u32 delay)
 	aux->count = count;
 	aux->type = type;
      }
-   /*if (q->count > Count || (Count - q->count) < 0x80000000)
-     next_interupt = q->count;
-   else
-     next_interupt = 0;*/
-   //print_queue();
+#if 0
+    if (q->count > Count || (Count - q->count) < 0x80000000)
+        next_interupt = q->count;
+    else
+        next_interupt = 0;
+    print_queue();
+#endif
 }
 
 void add_interupt_event_count(int type, u32 count)
@@ -233,12 +238,11 @@ void remove_event(int type)
      }
    while (aux->next != NULL && aux->next->type != type)
      aux = aux->next;
-   if (aux->next != NULL) // it's a type int
-     {
+    if (aux->next != NULL) { /* it's a type int */
 	interupt_queue *aux2 = aux->next->next;
 	free(aux->next);
 	aux->next = aux2;
-     }
+    }
 }
 
 void translate_event_queue(u32 base)
@@ -333,8 +337,10 @@ void check_interupt()
 
 void gen_interupt()
 {
-   //if (!skip_jump)
-     //printf("interrupt:%x (%x)\n", q->type, Count);
+#if 0
+    if (!skip_jump)
+        printf("interrupt:%x (%x)\n", q -> type, Count);
+#endif
 #if defined(HAVE_RECOMPILER)
    if (stop == 1)
      dyna_stop();
@@ -458,7 +464,7 @@ void gen_interupt()
 	break;
 	
       case AI_INT:
-	if (ai_register.ai_status & 0x80000000) // full
+	if (ai_register.ai_status & 0x80000000) /* full */
 	  {
 	     u32 ai_event = get_event(AI_INT);
 
@@ -466,9 +472,11 @@ void gen_interupt()
 	     ai_register.ai_status &= ~0x80000000;
 	     ai_register.current_delay = ai_register.next_delay;
 	     ai_register.current_len = ai_register.next_len;
-	     //add_interupt_event(AI_INT, ai_register.next_delay/**2*/);
-	     add_interupt_event_count(AI_INT, ai_event+ai_register.next_delay);
-	     
+#if 0
+	     add_interupt_event(AI_INT, ai_register.next_delay/* *2 */);
+#endif
+	     add_interupt_event_count(AI_INT, ai_event + ai_register.next_delay);
+
 	     MI_register.mi_intr_reg |= 0x04;
 	     if (MI_register.mi_intr_reg & MI_register.mi_intr_mask_reg)
 	       Cause = (Cause | 0x400) & 0xFFFFFF83;
@@ -482,7 +490,7 @@ void gen_interupt()
 	     remove_interupt_event();
 	     ai_register.ai_status &= ~0x40000000;
 
-	     //-------
+	     /* ------- */
 	     MI_register.mi_intr_reg |= 0x04;
 	      if (MI_register.mi_intr_reg & MI_register.mi_intr_mask_reg)
 	      Cause = (Cause | 0x400) & 0xFFFFFF83;
@@ -490,14 +498,14 @@ void gen_interupt()
 	      return;
 	      if ((Status & 7) != 1) return;
 	      if (!(Status & Cause & 0xFF00)) return;
-	     //return;
+	   /* return; */
 	  }
 	break;
 	
       case SP_INT:
 	remove_interupt_event();
 	sp_register.sp_status_reg |= 0x303;
-	//sp_register.signal1 = 1;
+     /* sp_register.signal1 = 1; */
 	sp_register.signal2 = 1;
 	sp_register.broke = 1;
 	sp_register.halt = 1;

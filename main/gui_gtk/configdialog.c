@@ -35,25 +35,25 @@
 #include <stdlib.h>
 #include <string.h>
 
-// icons
+/* icons */
 #include "icons/graphics.xpm"
 #include "icons/sound.xpm"
 #include "icons/input.xpm"
 #include "icons/rsp.xpm"
 
-// there's got to be a better idea than this...
+/* There's got to be a better idea than this.... */
 int autoinc_slot = 0;
 int *autoinc_save_slot = &autoinc_slot;
 
 /** globals **/
 SConfigDialog g_ConfigDialog;
-static int g_RefreshRomBrowser; // refresh the rombrowser when ok is clicked?
-                                // (true if rom directories were changed)
+static int g_RefreshRomBrowser; /* Refresh the ROM browser when OK is clicked?
+                                 * (true if ROM directories were changed) */
 
 /** callbacks **/
-// gfx
+/* gfx */
 static void
-callback_configGfx( GtkWidget *widget, gpointer data )
+callback_configGfx(GtkWidget *widget, gpointer data)
 {
 	const char *name = gtk_entry_get_text( GTK_ENTRY(GTK_COMBO(g_ConfigDialog.gfxCombo)->entry) );
 
@@ -79,7 +79,7 @@ callback_aboutGfx( GtkWidget *widget, gpointer data )
 		plugin_exec_about( name );
 }
 
-// audio
+/* audio */
 static void
 callback_configAudio( GtkWidget *widget, gpointer data )
 {
@@ -107,7 +107,7 @@ callback_aboutAudio( GtkWidget *widget, gpointer data )
 		plugin_exec_about( name );
 }
 
-// input
+/* input */
 static void
 callback_configInput( GtkWidget *widget, gpointer data )
 {
@@ -135,7 +135,7 @@ callback_aboutInput( GtkWidget *widget, gpointer data )
 		plugin_exec_about( name );
 }
 
-// RSP
+/* RSP */
 static void
 callback_configRSP( GtkWidget *widget, gpointer data )
 {
@@ -163,17 +163,16 @@ callback_aboutRSP( GtkWidget *widget, gpointer data )
 		plugin_exec_about( name );
 }
 
-// rombrowser
+/* ROM browser */
 static void
 callback_romDirectorySelected( const gchar *dirname )
 {
 	GList *dir = NULL, *list;
 	GtkWidget *item;
 
-	// check if the directory is already in the list
-	list = GTK_LIST(g_ConfigDialog.romDirectoryList)->children;
-	while( list )
-	{
+	/* Check if the directory is already in the list. */
+	list = GTK_LIST(g_ConfigDialog.romDirectoryList) -> children;
+	while (list) {
 		GtkListItem *item = GTK_LIST_ITEM(list->data);
 		GtkLabel *label = GTK_LABEL(GTK_BIN(item)->child);
 		char *text = NULL;
@@ -239,7 +238,7 @@ callback_romDirectoryRemoveAll( GtkWidget *widget, gpointer data )
 	g_RefreshRomBrowser = 1;
 }
 
-// ok/cancel button
+/* OK/cancel button */
 static void
 callback_okClicked( GtkWidget *widget, gpointer data )
 {
@@ -247,7 +246,7 @@ callback_okClicked( GtkWidget *widget, gpointer data )
 	GList *romDirGList;
 	int i;
 
-	// save configuration
+	/* Save configuration. */
 	name = gtk_entry_get_text( GTK_ENTRY(GTK_COMBO(g_ConfigDialog.gfxCombo)->entry) );
 	if( name )
 	{
@@ -319,35 +318,34 @@ callback_okClicked( GtkWidget *widget, gpointer data )
 	else
 		config_put_number( "Core", CORE_PURE_INTERPRETER );
 
-	// refresh rom-browser
-	if( g_RefreshRomBrowser )
+	/* Refresh rom-browser. */
+	if (g_RefreshRomBrowser)
 		rombrowser_refresh();
 
-	// hide dialog
-	gtk_widget_hide( g_ConfigDialog.dialog );
+	/* Hide dialog. */
+	gtk_widget_hide(g_ConfigDialog.dialog);
 
-	// write configuration
+	/* Write configuration. */
 	config_write();
 }
 
 static void
-callback_cancelClicked( GtkWidget *widget, gpointer data )
+callback_cancelClicked(GtkWidget *widget, gpointer data)
 {
-	// hide dialog
-	gtk_widget_hide( g_ConfigDialog.dialog );
+	/* Hide dialog. */
+	gtk_widget_hide(g_ConfigDialog.dialog);
 }
 
-// when the window is shown
+/* When the window is shown. */
 static void
-callback_dialogShow( GtkWidget *widget, gpointer data )
+callback_dialogShow(GtkWidget *widget, gpointer data)
 {
 	int i;
 	char *name;
 
-	// fill in configuration
-	callback_romDirectoryRemoveAll( NULL, NULL );
-	for( i = 0; i < config_get_number( "NumRomDirs", 0 ); i++ )
-	{
+	/* Fill in configuration. */
+	callback_romDirectoryRemoveAll(NULL, NULL);
+	for (i = 0; i < config_get_number("NumRomDirs", 0); i++) {
 		char buf[30];
 		sprintf( buf, "RomDirectory[%d]", i );
 		callback_romDirectorySelected( config_get_string( buf, "" ) );
@@ -392,13 +390,12 @@ callback_dialogShow( GtkWidget *widget, gpointer data )
 	g_RefreshRomBrowser = 0;
 }
 
-// hide on delete
+/* Hide on delete. */
 static gint
 delete_question_event(GtkWidget *widget, GdkEvent *event, gpointer data)
 {
-	gtk_widget_hide( widget );
-
-	return TRUE; // undeleteable
+	gtk_widget_hide(widget);
+	return TRUE; /* un-deleteable */
 }
 
 /** create dialog **/
@@ -412,7 +409,7 @@ create_configDialog( void )
 	GtkWidget *vbox;
 	GtkWidget *hbox1, *hbox2;
 
-	// search plugins
+	/* Search plugins. */
 	g_ConfigDialog.gfxPluginGList = NULL;
 	g_ConfigDialog.audioPluginGList = NULL;
 	g_ConfigDialog.inputPluginGList = NULL;
@@ -437,7 +434,7 @@ create_configDialog( void )
 			break;
 		}
 
-	// create window
+	/* Create window. */
 	g_ConfigDialog.dialog = gtk_dialog_new();
 	gtk_container_set_border_width( GTK_CONTAINER(g_ConfigDialog.dialog), 10 );
 	gtk_window_set_title( GTK_WINDOW(g_ConfigDialog.dialog), tr("Configure") );
@@ -446,27 +443,27 @@ create_configDialog( void )
 	gtk_signal_connect(GTK_OBJECT(g_ConfigDialog.dialog), "delete_event",
 				GTK_SIGNAL_FUNC(delete_question_event), (gpointer)NULL );
 
-	// create notebook
+	/* Create notebook. */
 	g_ConfigDialog.notebook = gtk_notebook_new();
 	gtk_notebook_set_tab_pos( GTK_NOTEBOOK(g_ConfigDialog.notebook), GTK_POS_TOP );
 	gtk_box_pack_start( GTK_BOX(GTK_DIALOG(g_ConfigDialog.dialog)->vbox), g_ConfigDialog.notebook, TRUE, TRUE, 0 );
 
-	// create ok/cancel button
-	button = gtk_button_new_with_label( tr("Ok") );
-	gtk_box_pack_start( GTK_BOX(GTK_DIALOG(g_ConfigDialog.dialog)->action_area), button, TRUE, TRUE, 0 );
-	gtk_signal_connect( GTK_OBJECT(button), "clicked",
-				GTK_SIGNAL_FUNC(callback_okClicked), (gpointer)NULL );
+	/* Create OK/cancel button. */
+	button = gtk_button_new_with_label(tr("Ok"));
+	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(g_ConfigDialog.dialog)->action_area), button, TRUE, TRUE, 0);
+	gtk_signal_connect(GTK_OBJECT(button), "clicked",
+				GTK_SIGNAL_FUNC(callback_okClicked), (gpointer)NULL);
 
 	button = gtk_button_new_with_label( tr("Cancel") );
 	gtk_box_pack_start( GTK_BOX(GTK_DIALOG(g_ConfigDialog.dialog)->action_area), button, TRUE, TRUE, 0 );
 	gtk_signal_connect( GTK_OBJECT(button), "clicked",
 				GTK_SIGNAL_FUNC(callback_cancelClicked), (gpointer)NULL );
 
-	// create mupen configuration page
-	label = gtk_label_new( "Mupen64" );
-	g_ConfigDialog.configMupen = gtk_vbox_new( FALSE, 5 );
-	gtk_container_set_border_width( GTK_CONTAINER(g_ConfigDialog.configMupen), 10 );
-	gtk_notebook_append_page( GTK_NOTEBOOK(g_ConfigDialog.notebook), g_ConfigDialog.configMupen, label );
+	/* Create mupen configuration page. */
+	label = gtk_label_new("Mupen64");
+	g_ConfigDialog.configMupen = gtk_vbox_new(FALSE, 5);
+	gtk_container_set_border_width(GTK_CONTAINER(g_ConfigDialog.configMupen), 10);
+	gtk_notebook_append_page(GTK_NOTEBOOK(g_ConfigDialog.notebook), g_ConfigDialog.configMupen, label);
 
 	frame = gtk_frame_new( tr("CPU Core") );
 	gtk_box_pack_start( GTK_BOX(g_ConfigDialog.configMupen), frame, FALSE, FALSE, 0 );
@@ -487,7 +484,7 @@ create_configDialog( void )
 	gtk_box_pack_start( GTK_BOX(vbox), g_ConfigDialog.coreDynaRecCheckButton, FALSE, FALSE, 0 );
 	gtk_box_pack_start( GTK_BOX(vbox), g_ConfigDialog.corePureInterpCheckButton, FALSE, FALSE, 0 );
    
-        // special core options
+        /* special core options */
 	g_ConfigDialog.noAudioDelayCheckButton = gtk_check_button_new_with_label("No audio delay (it can fix some compatibility issues \n but audio won't be synchronised with video)");
         g_ConfigDialog.noCompiledJumpCheckButton = gtk_check_button_new_with_label("No compiled jump (improves compatibility at the cost of some speed)");
         g_ConfigDialog.autoincSaveSlotCheckButton = gtk_check_button_new_with_label("Auto increment save slot");
@@ -496,19 +493,19 @@ create_configDialog( void )
         gtk_box_pack_start(GTK_BOX(g_ConfigDialog.configMupen), g_ConfigDialog.autoincSaveSlotCheckButton, FALSE, FALSE, 0);
         
    
-///////////
-// disable dynarec checkbutton
-///////////
-	//gtk_widget_set_sensitive( g_ConfigDialog.coreDynaRecCheckButton, FALSE );
+/**********
+* Disable dyna-rec check button.
+**********/
+	/* gtk_widget_set_sensitive(g_ConfigDialog.coreDynaRecCheckButton, FALSE); */
 
-	// create plugin config page
-	label = gtk_label_new( tr("Plugins") );
-	g_ConfigDialog.configPlugins = gtk_vbox_new( FALSE, 5 );
-	gtk_container_set_border_width( GTK_CONTAINER(g_ConfigDialog.configPlugins), 10 );
-	gtk_notebook_append_page( GTK_NOTEBOOK(g_ConfigDialog.notebook), g_ConfigDialog.configPlugins, label );
+	/* Create plugin config page. */
+	label = gtk_label_new(tr("Plugins"));
+	g_ConfigDialog.configPlugins = gtk_vbox_new(FALSE, 5);
+	gtk_container_set_border_width(GTK_CONTAINER(g_ConfigDialog.configPlugins), 10);
+	gtk_notebook_append_page(GTK_NOTEBOOK(g_ConfigDialog.notebook), g_ConfigDialog.configPlugins, label);
 
-	// gfx plugin
-	frame = gtk_frame_new( tr("Gfx Plugin") );
+	/* gfx plugin */
+	frame = gtk_frame_new(tr("Gfx Plugin"));
 	gtk_box_pack_start( GTK_BOX(g_ConfigDialog.configPlugins), frame, FALSE, FALSE, 0 );
 
 	vbox = gtk_vbox_new( TRUE, 5 );
@@ -546,9 +543,9 @@ create_configDialog( void )
 	gtk_signal_connect( GTK_OBJECT(button_about), "clicked",
 				GTK_SIGNAL_FUNC(callback_aboutGfx), (gpointer) NULL );
 
-	// audio plugin
-	frame = gtk_frame_new( tr("Audio Plugin") );
-	gtk_box_pack_start( GTK_BOX(g_ConfigDialog.configPlugins), frame, FALSE, FALSE, 0 );
+	/* audio plugin */
+	frame = gtk_frame_new(tr("Audio Plugin"));
+	gtk_box_pack_start(GTK_BOX(g_ConfigDialog.configPlugins), frame, FALSE, FALSE, 0);
 
 	vbox = gtk_vbox_new( TRUE, 5 );
 	gtk_container_set_border_width( GTK_CONTAINER(vbox), 10 );
@@ -585,9 +582,9 @@ create_configDialog( void )
 	gtk_signal_connect( GTK_OBJECT(button_about), "clicked",
 				GTK_SIGNAL_FUNC(callback_aboutAudio), (gpointer) NULL );
 
-	// input plugin
-	frame = gtk_frame_new( tr("Input Plugin") );
-	gtk_box_pack_start( GTK_BOX(g_ConfigDialog.configPlugins), frame, FALSE, FALSE, 0 );
+	/* input plugin */
+	frame = gtk_frame_new(tr("Input Plugin"));
+	gtk_box_pack_start(GTK_BOX(g_ConfigDialog.configPlugins), frame, FALSE, FALSE, 0);
 
 	vbox = gtk_vbox_new( TRUE, 5 );
 	gtk_container_set_border_width( GTK_CONTAINER(vbox), 10 );
@@ -624,9 +621,9 @@ create_configDialog( void )
 	gtk_signal_connect( GTK_OBJECT(button_about), "clicked",
 				GTK_SIGNAL_FUNC(callback_aboutInput), (gpointer) NULL );
 
-	// RSP plugin
-	frame = gtk_frame_new( tr("RSP Plugin") );
-	gtk_box_pack_start( GTK_BOX(g_ConfigDialog.configPlugins), frame, FALSE, FALSE, 0 );
+	/* RSP plugin */
+	frame = gtk_frame_new(tr("RSP Plugin"));
+	gtk_box_pack_start(GTK_BOX(g_ConfigDialog.configPlugins), frame, FALSE, FALSE, 0);
 
 	vbox = gtk_vbox_new( TRUE, 5 );
 	gtk_container_set_border_width( GTK_CONTAINER(vbox), 10 );
@@ -663,11 +660,11 @@ create_configDialog( void )
 	gtk_signal_connect( GTK_OBJECT(button_about), "clicked",
 				GTK_SIGNAL_FUNC(callback_aboutRSP), (gpointer) NULL );
 
-	// create rombrowser config page
-	label = gtk_label_new( tr("Rom Browser") );
-	g_ConfigDialog.configRomBrowser = gtk_vbox_new( FALSE, 5 );
-	gtk_container_set_border_width( GTK_CONTAINER(g_ConfigDialog.configRomBrowser), 10 );
-	gtk_notebook_append_page( GTK_NOTEBOOK(g_ConfigDialog.notebook), g_ConfigDialog.configRomBrowser, label );
+	/* Create rombrowser config page. */
+	label = gtk_label_new(tr("Rom Browser"));
+	g_ConfigDialog.configRomBrowser = gtk_vbox_new(FALSE, 5);
+	gtk_container_set_border_width(GTK_CONTAINER(g_ConfigDialog.configRomBrowser), 10);
+	gtk_notebook_append_page(GTK_NOTEBOOK(g_ConfigDialog.notebook), g_ConfigDialog.configRomBrowser, label);
 
 	frame = gtk_frame_new( tr("Rom Directories") );
 	gtk_box_pack_start( GTK_BOX(g_ConfigDialog.configRomBrowser), frame, TRUE, TRUE, 0 );
@@ -698,12 +695,11 @@ create_configDialog( void )
 	gtk_signal_connect( GTK_OBJECT(button), "clicked",
 				GTK_SIGNAL_FUNC(callback_romDirectoryRemoveAll), (gpointer) NULL );
 
-	g_ConfigDialog.romDirsScanRecCheckButton = gtk_check_button_new_with_label( tr("Recursively scan rom directories") );
-	gtk_box_pack_start( GTK_BOX(g_ConfigDialog.configRomBrowser), g_ConfigDialog.romDirsScanRecCheckButton, FALSE, FALSE, 0 );
-	
+	g_ConfigDialog.romDirsScanRecCheckButton = gtk_check_button_new_with_label(tr("Recursively scan rom directories"));
+	gtk_box_pack_start(GTK_BOX(g_ConfigDialog.configRomBrowser), g_ConfigDialog.romDirsScanRecCheckButton, FALSE, FALSE, 0);
 
-	// init widgets (load configuration into widgets)
-	callback_dialogShow( NULL, NULL );
+	/* Init widgets. (Load configuration into widgets.) */
+	callback_dialogShow(NULL, NULL);
 
 	return 0;
 }

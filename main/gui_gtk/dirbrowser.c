@@ -265,7 +265,7 @@ GtkWidget *create_dir_browser(gchar * title, gchar * current_path, GtkSelectionM
 #ifdef _GTK2
 	window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	gtk_window_set_modal(GTK_WINDOW(window), TRUE);
-//	gtk_window_set_decorated(GTK_WINDOW(window), TRUE);
+/*	gtk_window_set_decorated(GTK_WINDOW(window), TRUE); */
 #else
 	window = gtk_window_new(GTK_WINDOW_DIALOG);
 #endif

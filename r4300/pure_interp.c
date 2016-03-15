@@ -814,7 +814,7 @@ static void TLBWI()
    tlb_e[Index&0x3F].v_odd = (EntryLo1 & 0x2) >> 1;
    tlb_e[Index&0x3F].asid = (EntryHi & 0xFF);
    tlb_e[Index&0x3F].vpn2 = (EntryHi & 0xFFFFE000) >> 13;
-   //tlb_e[Index&0x3F].r = (EntryHi & 0xC000000000000000LL) >> 62;
+/* tlb_e[Index&0x3F].r = (EntryHi & 0xC000000000000000LL) >> 62; */
    tlb_e[Index&0x3F].mask = (PageMask & 0x1FFE000) >> 13;
    
    tlb_e[Index&0x3F].start_even = tlb_e[Index&0x3F].vpn2 << 13;
@@ -895,7 +895,7 @@ static void TLBWR()
    tlb_e[Random].v_odd = (EntryLo1 & 0x2) >> 1;
    tlb_e[Random].asid = (EntryHi & 0xFF);
    tlb_e[Random].vpn2 = (EntryHi & 0xFFFFE000) >> 13;
-   //tlb_e[Random].r = (EntryHi & 0xC000000000000000LL) >> 62;
+/* tlb_e[Random].r = (EntryHi & 0xC000000000000000LL) >> 62; */
    tlb_e[Random].mask = (PageMask & 0x1FFE000) >> 13;
    
    tlb_e[Random].start_even = tlb_e[Random].vpn2 << 13;
@@ -1010,7 +1010,7 @@ static void MTC0()
 {
    switch(PC->f.r.nrd)
      {
-      case 0:    // Index
+      case 0:    /* Index */
 	Index = rrt & 0x8000003F;
 	if ((Index & 0x3F) > 31) 
 	  {
@@ -1018,27 +1018,27 @@ static void MTC0()
 	     stop=1;
 	  }
 	break;
-      case 1:    // Random
+      case 1:    /* Random */
 	break;
-      case 2:    // EntryLo0
+      case 2:    /* EntryLo0 */
 	EntryLo0 = rrt & 0x3FFFFFFF;
 	break;
-      case 3:    // EntryLo1
+      case 3:    /* EntryLo1 */
  	EntryLo1 = rrt & 0x3FFFFFFF;
 	break;
-      case 4:    // Context
+      case 4:    /* Context */
 	Context = (rrt & 0xFF800000) | (Context & 0x007FFFF0);
 	break;
-      case 5:    // PageMask
+      case 5:    /* PageMask */
 	PageMask = rrt & 0x01FFE000;
 	break;
-      case 6:    // Wired
+      case 6:    /* Wired */
 	Wired = rrt;
 	Random = 31;
 	break;
-      case 8:    // BadVAddr
+      case 8:    /* BadVAddr */
 	break;
-      case 9:    // Count
+      case 9:    /* Count */
 	update_count();
 	if (next_interupt <= Count) gen_interupt();
 	debug_count += Count;
@@ -1046,17 +1046,17 @@ static void MTC0()
 	Count = rrt & 0xFFFFFFFF;
 	debug_count -= Count;
 	break;
-      case 10:   // EntryHi
+      case 10:   /* EntryHi */
 	EntryHi = rrt & 0xFFFFE0FF;
 	break;
-      case 11:   // Compare
+      case 11:   /* Compare */
 	update_count();
 	remove_event(COMPARE_INT);
 	add_interupt_event_count(COMPARE_INT, (u32)rrt);
 	Compare = rrt;
-	Cause = Cause & 0xFFFF7FFF; //Timer interupt is clear
+	Cause = Cause & 0xFFFF7FFF; /* Timer interupt is clear. */
 	break;
-      case 12:   // Status
+      case 12:   /* Status */
 	if((rrt & 0x04000000) != (Status & 0x04000000))
 	  {
 	     if (rrt & 0x04000000)
@@ -1064,7 +1064,7 @@ static void MTC0()
 		  int i;
 		  for (i=0; i<32; i++)
 		    {
-		       //reg_cop1_fgr_64[i]=reg_cop1_fgr_32[i];
+		    /* reg_cop1_fgr_64[i]=reg_cop1_fgr_32[i]; */
 		       reg_cop1_double[i]=(double*)&reg_cop1_fgr_64[i];
 		       reg_cop1_simple[i]=(float*)&reg_cop1_fgr_64[i];
 		    }
@@ -1074,14 +1074,19 @@ static void MTC0()
 		  int i;
 		  for (i=0; i<32; i++)
 		    {
-		       //reg_cop1_fgr_32[i]=reg_cop1_fgr_64[i]&0xFFFFFFFF;
-		       //if (i<16) reg_cop1_double[i*2]=(double*)&reg_cop1_fgr_32[i*2];
-		       //reg_cop1_double[i]=(double*)&reg_cop1_fgr_64[i & 0xFFFE];
+#if 0
+		       reg_cop1_fgr_32[i] = reg_cop1_fgr_64[i] & 0xFFFFFFFF;
+		       if (i < 16)
+			   reg_cop1_double[i*2] = (double*)&reg_cop1_fgr_32[i*2];
+		       reg_cop1_double[i] = (double*)&reg_cop1_fgr_64[i & 0xFFFE];
+#endif
 		       if(!(i&1))
 			 reg_cop1_double[i]=(double*)&reg_cop1_fgr_64[i>>1];
-		       //reg_cop1_double[i]=(double*)&reg_cop1_fgr_64[i];
-		       //reg_cop1_simple[i]=(float*)&reg_cop1_fgr_32[i];
-		       //reg_cop1_simple[i]=(float*)&reg_cop1_fgr_64[i & 0xFFFE]+(i&1);
+#if 0
+		       reg_cop1_double[i] = (double*)&reg_cop1_fgr_64[i];
+		       reg_cop1_simple[i] = (float*)&reg_cop1_fgr_32[i];
+		       reg_cop1_simple[i] = (float*)&reg_cop1_fgr_64[i & 0xFFFE] + (i & 1);
+#endif
 #ifndef _BIG_ENDIAN
 		       reg_cop1_simple[i]=(float*)&reg_cop1_fgr_64[i>>1]+(i&1);
 #else
@@ -1097,7 +1102,7 @@ static void MTC0()
 	if (next_interupt <= Count) gen_interupt();
 	interp_addr-=4;
 	break;
-      case 13:   // Cause
+      case 13: /* Cause */
 	if (rrt!=0)
 	  {
 	     printf("écriture dans Cause\n");
@@ -1105,26 +1110,26 @@ static void MTC0()
 	  }
 	else Cause = rrt;
 	break;
-      case 14:   // EPC
+      case 14: /* EPC */
 	EPC = rrt;
 	break;
-      case 15:  // PRevID
+      case 15: /* PRevID */
 	break;
-      case 16:  // Config
+      case 16: /* Config */
 	Config = rrt;
 	break;
-      case 18:  // WatchLo
+      case 18: /* WatchLo */
 	WatchLo = rrt & 0xFFFFFFFF;
 	break;
-      case 19:  // WatchHi
+      case 19: /* WatchHi */
 	WatchHi = rrt & 0xFFFFFFFF;
 	break;
-      case 27: // CacheErr
+      case 27: /* CacheErr */
 	break;
-      case 28: // TagLo
+      case 28: /* TagLo */
 	TagLo = rrt & 0x0FFFFFC0;
 	break;
-      case 29: // TagHi
+      case 29: /* TagHi */
 	TagHi =0;
 	break;
       default:
@@ -1628,15 +1633,16 @@ static void MUL_D()
 
 static void DIV_D()
 {
-   if((FCR31 & 0x400) && *reg_cop1_double[cfft] == 0)
-     {
-	//FCR31 |= 0x8020;
-	/*FCR31 |= 0x8000;
-	Cause = 15 << 2;
-	exception_general();*/
+    if ((FCR31 & 0x400) && *reg_cop1_double[cfft] == 0) {
+#if 0
+        FCR31 |= 0x8020;
+        FCR31 |= 0x8000;
+        Cause = 15 << 2;
+        exception_general();
+#endif
 	printf("div_d by 0\n");
-	//return;
-     }
+     /* return; */
+    }
    set_rounding();
    *reg_cop1_double[cffd] = *reg_cop1_double[cffs] /
      *reg_cop1_double[cfft];
@@ -2022,26 +2028,30 @@ static void DMTC1()
 
 static void CTC1()
 {
-   if (rfs==31)
-     FCR31 = rrt32;
-   switch((FCR31 & 3))
-     {
-      case 0:
-	rounding_mode = 0x33F;
-	break;
-      case 1:
-	rounding_mode = 0xF3F;
-	break;
-      case 2:
-	rounding_mode = 0xB3F;
-	break;
-      case 3:
-	rounding_mode = 0x73F;
-	break;
-     }
-   //if ((FCR31 >> 7) & 0x1F) printf("FPU Exception enabled : %x\n",
-//				   (int)((FCR31 >> 7) & 0x1F));
-   interp_addr+=4;
+    if (rfs == 31)
+        FCR31 = rrt32;
+    switch ((FCR31 & 3)) {
+    case 0:
+        rounding_mode = 0x33F;
+        break;
+    case 1:
+        rounding_mode = 0xF3F;
+        break;
+    case 2:
+        rounding_mode = 0xB3F;
+        break;
+    case 3:
+        rounding_mode = 0x73F;
+        break;
+    }
+#if 0
+    if ((FCR31 >> 7) & 0x1F)
+        printf(
+            "FPU Exception enabled : %x\n",
+            (int)((FCR31 >> 7) & 0x1F)
+        );
+#endif
+    interp_addr += 4;
 }
 
 static void BC()
@@ -3061,26 +3071,33 @@ static void (*interp_ops[64])(void) =
 
 void prefetch()
 {
-   //static FILE *f = NULL;
-   //static int line=1;
-   //static int tlb_used = 0;
-   //unsigned int comp;
-   //if (!tlb_used)
-     //{
-	/*if (f==NULL) f = fopen("/mnt/windows/pcdeb.txt", "rb");
-	fscanf(f, "%x", &comp);
-	if (comp != interp_addr)
-	  {
-	     printf("diff@%x, line:%d\n", interp_addr, line);
-	     stop=1;
-	  }*/
-	//line++;
-	//if ((debug_count+Count) > 0x50fe000) printf("line:%d\n", line);
-	/*if ((debug_count+Count) > 0xb70000)
-	  printf("count:%x, add:%x, op:%x, l%d\n", (int)(Count+debug_count),
-		 interp_addr, op, line);*/
-     //}
-   //printf("addr:%x\n", interp_addr);
+#if 0
+    static FILE *f = NULL;
+    static int line=1;
+    static int tlb_used = 0;
+    unsigned int comp;
+    if (!tlb_used) {
+        if (f == NULL)
+            f = fopen("/mnt/windows/pcdeb.txt", "rb");
+        fscanf(f, "%x", &comp);
+        if (comp != interp_addr) {
+            printf(
+                "diff@%x, line:%d\n", interp_addr, line
+            );
+            stop=1;
+        }
+        line++;
+        if ((debug_count+Count) > 0x50fe000)
+            printf("line:%d\n", line);
+        if ((debug_count+Count) > 0xb70000)
+            printf(
+                "count:%x, add:%x, op:%x, l%d\n",
+                (int)(Count + debug_count),
+                interp_addr, op, line
+            );
+    }
+    printf("addr:%x\n", interp_addr);
+#endif
    if ((interp_addr >= 0x80000000) && (interp_addr < 0xc0000000))
      {
 	if ((interp_addr >= 0x80000000) && (interp_addr < 0x80800000))
@@ -3116,14 +3133,14 @@ void prefetch()
 	else 
 	  {
 	     prefetch();
-	     //tlb_used = 0;
+	  /* tlb_used = 0; */
 	     return;
 	  }
-	//tlb_used = 1;
+     /* tlb_used = 1; */
 	prefetch();
-	//tlb_used = 0;
+     /* tlb_used = 0; */
 	interp_addr = addr;
-     }
+    }
 }
 
 void pure_interpreter()
@@ -3132,19 +3149,28 @@ void pure_interpreter()
    stop=0;
    PC = malloc(sizeof(precomp_instr));
    last_addr = interp_addr;
-   while (!stop)
-     {
-	//if (interp_addr == 0x10022d08) stop = 1;
+    while (!stop) {
+#if 0
+        if (interp_addr == 0x10022d08)
+            stop = 1;
+#endif
 	prefetch();
 #ifdef COMPARE_CORE
 	compare_core();
 #endif
-	//if (Count > 0x2000000) printf("inter:%x,%x\n", interp_addr,op);
-	//if ((Count+debug_count) > 0xabaa2c) stop=1;
+#if 0
+        if (Count > 0x2000000)
+            printf("inter:%x,%x\n", interp_addr,op);
+        if ((Count + debug_count) > 0xabaa2c)
+            stop = 1;
+#endif
 	interp_ops[((op >> 26) & 0x3F)]();
 
-	//Count = (u32)Count + 2;
-	//if (interp_addr == 0x80000180) last_addr = interp_addr;
+#if 0
+        Count = (u32)Count + 2;
+        if (interp_addr == 0x80000180)
+            last_addr = interp_addr;
+#endif
 #ifdef DBG
 	PC->addr = interp_addr;
 	if (debugger_mode) update_debugger();

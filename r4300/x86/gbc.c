@@ -39,9 +39,9 @@ void genbc1f_test()
 {
    test_m32_imm32((u32*)&FCR31, 0x800000);
    jne_rj(12);
-   mov_m32_imm32((u32*)(&branch_taken), 1); // 10
-   jmp_imm_short(10); // 2
-   mov_m32_imm32((u32*)(&branch_taken), 0); // 10
+   mov_m32_imm32((u32*)(&branch_taken), 1); /* 10 */
+   jmp_imm_short(10); /* 2 */
+   mov_m32_imm32((u32*)(&branch_taken), 0); /* 10 */
 }
 
 void genbc1f()
@@ -105,9 +105,9 @@ void genbc1t_test()
 {
    test_m32_imm32((u32*)&FCR31, 0x800000);
    je_rj(12);
-   mov_m32_imm32((u32*)(&branch_taken), 1); // 10
-   jmp_imm_short(10); // 2
-   mov_m32_imm32((u32*)(&branch_taken), 0); // 10
+   mov_m32_imm32((u32*)(&branch_taken), 1); /* 10 */
+   jmp_imm_short(10); /* 2 */
+   mov_m32_imm32((u32*)(&branch_taken), 0); /* 10 */
 }
 
 void genbc1t()

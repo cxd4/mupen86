@@ -44,9 +44,9 @@ const char *VCRComp_audioCodecAttribOption( int cindex, int aindex, int oindex )
 void        VCRComp_selectAudioCodec( int index );
 
 #if defined(__cplusplus)
-} // extern "C"
+} /* extern "C" */
 #endif
 
-#endif // __VCR_COMPRESS_H__
+#endif /* __VCR_COMPRESS_H__ */
 
-#endif // VCR_SUPPORT
+#endif /* VCR_SUPPORT */

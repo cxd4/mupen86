@@ -31,8 +31,10 @@
  * if you want to implement an interface, you should look here
  */
 
-// Emulateur Nintendo 64, MUPEN64, Fichier Principal 
-// main.c
+/*
+ * Emulateur Nintendo 64, MUPEN64, Fichier Principal 
+ * main.c
+ */
 #define VERSION "0.5\0"
 
 #include <stdlib.h>
@@ -243,7 +245,7 @@ int main(int argc, char *argv[])
      printf("Warning: Couldn't register SIGTERM signal handler!\n");
 #endif
    
-   //Set working dir
+    /* Set working directory. */
 #ifdef WITH_HOME
      {
 	char temp[PATH_MAX], orig[PATH_MAX];
@@ -347,12 +349,12 @@ int main(int argc, char *argv[])
    strcpy(g_WorkingDir, cwd);
 #endif
    
-   //read config file, read plugins
-   config_read();
-   plugin_scan_directory(cwd);
-   
-   //get config file settings
-   
+    /* Read config file; read plugins. */
+    config_read();
+    plugin_scan_directory(cwd);
+
+    /* Get config file settings. */
+
    buffer = (char*)config_get_string("Gfx Plugin", "");
    buffer2= plugin_name_by_filename(buffer);
    if(buffer2)
@@ -410,10 +412,8 @@ int main(int argc, char *argv[])
 	  p_noask = true;
      }
    
-   // Command Line Parameter - Parsing
-   
-   for(p=1; p<argc; p++)
-     {
+    /* Command Line Parameter - Parsing */
+    for (p = 1; p < argc; p++) {
 	if(argv[p][0] == '-')
 	  {
 	     if(!strcmp(argv[p], "--fullscreen"))
@@ -564,7 +564,7 @@ int main(int argc, char *argv[])
    SDL_EnableKeyRepeat(0, 0);
    SDL_EnableUNICODE(1);
    init_memory();
-   // --------------------- loading plugins ----------------------
+   /* --------------------- loading plugins ---------------------- */
    i=1;
    i1=1;
    printf("  Choose your gfx plugin : \n");
@@ -606,20 +606,21 @@ int main(int argc, char *argv[])
 	  }
 	else
 	  plugin_next();
-     }
-   /*getchar();
-   c = getchar();
-   //getchar();
-   s[0] = c;
-   s[1] = 0;*/
-   if(p_audio)
-     i2 = 99;
-   else
-     {
-	scanf("%10s", s);
-	i2 = old_i + atoi(s) - 1;
-     }
-   
+    }
+#if 0
+    getchar();
+    c = getchar();
+ /* getchar(); */
+    s[0] = c;
+    s[1] = 0;
+#endif
+    if (p_audio)
+        i2 = 99;
+    else {
+        scanf("%10s", s);
+        i2 = old_i + atoi(s) - 1;
+    }
+
    plugin_rewind();
    old_i = i;
    printf("  Choose your input plugin : \n");
@@ -634,19 +635,20 @@ int main(int argc, char *argv[])
 	else
 	  plugin_next();
      }
-   /*getchar();
-   c = getchar();
-   //getchar();
-   s[0] = c;
-   s[1] = 0;*/
-   if(p_input)
-     i3 = 98;
-   else
-     {
-	scanf("%10s", s);
-	i3 = old_i + atoi(s) - 1;
-     }
-   
+#if 0
+    getchar();
+    c = getchar();
+ /* getchar(); */
+    s[0] = c;
+    s[1] = 0;
+#endif
+    if (p_input)
+        i3 = 98;
+    else {
+        scanf("%10s", s);
+        i3 = old_i + atoi(s) - 1;
+    }
+
    plugin_rewind();
    old_i = i;
    printf("  Choose your RSP plugin : \n");
@@ -680,7 +682,7 @@ int main(int argc, char *argv[])
    romOpen_gfx();
    romOpen_audio();
    romOpen_input();
-   // ------------------------------------------------------------
+   /* ------------------------------------------------------------ */
    SDL_SetEventFilter(filter);
 
    if (p_fullscreen)

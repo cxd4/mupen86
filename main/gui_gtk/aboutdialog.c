@@ -22,7 +22,7 @@
 
 #include <gtk/gtk.h>
 
-// mupen pixmap
+/* mupen pixmap */
 #include "../../logo.xpm"
 
 /** globals **/
@@ -35,12 +35,11 @@ callback_okClicked( GtkWidget *widget, gpointer data )
 	gtk_widget_hide( g_AboutDialog.dialog );
 }
 
-// hide on delete
+/* Hide on delete. */
 static gint delete_question_event(GtkWidget *widget, GdkEvent *event, gpointer data)
 {
-	gtk_widget_hide( widget );
-
-	return TRUE; // undeleteable
+	gtk_widget_hide(widget);
+	return TRUE; /* un-deleteable */
 }
 
 /** function to create the about dialog **/

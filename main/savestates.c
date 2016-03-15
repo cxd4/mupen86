@@ -122,7 +122,8 @@ void savestates_save()
    
    gzwrite(f, &llbit, 4);
    gzwrite(f, reg, 32*8);
-   for (i=0; i<32; i++) gzwrite(f, reg_cop0+i, 8); // *8 for compatibility with old versions purpose
+    for (i = 0; i < 32; i++)
+        gzwrite(f, reg_cop0 + i, 8); /* *8 for compatibility with old versions purpose */
    gzwrite(f, &lo, 8);
    gzwrite(f, &hi, 8);
    gzwrite(f, reg_cop1_fgr_64, 32*8);
@@ -205,11 +206,10 @@ void savestates_load()
    
    gzread(f, &llbit, 4);
    gzread(f, reg, 32*8);
-   for (i=0; i<32; i++) 
-     {
-	gzread(f, reg_cop0+i, 4);
-	gzread(f, buf, 4); // for compatibility with old versions purpose
-     }
+    for (i = 0; i < 32; i++) {
+        gzread(f, reg_cop0 + i, 4);
+        gzread(f, buf, 4); /* for compatibility with old versions purpose */
+    }
    gzread(f, &lo, 8);
    gzread(f, &hi, 8);
    gzread(f, reg_cop1_fgr_64, 32*8);

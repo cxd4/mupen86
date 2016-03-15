@@ -58,12 +58,12 @@ void dyna_start(void (*code)())
    asm("mov %%ebp, save_ebp \n" : : : "memory");
    code();
    asm("mov save_ebp, %%ebp \n" : : : "memory");
-#else // _WIN32
+#else /* _WIN32 */
    save_ebp=0;
    asm("mov %%ebp, _save_ebp \n" : : : "memory");
    code();
    asm("mov _save_ebp, %%ebp \n" : : : "memory");
-#endif // _WIN32
+#endif /* _WIN32 */
 }
 
 static void dyna_stop2() {}
@@ -77,13 +77,13 @@ void dyna_stop()
        :
        :
        : "memory");
-#else // _WIN32
+#else /* _WIN32 */
    asm("mov _return_address, %%esp \n"
        "ret                        \n"
        :
        :
        : "memory");
-#endif // _WIN32
+#endif /* _WIN32 */
 }
 
 #endif

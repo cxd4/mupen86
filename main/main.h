@@ -17,13 +17,13 @@
 #ifndef __MAIN_H__
 #define __MAIN_H__
 
-#define CORE_INTERPRETER		(0)
-#define CORE_DYNAREC			(1)
-#define CORE_PURE_INTERPRETER	(2)
+#define CORE_INTERPRETER                (0)
+#define CORE_DYNAREC                    (1)
+#define CORE_PURE_INTERPRETER           (2)
 
 #ifndef PATH_MAX
 #  define PATH_MAX 1024
 #endif
 
 char g_WorkingDir[];
-#endif // __MAIN_H__
+#endif /* __MAIN_H__ */

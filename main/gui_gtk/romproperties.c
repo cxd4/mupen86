@@ -21,7 +21,7 @@
 #include "rombrowser.h"
 #include "translate.h"
 
-#include "../../memory/memory.h"	// sl()
+#include "../../memory/memory.h"        /* sl() */
 
 #include <gtk/gtk.h>
 #include <stdio.h>
@@ -60,7 +60,7 @@ callback_okClicked( GtkWidget *widget, gpointer data )
 		ini_updateFile(1);
 	}
 
-	// update rombrowser
+	/* Update ROM browser. */
 	gtk_clist_set_text( GTK_CLIST(g_MainWindow.romCList), gtk_clist_find_row_from_data( GTK_CLIST(g_MainWindow.romCList), g_RomEntry ),
 											3, g_RomEntry->info.cComments );
 }
@@ -72,20 +72,20 @@ callback_cancelClicked( GtkWidget *widget, gpointer data )
 	gtk_grab_remove( g_RomPropDialog.dialog );
 }
 
-// calculate md5
+/* Calculate MD5. */
 static void
 callback_calculateMd5Clicked( GtkWidget *widget, gpointer data )
 {
 }
 
-// hide on delete
+/* Hide on delete. */
 static gint
 delete_question_event( GtkWidget *widget, GdkEvent *event, gpointer data )
 {
 	gtk_widget_hide( widget );
 	gtk_grab_remove( g_RomPropDialog.dialog );
 
-	return TRUE; // undeleteable
+	return TRUE; /* un-deleteable */
 }
 
 
@@ -97,7 +97,7 @@ show_romPropDialog( SRomEntry *entry )
 {
 	char ini_code[200];
 
-	// fill dialog
+	/* Fill dialog. */
 	gtk_entry_set_text( GTK_ENTRY(g_RomPropDialog.romNameEntry), entry->cName );
 	gtk_entry_set_text( GTK_ENTRY(g_RomPropDialog.sizeEntry), entry->cSize );
 	gtk_entry_set_text( GTK_ENTRY(g_RomPropDialog.countryEntry), entry->cCountry );
@@ -108,7 +108,7 @@ show_romPropDialog( SRomEntry *entry )
 
 	g_RomEntry = entry;
 
-	// show dialog
+	/* Show dialog. */
 	gtk_widget_show_all( g_RomPropDialog.dialog );
 	gtk_grab_add( g_RomPropDialog.dialog );
 }
@@ -131,9 +131,9 @@ create_romPropDialog( void )
 	gtk_signal_connect(GTK_OBJECT(g_RomPropDialog.dialog), "delete_event",
 				GTK_SIGNAL_FUNC(delete_question_event), (gpointer)NULL );
 
-	// rom info
-	frame = gtk_frame_new( tr("Rom Info") );
-	gtk_box_pack_start( GTK_BOX(GTK_DIALOG(g_RomPropDialog.dialog)->vbox), frame, TRUE, TRUE, 0 );
+	/* ROM info */
+	frame = gtk_frame_new(tr("Rom Info"));
+	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(g_RomPropDialog.dialog) -> vbox), frame, TRUE, TRUE, 0);
 
 	table = gtk_table_new( 7, 3, FALSE );
 	gtk_container_set_border_width( GTK_CONTAINER(table), 10 );
@@ -182,7 +182,7 @@ create_romPropDialog( void )
 
 	gtk_container_add( GTK_CONTAINER(frame), g_RomPropDialog.commentsEntry );
 
-	// ok/cancel button
+	/* OK/cancel button */
 	button_ok = gtk_button_new_with_label( tr("Ok") );
 	gtk_box_pack_start( GTK_BOX(GTK_DIALOG(g_RomPropDialog.dialog)->action_area), button_ok, TRUE, TRUE, 0 );
 	gtk_signal_connect( GTK_OBJECT(button_ok), "clicked",

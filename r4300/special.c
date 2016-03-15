@@ -288,24 +288,28 @@ void DMULTU()
 
 void DDIV()
 {
-   if (rrt)
-     {
-	lo = (s64)rrs / (s64)rrt;
-	hi = (s64)rrs % (s64)rrt;
-     }
-//   else printf("ddiv\n");
-   PC++;
+    if (rrt) {
+        lo = (s64)rrs / (s64)rrt;
+    hi = (s64)rrs % (s64)rrt;
+    }
+#if 0
+    else
+        printf("ddiv\n");
+#endif
+    PC++;
 }
 
 void DDIVU()
 {
-   if (rrt)
-     {
-	lo = (u64)rrs / (u64)rrt;
-	hi = (u64)rrs % (u64)rrt;
-     }
-//   else printf("ddivu\n");
-   PC++;
+    if (rrt) {
+        lo = (u64)rrs / (u64)rrt;
+        hi = (u64)rrs % (u64)rrt;
+    }
+#if 0
+    else
+        printf("ddivu\n");
+#endif
+    PC++;
 }
 
 void ADD()

@@ -83,7 +83,9 @@ int check_cop1_unusable();
 
 #ifndef __WIN32__
 
-//#define PROFILE
+#if 0
+#define PROFILE
+#endif
 
 #ifdef PROFILE
 

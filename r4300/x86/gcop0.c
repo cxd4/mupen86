@@ -35,7 +35,7 @@
 #include "../r4300.h"
 #include "../ops.h"
 
-//static unsigned long pMFC0 = (unsigned long)(MFC0);
+/* static unsigned long pMFC0 = (unsigned long)(MFC0); */
 void genmfc0()
 {
    gencallinterp((u32)MFC0, 0);
@@ -45,7 +45,7 @@ void genmfc0()
    genupdate_system(0);*/
 }
 
-//static unsigned long pMTC0 = (unsigned long)(MTC0);
+/*static unsigned long pMTC0 = (unsigned long)(MTC0); */
 void genmtc0()
 {
    gencallinterp((u32)MTC0, 0);

@@ -23,7 +23,7 @@
 typedef struct
 {
 	GtkWidget	*window;
-	GtkWidget	*toplevelVBox;	// vbox containing menubar, toolbar, rombrowser, statusbar
+	GtkWidget	*toplevelVBox;	/* vbox containing menu bar, toolbar, ROM browser, status bar */
 
 	GtkWidget	*menuBar;
 
@@ -37,8 +37,8 @@ typedef struct
 extern SMainWindow g_MainWindow;
 extern char g_WorkingDir[];
 
-void statusbar_message( const char *section, const char *fmt, ... );
-void open_rom( const char *filename );
-void run_rom( void );
+void statusbar_message(const char *section, const char *fmt, ...);
+void open_rom(const char *filename);
+void run_rom(void);
 
-#endif // __MAIN_GTK_H__
+#endif /* __MAIN_GTK_H__ */

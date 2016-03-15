@@ -36,26 +36,24 @@
 
 #define log_warn( args... ) printf( args )
 
-typedef struct _SConfigValue
-{
-	char *key;		// key - string
-	char *cValue;	// value - string
-	int   iValue;	// value - integer
-	int   bValue;	// value - bool
+typedef struct _SConfigValue {
+    char *key;      /* key - string */
+    char *cValue;   /* value - string */
+    int   iValue;   /* value - integer */
+    int   bValue;   /* value - bool */
 
-	struct _SConfigValue *next;
+    struct _SConfigValue *next;
 } SConfigValue;
 
-typedef struct _SConfigSection
-{
-	char         *name;
-	SConfigValue *values;
+typedef struct _SConfigSection {
+    char         *name;
+    SConfigValue *values;
 
-	struct _SConfigSection *next;
+    struct _SConfigSection *next;
 } SConfigSection;
 
 SConfigSection *m_config = 0;
-SConfigSection *m_configSection = 0; // selected section
+SConfigSection *m_configSection = 0; /* selected section */
 
 /** helper funcs **/
 
@@ -258,7 +256,7 @@ config_read( void )
 
 		trim( line );
 		linelen = strlen( line );
-		if (line[0] == '#')		// comment
+		if (line[0] == '#')     /* comment */
 			continue;
 
 		if (line[0] == '[' && line[linelen-1] == ']')

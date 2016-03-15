@@ -139,7 +139,7 @@ void TLBWI()
    tlb_e[Index&0x3F].v_odd = (EntryLo1 & 0x2) >> 1;
    tlb_e[Index&0x3F].asid = (EntryHi & 0xFF);
    tlb_e[Index&0x3F].vpn2 = (EntryHi & 0xFFFFE000) >> 13;
-   //tlb_e[Index&0x3F].r = (EntryHi & 0xC000000000000000LL) >> 62;
+/* tlb_e[Index&0x3F].r = (EntryHi & 0xC000000000000000LL) >> 62; */
    tlb_e[Index&0x3F].mask = (PageMask & 0x1FFE000) >> 13;
    
    tlb_e[Index&0x3F].start_even = tlb_e[Index&0x3F].vpn2 << 13;
@@ -326,7 +326,7 @@ void TLBWR()
    tlb_e[Random].v_odd = (EntryLo1 & 0x2) >> 1;
    tlb_e[Random].asid = (EntryHi & 0xFF);
    tlb_e[Random].vpn2 = (EntryHi & 0xFFFFE000) >> 13;
-   //tlb_e[Random].r = (EntryHi & 0xC000000000000000LL) >> 62;
+/* tlb_e[Random].r = (EntryHi & 0xC000000000000000LL) >> 62; */
    tlb_e[Random].mask = (PageMask & 0x1FFE000) >> 13;
    
    tlb_e[Random].start_even = tlb_e[Random].vpn2 << 13;

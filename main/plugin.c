@@ -61,7 +61,9 @@ static Boolean dummy_initiateAudio(AUDIO_INFO Audio_Info) { return TRUE; }
 static void dummy_initiateControllers(CONTROL_INFO Control_Info) {}
 static void dummy_aiDacrateChanged(int SystemType) {}
 static u32 dummy_aiReadLength() { return 0; }
-//static void dummy_aiUpdate(BOOL Wait) {}
+#if 0
+static void dummy_aiUpdate(Boolean Wait) {}
+#endif
 static void dummy_controllerCommand(int Control, u8 * Command) {}
 static void dummy_getKeys(int Control, BUTTONS *Keys) {}
 static void dummy_readController(int Control, u8 *Command) {}
@@ -90,7 +92,9 @@ void (*readScreen)(void **dest, long *width, long *height) = 0;
 void (*aiDacrateChanged)(int SystemType) = dummy_aiDacrateChanged;
 void (*aiLenChanged)() = dummy_void;
 u32 (*aiReadLength)() = dummy_aiReadLength;
-//void (*aiUpdate)(Boolean Wait) = dummy_aiUpdate;
+#if 0
+void (*aiUpdate)(Boolean Wait) = dummy_aiUpdate;
+#endif
 void (*closeDLL_audio)() = dummy_void;
 Boolean (*initiateAudio)(AUDIO_INFO Audio_Info) = dummy_initiateAudio;
 void (*processAList)() = dummy_void;
@@ -116,7 +120,7 @@ void (*fBRead)(u32 addr) = dummy_fBRead;
 void (*fBWrite)(u32 addr, u32 size) = dummy_fBWrite;
 void (*fBGetFrameBufferInfo)(void *p) = dummy_fBGetFrameBufferInfo;
 
-//--------------------- plugin storage type ----------------
+/* --------------------- plugin storage type ---------------- */
 typedef struct _plugins plugins;
 struct _plugins
 {
@@ -221,7 +225,7 @@ char *plugin_name_by_filename(const char *filename)
 
 static void sucre()
 {
-   //printf("sucre\n");
+ /* printf("sucre\n"); */
 }
 
 void plugin_scan_directory(const char *directory)
@@ -396,7 +400,9 @@ void plugin_load_plugins(const char *gfx_name,
 	aiDacrateChanged = dlsym(handle_audio, "AiDacrateChanged");
 	aiLenChanged = dlsym(handle_audio, "AiLenChanged");
 	aiReadLength = dlsym(handle_audio, "AiReadLength");
-	//aiUpdate = dlsym(handle_audio, "AiUpdate");
+#if 0
+	aiUpdate = dlsym(handle_audio, "AiUpdate");
+#endif
 	initiateAudio = dlsym(handle_audio, "InitiateAudio");
 	processAList = dlsym(handle_audio, "ProcessAList");
 	romClosed_audio = dlsym(handle_audio, "RomClosed");
@@ -405,7 +411,9 @@ void plugin_load_plugins(const char *gfx_name,
 	if (aiDacrateChanged == NULL) aiDacrateChanged = dummy_aiDacrateChanged;
 	if (aiLenChanged == NULL) aiLenChanged = dummy_void;
 	if (aiReadLength == NULL) aiReadLength = dummy_aiReadLength;
-	//if (aiUpdate == NULL) aiUpdate = dummy_aiUpdate;
+#if 0
+	if (aiUpdate == NULL) aiUpdate = dummy_aiUpdate;
+#endif
 	if (closeDLL_audio == NULL) closeDLL_audio = dummy_void;
 	if (initiateAudio == NULL) initiateAudio = dummy_initiateAudio;
 	if (processAList == NULL) processAList = dummy_void;
@@ -433,7 +441,9 @@ void plugin_load_plugins(const char *gfx_name,
 	aiDacrateChanged = dummy_aiDacrateChanged;
 	aiLenChanged = dummy_void;
 	aiReadLength = dummy_aiReadLength;
-	//aiUpdate = dummy_aiUpdate;
+#if 0
+	aiUpdate = dummy_aiUpdate;
+#endif
 	closeDLL_audio = dummy_void;
 	initiateAudio = dummy_initiateAudio;
 	processAList = dummy_void;

@@ -70,7 +70,7 @@ void free_all_registers()
      }
 }
 
-// this function frees a specific X86 GPR
+/* This function frees a specific X86 GPR. */
 void free_register(int reg)
 {
    precomp_instr *last;
@@ -157,18 +157,19 @@ int lru_register_exc1(int exc1)
    return reg;
 }
 
-// this function finds a register to put the data contained in addr,
-// if there was another value before it's cleanly removed of the
-// register cache. After that, the register number is returned.
-// If data are already cached, the function only returns the register number
+/*
+ * This function finds a register to put the data contained in addr,
+ * if there was another value before it's cleanly removed of the
+ * register cache.  After that, the register number is returned.
+ * If data are already cached, the function only returns the register number.
+ */
 int allocate_register(u32 *addr)
 {
-   unsigned int oldest_access = 0xFFFFFFFF;
-   int reg = 0, i;
-   
-   // is it already cached ?
-   if (addr != NULL)
-     {
+    unsigned int oldest_access = 0xFFFFFFFF;
+    int reg = 0, i;
+
+    /* Is it already cached ? */
+    if (addr != NULL) {
 	for (i=0; i<8; i++)
 	  {
 	     if (last_access[i] != NULL && reg_content[i] == addr)
@@ -197,10 +198,9 @@ int allocate_register(u32 *addr)
 	       }
 	  }
      }
-   
-   // if it's not cached, we take the least recently used register
-   for (i=0; i<8; i++)
-     {
+
+    /* If it's not cached, we take the least recently used register. */
+    for (i = 0; i < 8; i++) {
 	if (i != ESP && (unsigned int)last_access[i] < oldest_access)
 	  {
 	     oldest_access = (int)last_access[i];
@@ -234,15 +234,16 @@ int allocate_register(u32 *addr)
    return reg;
 }
 
-// this function is similar to allocate_register except it loads
-// a 64 bits value, and return the register number of the LSB part
+/*
+ * This function is similar to allocate_register except it loads
+ * a 64-bit value and returns the register number of the LSB part.
+ */
 int allocate_64_register1(u32 *addr)
 {
-   int reg1, reg2, i;
-   
-   // is it already cached as a 32 bits value ?
-   for (i=0; i<8; i++)
-     {
+    int reg1, reg2, i;
+
+    /* Is it already cached as a 32-bit value ? */
+    for (i = 0; i < 8; i++) {
 	if (last_access[i] != NULL && reg_content[i] == addr)
 	  {
 	     if (r64[i] == -1)
@@ -273,15 +274,16 @@ int allocate_64_register1(u32 *addr)
    return reg1;
 }
 
-// this function is similar to allocate_register except it loads
-// a 64 bits value, and return the register number of the MSB part
+/*
+ * This function is similar to allocate_register except it loads
+ * a 64-bit value and returns the register number of the MSB part.
+ */
 int allocate_64_register2(u32 *addr)
 {
-   int reg1, reg2, i;
-   
-   // is it already cached as a 32 bits value ?
-   for (i=0; i<8; i++)
-     {
+    int reg1, reg2, i;
+
+    /* Is it already cached as a 32 bits value ? */
+    for (i = 0; i < 8; i++) {
 	if (last_access[i] != NULL && reg_content[i] == addr)
 	  {
 	     if (r64[i] == -1)
@@ -312,10 +314,12 @@ int allocate_64_register2(u32 *addr)
    return reg2;
 }
 
-// this function checks if the data located at addr are cached in a register
-// and then, it returns 1  if it's a 64 bit value
-//                      0  if it's a 32 bit value
-//                      -1 if it's not cached
+/*
+ * This function checks if the data located at addr are cached in a register
+ * and then, it returns 1  if it's a 64 bit value,
+ *                      0  if it's a 32 bit value, or
+ *                      -1 if it's not cached.
+ */
 int is64(u32 *addr)
 {
    int i;
@@ -334,10 +338,9 @@ int allocate_register_w(u32 *addr)
 {
    unsigned int oldest_access = 0xFFFFFFFF;
    int reg = 0, i;
-   
-   // is it already cached ?
-   for (i=0; i<8; i++)
-     {
+
+    /* Is it already cached ? */
+    for (i = 0; i < 8; i++) {
 	if (last_access[i] != NULL && reg_content[i] == addr)
 	  {
 	     precomp_instr *last = last_access[i]+1;
@@ -360,21 +363,19 @@ int allocate_register_w(u32 *addr)
 		  free_since[r64[i]] = dst+1;
 		  last_access[r64[i]] = NULL;
 		  r64[i] = -1;
-	       }
-	     
-	     return i;
-	  }
-     }
-   
-   // if it's not cached, we take the least recently used register
-   for (i=0; i<8; i++)
-     {
-	if (i != ESP && (unsigned int)last_access[i] < oldest_access)
-	  {
-	     oldest_access = (int)last_access[i];
-	     reg = i;
-	  }
-     }
+            }
+
+            return i;
+        }
+    }
+
+    /* If it's not cached, we take the least recently used register. */
+    for (i = 0; i < 8; i++) {
+        if (i != ESP && (unsigned int)last_access[i] < oldest_access) {
+            oldest_access = (int)last_access[i];
+            reg = i;
+        }
+    }
    
    if (last_access[reg]) free_register(reg);
    else
@@ -396,11 +397,10 @@ int allocate_register_w(u32 *addr)
 
 int allocate_64_register1_w(u32 *addr)
 {
-   int reg1, reg2, i;
-   
-   // is it already cached as a 32 bits value ?
-   for (i=0; i<8; i++)
-     {
+    int reg1, reg2, i;
+
+    /* Is it already cached as a 32 bits value ? */
+    for (i = 0; i < 8; i++) {
 	if (last_access[i] != NULL && reg_content[i] == addr)
 	  {
 	     if (r64[i] == -1)
@@ -451,11 +451,10 @@ int allocate_64_register1_w(u32 *addr)
 
 int allocate_64_register2_w(u32 *addr)
 {
-   int reg1, reg2, i;
-   
-   // is it already cached as a 32 bits value ?
-   for (i=0; i<8; i++)
-     {
+    int reg1, reg2, i;
+
+    /* Is it already cached as a 32-bit value ? */
+    for (i = 0; i < 8; i++) {
 	if (last_access[i] != NULL && reg_content[i] == addr)
 	  {
 	     if (r64[i] == -1)
@@ -607,9 +606,8 @@ void allocate_register_manually(int reg, u32 *addr)
 	  }
      }
    
-   // is it already cached ?
-   for (i=0; i<8; i++)
-     {
+    /* Is it already cached ? */
+    for (i = 0; i < 8; i++) {
 	if (last_access[i] != NULL && reg_content[i] == addr)
 	  {
 	     precomp_instr *last = last_access[i]+1;
@@ -700,10 +698,9 @@ void allocate_register_manually_w(int reg, u32 *addr, int load)
 	     free_since[reg]++;
 	  }
      }
-   
-   // is it already cached ?
-   for (i=0; i<8; i++)
-     {
+
+    /* Is it already cached ? */
+    for (i = 0; i < 8; i++) {
 	if (last_access[i] != NULL && reg_content[i] == addr)
 	  {
 	     precomp_instr *last = last_access[i]+1;
@@ -754,32 +751,34 @@ void allocate_register_manually_w(int reg, u32 *addr, int load)
      }
 }
 
-// 0x81 0xEC 0x4 0x0 0x0 0x0  sub esp, 4
-// 0xA1            0xXXXXXXXX mov eax, XXXXXXXX (&code start)
-// 0x05            0xXXXXXXXX add eax, XXXXXXXX (local_addr)
-// 0x89 0x04 0x24             mov [esp], eax
-// 0x8B (reg<<3)|5 0xXXXXXXXX mov eax, [XXXXXXXX]
-// 0x8B (reg<<3)|5 0xXXXXXXXX mov ebx, [XXXXXXXX]
-// 0x8B (reg<<3)|5 0xXXXXXXXX mov ecx, [XXXXXXXX]
-// 0x8B (reg<<3)|5 0xXXXXXXXX mov edx, [XXXXXXXX]
-// 0x8B (reg<<3)|5 0xXXXXXXXX mov ebp, [XXXXXXXX]
-// 0x8B (reg<<3)|5 0xXXXXXXXX mov esi, [XXXXXXXX]
-// 0x8B (reg<<3)|5 0xXXXXXXXX mov edi, [XXXXXXXX]
-// 0xC3 ret
-// total : 62 bytes
+/*
+ * 0x81 0xEC 0x4 0x0 0x0 0x0  sub esp, 4
+ * 0xA1            0xXXXXXXXX mov eax, XXXXXXXX (&code start)
+ * 0x05            0xXXXXXXXX add eax, XXXXXXXX (local_addr)
+ * 0x89 0x04 0x24             mov [esp], eax
+ * 0x8B (reg<<3)|5 0xXXXXXXXX mov eax, [XXXXXXXX]
+ * 0x8B (reg<<3)|5 0xXXXXXXXX mov ebx, [XXXXXXXX]
+ * 0x8B (reg<<3)|5 0xXXXXXXXX mov ecx, [XXXXXXXX]
+ * 0x8B (reg<<3)|5 0xXXXXXXXX mov edx, [XXXXXXXX]
+ * 0x8B (reg<<3)|5 0xXXXXXXXX mov ebp, [XXXXXXXX]
+ * 0x8B (reg<<3)|5 0xXXXXXXXX mov esi, [XXXXXXXX]
+ * 0x8B (reg<<3)|5 0xXXXXXXXX mov edi, [XXXXXXXX]
+ * 0xC3 ret
+ * total : 62 bytes
+ */
 void build_wrapper(precomp_instr *instr, unsigned char* code, precomp_block* block)
 {
    int i;
    int j=0;
 
-   //--
-   /*code[j++] = 0xB8;
-   *((u32*)&code[j]) = (u32)(fake);
-   j+=4;
-   code[j++] = 0xFF;
-   code[j++] = 0xD0;*/
-   //--
-   
+#if 0
+    code[j++] = 0xB8;
+    *((u32*)&code[j]) = (u32)(fake);
+    j+=4;
+    code[j++] = 0xFF;
+    code[j++] = 0xD0;
+#endif
+
    code[j++] = 0x81;
    code[j++] = 0xEC;
    code[j++] = 0x04;

@@ -287,7 +287,7 @@ int rom_read(const char *argv)
    printf ("size: %d\n", (unsigned int)(sizeof(rom_header)));
    printf ("PC= %x\n", sl((unsigned int)ROM_HEADER->PC));
    
-   // loading rom settings and checking if it's a good dump
+    /* loading ROM settings and checking if it's a good dump */
    md5_init(&state);
    md5_append(&state, (const md5_byte_t *)rom, taille_rom);
    md5_finish(&state, digest);

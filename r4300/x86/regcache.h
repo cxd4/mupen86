@@ -55,4 +55,4 @@ void force_32(int reg);
 int lru_register_exc1(int exc1);
 void simplify_access();
 
-#endif // REGCACHE_H
+#endif /* REGCACHE_H */

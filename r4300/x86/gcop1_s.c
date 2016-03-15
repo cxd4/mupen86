@@ -333,9 +333,9 @@ void genc_un_s()
    fucomip_fpreg(1);
    ffree_fpreg(0);
    jp_rj(12);
-   and_m32_imm32((u32*)&FCR31, ~0x800000); // 10
-   jmp_imm_short(10); // 2
-   or_m32_imm32((u32*)&FCR31, 0x800000); // 10
+   and_m32_imm32((u32*)&FCR31, ~0x800000); /* 10 */
+   jmp_imm_short(10); /* 2 */
+   or_m32_imm32((u32*)&FCR31, 0x800000); /* 10 */
 #endif
 }
 
@@ -352,9 +352,9 @@ void genc_eq_s()
    fucomip_fpreg(1);
    ffree_fpreg(0);
    jne_rj(12);
-   or_m32_imm32((u32*)&FCR31, 0x800000); // 10
-   jmp_imm_short(10); // 2
-   and_m32_imm32((u32*)&FCR31, ~0x800000); // 10
+   or_m32_imm32((u32*)&FCR31, 0x800000); /* 10 */
+   jmp_imm_short(10); /* 2 */
+   and_m32_imm32((u32*)&FCR31, ~0x800000); /* 10 */
 #endif
 }
 
@@ -372,9 +372,9 @@ void genc_ueq_s()
    ffree_fpreg(0);
    jp_rj(14);
    jne_rj(12);
-   or_m32_imm32((u32*)&FCR31, 0x800000); // 10
-   jmp_imm_short(10); // 2
-   and_m32_imm32((u32*)&FCR31, ~0x800000); // 10
+   or_m32_imm32((u32*)&FCR31, 0x800000); /* 10 */
+   jmp_imm_short(10); /* 2 */
+   and_m32_imm32((u32*)&FCR31, ~0x800000); /* 10 */
 #endif
 }
 
@@ -391,9 +391,9 @@ void genc_olt_s()
    fucomip_fpreg(1);
    ffree_fpreg(0);
    jae_rj(12);
-   or_m32_imm32((u32*)&FCR31, 0x800000); // 10
-   jmp_imm_short(10); // 2
-   and_m32_imm32((u32*)&FCR31, ~0x800000); // 10
+   or_m32_imm32((u32*)&FCR31, 0x800000); /* 10 */
+   jmp_imm_short(10); /* 2 */
+   and_m32_imm32((u32*)&FCR31, ~0x800000); /* 10 */
 #endif
 }
 
@@ -411,9 +411,9 @@ void genc_ult_s()
    ffree_fpreg(0);
    jp_rj(14);
    jae_rj(12);
-   or_m32_imm32((u32*)&FCR31, 0x800000); // 10
-   jmp_imm_short(10); // 2
-   and_m32_imm32((u32*)&FCR31, ~0x800000); // 10
+   or_m32_imm32((u32*)&FCR31, 0x800000); /* 10 */
+   jmp_imm_short(10); /* 2 */
+   and_m32_imm32((u32*)&FCR31, ~0x800000); /* 10 */
 #endif
 }
 
@@ -430,9 +430,9 @@ void genc_ole_s()
    fucomip_fpreg(1);
    ffree_fpreg(0);
    ja_rj(12);
-   or_m32_imm32((u32*)&FCR31, 0x800000); // 10
-   jmp_imm_short(10); // 2
-   and_m32_imm32((u32*)&FCR31, ~0x800000); // 10
+   or_m32_imm32((u32*)&FCR31, 0x800000); /* 10 */
+   jmp_imm_short(10); /* 2 */
+   and_m32_imm32((u32*)&FCR31, ~0x800000); /* 10 */
 #endif
 }
 
@@ -450,9 +450,9 @@ void genc_ule_s()
    ffree_fpreg(0);
    jp_rj(14);
    ja_rj(12);
-   or_m32_imm32((u32*)&FCR31, 0x800000); // 10
-   jmp_imm_short(10); // 2
-   and_m32_imm32((u32*)&FCR31, ~0x800000); // 10
+   or_m32_imm32((u32*)&FCR31, 0x800000); /* 10 */
+   jmp_imm_short(10); /* 2 */
+   and_m32_imm32((u32*)&FCR31, ~0x800000); /* 10 */
 #endif
 }
 
@@ -485,9 +485,9 @@ void genc_ngle_s()
    fcomip_fpreg(1);
    ffree_fpreg(0);
    jp_rj(12);
-   and_m32_imm32((u32*)&FCR31, ~0x800000); // 10
-   jmp_imm_short(10); // 2
-   or_m32_imm32((u32*)&FCR31, 0x800000); // 10
+   and_m32_imm32((u32*)&FCR31, ~0x800000); /* 10 */
+   jmp_imm_short(10); /* 2 */
+   or_m32_imm32((u32*)&FCR31, 0x800000); /* 10 */
 #endif
 }
 
@@ -504,9 +504,9 @@ void genc_seq_s()
    fcomip_fpreg(1);
    ffree_fpreg(0);
    jne_rj(12);
-   or_m32_imm32((u32*)&FCR31, 0x800000); // 10
-   jmp_imm_short(10); // 2
-   and_m32_imm32((u32*)&FCR31, ~0x800000); // 10
+   or_m32_imm32((u32*)&FCR31, 0x800000); /* 10 */
+   jmp_imm_short(10); /* 2 */
+   and_m32_imm32((u32*)&FCR31, ~0x800000); /* 10 */
 #endif
 }
 
@@ -524,9 +524,9 @@ void genc_ngl_s()
    ffree_fpreg(0);
    jp_rj(14);
    jne_rj(12);
-   or_m32_imm32((u32*)&FCR31, 0x800000); // 10
-   jmp_imm_short(10); // 2
-   and_m32_imm32((u32*)&FCR31, ~0x800000); // 10
+   or_m32_imm32((u32*)&FCR31, 0x800000); /* 10 */
+   jmp_imm_short(10); /* 2 */
+   and_m32_imm32((u32*)&FCR31, ~0x800000); /* 10 */
 #endif
 }
 
@@ -543,9 +543,9 @@ void genc_lt_s()
    fcomip_fpreg(1);
    ffree_fpreg(0);
    jae_rj(12);
-   or_m32_imm32((u32*)&FCR31, 0x800000); // 10
-   jmp_imm_short(10); // 2
-   and_m32_imm32((u32*)&FCR31, ~0x800000); // 10
+   or_m32_imm32((u32*)&FCR31, 0x800000); /* 10 */
+   jmp_imm_short(10); /* 2 */
+   and_m32_imm32((u32*)&FCR31, ~0x800000); /* 10 */
 #endif
 }
 
@@ -563,9 +563,9 @@ void genc_nge_s()
    ffree_fpreg(0);
    jp_rj(14);
    jae_rj(12);
-   or_m32_imm32((u32*)&FCR31, 0x800000); // 10
-   jmp_imm_short(10); // 2
-   and_m32_imm32((u32*)&FCR31, ~0x800000); // 10
+   or_m32_imm32((u32*)&FCR31, 0x800000); /* 10 */
+   jmp_imm_short(10); /* 2 */
+   and_m32_imm32((u32*)&FCR31, ~0x800000); /* 10 */
 #endif
 }
 
@@ -582,9 +582,9 @@ void genc_le_s()
    fcomip_fpreg(1);
    ffree_fpreg(0);
    ja_rj(12);
-   or_m32_imm32((u32*)&FCR31, 0x800000); // 10
-   jmp_imm_short(10); // 2
-   and_m32_imm32((u32*)&FCR31, ~0x800000); // 10
+   or_m32_imm32((u32*)&FCR31, 0x800000); /* 10 */
+   jmp_imm_short(10); /* 2 */
+   and_m32_imm32((u32*)&FCR31, ~0x800000); /* 10 */
 #endif
 }
 
@@ -602,9 +602,9 @@ void genc_ngt_s()
    ffree_fpreg(0);
    jp_rj(14);
    ja_rj(12);
-   or_m32_imm32((u32*)&FCR31, 0x800000); // 10
-   jmp_imm_short(10); // 2
-   and_m32_imm32((u32*)&FCR31, ~0x800000); // 10
+   or_m32_imm32((u32*)&FCR31, 0x800000); /* 10 */
+   jmp_imm_short(10); /* 2 */
+   and_m32_imm32((u32*)&FCR31, ~0x800000); /* 10 */
 #endif
 }
 

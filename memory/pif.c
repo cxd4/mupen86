@@ -51,7 +51,9 @@ static unsigned char mempack[4][0x8000];
 
 void check_input_sync(unsigned char *value);
 
-//#define DEBUG_PIF
+#if 0
+#define DEBUG_PIF
+#endif
 #ifdef DEBUG_PIF
 void print_pif()
 {
@@ -68,7 +70,7 @@ void EepromCommand(u8 *Command)
 {
    switch (Command[2])
      {
-      case 0: // check
+      case 0: /* check */
 	if (Command[1] != 3)
 	  {
 	     Command[1] |= 0x40;
@@ -86,7 +88,7 @@ void EepromCommand(u8 *Command)
 	     Command[5] = 0;
 	  }
 	break;
-      case 4: // read
+      case 4: /* read */
 	  {
 	     char *filename;
 	     FILE *f;
@@ -107,7 +109,7 @@ void EepromCommand(u8 *Command)
 	     memcpy(&Command[4], eeprom + Command[3]*8, 8);
 	  }
 	break;
-      case 5: // write
+      case 5: /* write */
 	  {
 	     char *filename;
 	     FILE *f;
@@ -209,14 +211,14 @@ void internal_ReadController(int Control, u8 *Command)
 #endif
 	  }
 	break;
-      case 2: // read controller pack
+      case 2: /* read controller pack */
 	if (Controls[Control].Present)
 	  {
 	     if (Controls[Control].Plugin == PLUGIN_RAW)
 	       if (controllerCommand) readController(Control, Command);
 	  }
 	break;
-      case 3: // write controller pack
+      case 3: /* write controller pack */
 	if (Controls[Control].Present)
 	  {
 	     if (Controls[Control].Plugin == PLUGIN_RAW)
@@ -230,7 +232,7 @@ void internal_ControllerCommand(int Control, u8 *Command)
 {
    switch (Command[2])
      {
-      case 0x00: // check
+      case 0x00: /* check */
       case 0xFF:
 	if ((Command[1] & 0x80))
 	  break;
@@ -258,7 +260,7 @@ void internal_ControllerCommand(int Control, u8 *Command)
 	if (!Controls[Control].Present)
 	  Command[1] |= 0x80;
 	break;
-      case 0x02: // read controller pack
+      case 0x02: /* read controller pack */
 	if (Controls[Control].Present)
 	  {
 	     switch(Controls[Control].Plugin)
@@ -315,7 +317,7 @@ void internal_ControllerCommand(int Control, u8 *Command)
 	else
 	  Command[1] |= 0x80;
 	break;
-      case 0x03: // write controller pack
+      case 0x03: /* write controller pack */
 	if (Controls[Control].Present)
 	  {
 	     switch(Controls[Control].Plugin)
@@ -439,11 +441,11 @@ void update_pif_write()
 	       i=0x40;
 	  }
 	i++;
-     }
-   //PIF_RAMb[0x3F] = 0;
-   controllerCommand(-1, NULL);
+    }
+ /* PIF_RAMb[0x3F] = 0; */
+    controllerCommand(-1, NULL);
 #ifdef DEBUG_PIF
-   print_pif();
+    print_pif();
 #endif
 }
 

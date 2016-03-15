@@ -48,17 +48,17 @@ void genbltz_test()
 	
 	cmp_reg32_imm32(rs, 0);
 	jge_rj(12);
-	mov_m32_imm32((u32 *)(&branch_taken), 1); // 10
-	jmp_imm_short(10); // 2
-	mov_m32_imm32((u32 *)(&branch_taken), 0); // 10
+	mov_m32_imm32((u32 *)(&branch_taken), 1); /* 10 */
+	jmp_imm_short(10); /* 2 */
+	mov_m32_imm32((u32 *)(&branch_taken), 0); /* 10 */
      }
    else if (rs_64bit == -1)
      {
 	cmp_m32_imm32(((u32 *)dst->f.i.rs)+1, 0);
 	jge_rj(12);
-	mov_m32_imm32((u32 *)(&branch_taken), 1); // 10
-	jmp_imm_short(10); // 2
-	mov_m32_imm32((u32 *)(&branch_taken), 0); // 10
+	mov_m32_imm32((u32 *)(&branch_taken), 1); /* 10 */
+	jmp_imm_short(10); /* 2 */
+	mov_m32_imm32((u32 *)(&branch_taken), 0); /* 10 */
      }
    else
      {
@@ -66,9 +66,9 @@ void genbltz_test()
 	
 	cmp_reg32_imm32(rs2, 0);
 	jge_rj(12);
-	mov_m32_imm32((u32 *)(&branch_taken), 1); // 10
-	jmp_imm_short(10); // 2
-	mov_m32_imm32((u32 *)(&branch_taken), 0); // 10
+	mov_m32_imm32((u32 *)(&branch_taken), 1); /* 10 */
+	jmp_imm_short(10); /* 2 */
+	mov_m32_imm32((u32 *)(&branch_taken), 0); /* 10 */
      }
 }
 
@@ -136,17 +136,17 @@ void genbgez_test()
 	
 	cmp_reg32_imm32(rs, 0);
 	jl_rj(12);
-	mov_m32_imm32((u32 *)(&branch_taken), 1); // 10
-	jmp_imm_short(10); // 2
-	mov_m32_imm32((u32 *)(&branch_taken), 0); // 10
+	mov_m32_imm32((u32 *)(&branch_taken), 1); /* 10 */
+	jmp_imm_short(10); /* 2 */
+	mov_m32_imm32((u32 *)(&branch_taken), 0); /* 10 */
      }
    else if (rs_64bit == -1)
      {
 	cmp_m32_imm32(((u32 *)dst->f.i.rs)+1, 0);
 	jl_rj(12);
-	mov_m32_imm32((u32 *)(&branch_taken), 1); // 10
-	jmp_imm_short(10); // 2
-	mov_m32_imm32((u32 *)(&branch_taken), 0); // 10
+	mov_m32_imm32((u32 *)(&branch_taken), 1); /* 10 */
+	jmp_imm_short(10); /* 2 */
+	mov_m32_imm32((u32 *)(&branch_taken), 0); /* 10 */
      }
    else
      {
@@ -154,9 +154,9 @@ void genbgez_test()
 	
 	cmp_reg32_imm32(rs2, 0);
 	jl_rj(12);
-	mov_m32_imm32((u32 *)(&branch_taken), 1); // 10
-	jmp_imm_short(10); // 2
-	mov_m32_imm32((u32 *)(&branch_taken), 0); // 10
+	mov_m32_imm32((u32 *)(&branch_taken), 1); /* 10 */
+	jmp_imm_short(10); /* 2 */
+	mov_m32_imm32((u32 *)(&branch_taken), 0); /* 10 */
      }
 }
 

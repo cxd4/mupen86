@@ -25,7 +25,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-// include icons
+/* Include icons. */
 #include "icons/messagebox-error.xpm"
 #include "icons/messagebox-info.xpm"
 #include "icons/messagebox-quest.xpm"
@@ -33,7 +33,7 @@
 
 static gint delete_question_event(GtkWidget *widget, GdkEvent *event, gpointer data)
 {
-   return TRUE; // undeleteable
+    return TRUE; /* un-deleteable */
 }
 
 static void
@@ -77,8 +77,8 @@ messagebox( const char *title, int flags, const char *fmt, ... )
 	vsnprintf( buf, 2048, fmt, ap );
 	va_end( ap );
 
-	// check flags
-	switch( flags & 0x000000FF )
+	/* Check flags. */
+	switch (flags & 0x000000FF)
 	{
 	case MB_ABORTRETRYIGNORE:
 		button1 = gtk_button_new_with_label( tr("Abort") );
@@ -129,8 +129,8 @@ messagebox( const char *title, int flags, const char *fmt, ... )
 	gtk_box_pack_start( GTK_BOX(GTK_DIALOG(dialog)->vbox), hbox, TRUE, TRUE, 0 );
 	gtk_widget_show( hbox );
 
-	// icon
-	switch( flags & 0x00000F00 )
+	/* icon */
+	switch (flags & 0x00000F00)
 	{
 	case MB_ICONWARNING:
 		icon = create_pixmap_d( dialog, messagebox_warn_xpm );

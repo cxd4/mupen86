@@ -134,9 +134,8 @@ void dma_pi_write()
      
 	return;
      }
-   
-   if (pi_register.pi_cart_addr_reg >= 0x1fc00000) // for paper mario
-     {
+
+    if (pi_register.pi_cart_addr_reg >= 0x1fc00000) { /* for Paper Mario */
 	pi_register.read_pi_status_reg |= 1;
 	update_count();
 	add_interupt_event(PI_INT, 0x1000);

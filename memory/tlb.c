@@ -37,16 +37,15 @@ u32 tlb_LUT_w[0x100000];
 extern u32 interp_addr;
 u32 virtual_to_physical_address(u32 addresse, int w)
 {
-   if (addresse >= 0x7f000000 && addresse < 0x80000000) // golden eye hack
-     {
-	if (ROM_HEADER->CRC1 == sl(0xDCBC50D1)) // US
-	  return 0xb0034b30 + (addresse & 0xFFFFFF);
-	if (ROM_HEADER->CRC1 == sl(0x0414CA61)) // E
-	  return 0xb00329f0 + (addresse & 0xFFFFFF);
-	if (ROM_HEADER->CRC1 == sl(0xA24F4CF1)) // J
-	  return 0xb0034b70 + (addresse & 0xFFFFFF);
-     }
-   if (w == 1)
+    if (addresse >= 0x7f000000 && addresse < 0x80000000) { /* GoldenEye hack */
+        if (ROM_HEADER->CRC1 == sl(0xDCBC50D1)) /* US */
+            return 0xb0034b30 + (addresse & 0xFFFFFF);
+        if (ROM_HEADER->CRC1 == sl(0x0414CA61)) /* E */
+            return 0xb00329f0 + (addresse & 0xFFFFFF);
+        if (ROM_HEADER->CRC1 == sl(0xA24F4CF1)) /* J */
+            return 0xb0034b70 + (addresse & 0xFFFFFF);
+    }
+    if (w == 1)
      {
 	if (tlb_LUT_w[addresse>>12])
 	  return (tlb_LUT_w[addresse>>12]&0xFFFFF000)|(addresse&0xFFF);
@@ -56,12 +55,16 @@ u32 virtual_to_physical_address(u32 addresse, int w)
 	if (tlb_LUT_r[addresse>>12])
 	  return (tlb_LUT_r[addresse>>12]&0xFFFFF000)|(addresse&0xFFF);
      }
-   //printf("tlb exception !!! @ %x, %x, add:%x\n", addresse, w, interp_addr);
-   //getchar();
-   TLB_refill_exception(addresse,w);
-   //return 0x80000000;
-   return 0x00000000;
-   /*int i;
+#if 0
+    printf("tlb exception !!! @ %x, %x, add:%x\n", addresse, w, interp_addr);
+    getchar();
+#endif
+    TLB_refill_exception(addresse,w);
+ /* return 0x80000000; */
+    return 0x00000000;
+
+#if 0
+   int i;
    for (i=0; i<32; i++)
      {
 	if ((tlb_e[i].vpn2 & ~(tlb_e[i].mask))
@@ -119,8 +122,9 @@ u32 virtual_to_physical_address(u32 addresse, int w)
      }
    BadVAddr = addresse;
    TLB_refill_exception(addresse,w);
-   //printf("TLB refill exception\n");
-   return 0x80000000;*/
+/* printf("TLB refill exception\n"); */
+   return 0x80000000;
+#endif
 }
 
 int probe_nop(u32 address)

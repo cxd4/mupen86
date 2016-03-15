@@ -24,7 +24,7 @@
 
 #include "../rom.h"
 #include "../mupenIniApi.h"
-#include "../../memory/memory.h"	// sl()
+#include "../../memory/memory.h"        /* sl() */
 
 #include <gtk/gtk.h>
 #include <zlib.h>
@@ -39,7 +39,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-// icons
+/* icons */
 #include "icons/australia.xpm"
 #include "icons/europe.xpm"
 #include "icons/france.xpm"
@@ -50,7 +50,7 @@
 #include "icons/usa.xpm"
 #include "icons/n64cart.xpm"
 
-// rom file extensions
+/* ROM file extensions */
 static const char *g_romFileExtensions[] = {
 	".rom", ".v64", ".z64", ".gz", ".zip", ".n64", NULL
 };
@@ -59,20 +59,20 @@ static const char *g_romFileExtensions[] = {
  * globals
  */
 GList *g_RomList = NULL;
-static GList *g_RomListCache = NULL; // roms in cache
+static GList *g_RomListCache = NULL; /* ROMs in cache */
 static GtkWidget *australia, *europe, *france, *germany, *italy, *japan, *spain, *usa, *n64cart;
 static GtkWidget *playRomItem;
 static GtkWidget *romPropertiesItem;
 static GtkWidget *refreshRomBrowserItem;
 static int g_iNumRoms = 0;
-static gint g_iSortColumn = 0; // sort column
-static GtkSortType g_SortType = GTK_SORT_ASCENDING; // sort type (ascending/descending)
+static gint g_iSortColumn = 0; /* sort column */
+static GtkSortType g_SortType = GTK_SORT_ASCENDING; /* sort type (ascending/descending) */
 
-// function to fill a SRomEntry structure
+/* function to fill a SRomEntry structure */
 static void
 romentry_fill( SRomEntry *entry )
 {
-	// fill in defaults
+	/* fill in defaults */
 	if( strlen( entry->cName ) == 0 )
 	{
 		if( strlen( entry->info.cGoodName ) == 0 )
@@ -95,7 +95,7 @@ romentry_fill( SRomEntry *entry )
 
 	case 0x41:
 		strcpy( entry->cCountry, tr("USA/Japan") );
-		entry->flag = usa;	// FixMe: USA/Japan flag
+		entry->flag = usa; /* fix-me:  USA/Japan flag */
 		break;
 
 	case 0x44:	/* Germany */
@@ -161,21 +161,19 @@ rombrowser_readCache( void )
 	if( !f )
 		return;
 
-	// free old list
-	for( i = 0; i < g_list_length( g_RomListCache ); i++ )
-	{
+	/* free old list */
+	for (i = 0; i < g_list_length(g_RomListCache); i++) {
 		entry = (SRomEntry *)g_list_nth_data( g_RomListCache, i );
 		free( entry );
 	}
 	g_list_free( g_RomListCache );
 	g_RomListCache = NULL;
 
-	// number of entries
-	gzread( f, &g_iNumRoms, sizeof( g_iNumRoms ) );
+	/* number of entries */
+	gzread(f, &g_iNumRoms, sizeof(g_iNumRoms));
 
-	// entries
-	for( i = 0; i < g_iNumRoms; i++ )
-	{
+	/* entries */
+	for (i = 0; i < g_iNumRoms; i++) {
 		entry = malloc( sizeof( SRomEntry ) );
 		if( !entry )
 		{
@@ -190,8 +188,8 @@ rombrowser_readCache( void )
 
 		romentry_fill( entry );
 
-		// append to list
-		g_RomListCache = g_list_append( g_RomListCache, entry );
+		/* append to list */
+		g_RomListCache = g_list_append(g_RomListCache, entry);
 	}
 
 	gzclose( f );
@@ -210,12 +208,11 @@ rombrowser_writeCache( void )
 	if( !f )
 		return;
 
-	// number of entries
-	gzwrite( f, &g_iNumRoms, sizeof( g_iNumRoms ) );
+	/* number of entries */
+	gzwrite(f, &g_iNumRoms, sizeof(g_iNumRoms));
 
-	// entries
-	for( i = 0; i < g_iNumRoms; i++ )
-	{
+	/* entries */
+	for (i = 0; i < g_iNumRoms; i++) {
 		entry = (SRomEntry *)g_list_nth_data( g_RomList, i );
 		gzwrite( f, entry->cFilename, sizeof( char ) * PATH_MAX );
 		gzwrite( f, &entry->info, sizeof( entry->info ) );
@@ -223,14 +220,14 @@ rombrowser_writeCache( void )
 
 	gzclose( f );
 
-	// update cache list
+	/* update cache list */
 	rombrowser_readCache();
 }
 
 /*********************************************************************************************************
  * rombrowser functions
  */
-// compare functions
+/* compare functions */
 gint
 rombrowser_compare( GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2 )
 {
@@ -244,13 +241,13 @@ rombrowser_compare( GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2 )
 
 	switch( g_iSortColumn )
 	{
-	case 0:		// Name
-		ret = strcasecmp( entry1->cName, entry2->cName );
+	case 0:  /* Name */
+		ret = strcasecmp(entry1 -> cName, entry2 -> cName);
 		break;
-	case 1:		// Country
-		ret = strcasecmp( entry1->cCountry, entry2->cCountry );
+	case 1:  /* Country */
+		ret = strcasecmp(entry1 -> cCountry, entry2 -> cCountry);
 		break;
-	case 2:		// Size
+	case 2:  /* Size */
 		d = entry1->info.iSize - entry2->info.iSize;
 		if( d < 0 )
 			ret = 1;
@@ -259,10 +256,10 @@ rombrowser_compare( GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2 )
 		else
 			ret = 0;
 		break;
-	case 3:		// Comments
+	case 3:  /* Comments */
 		return strcasecmp( entry1->info.cComments, entry2->info.cComments );
 		break;
-	case 4:		// File Name
+	case 4:  /* File Name */
 		ret = strcmp( entry1->cFilename, entry2->cFilename );
 		break;
 	default:
@@ -275,7 +272,7 @@ rombrowser_compare( GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2 )
 		return -ret;
 }
 
-// scan dir for roms
+/* Scan directory for ROMs. */
 static void
 scan_dir( const char *dirname )
 {
@@ -294,28 +291,24 @@ scan_dir( const char *dirname )
 	int found;
 
 	dir = opendir( dirname );
-	if( !dir )
-	{
-		// error
-		printf( "Couldn't open directory '%s': %s\n", dirname, strerror( errno ) );
+	if (!dir) {
+		/* error */
+		printf("Couldn't open directory '%s': %s\n", dirname, strerror(errno));
 		return;
 	}
 
-	while( (de = readdir( dir )) )
-	{
-		if( de->d_name[0] == '.' ) // .., . or hidden file
+	while ((de = readdir(dir))) {
+		if (de->d_name[0] == '.') /* .., . or hidden file */
 			continue;
 		snprintf( filename, PATH_MAX, "%s%s", dirname, de->d_name );
-	   
-		if( config_get_bool( "RomDirsScanRecursive", FALSE ) )
-		{
-			// use real path (maybe it's a link)
-			if( !realpath( filename, real_path ) )
+
+		if (config_get_bool("RomDirsScanRecursive", FALSE)) {
+			/* Use real path.  (Maybe it's a link.) */
+			if (!realpath(filename, real_path))
 				strcpy( real_path, filename );
 
-			if( stat( real_path, &sb ) == -1 )
-			{
-				// Display error?
+			if (stat(real_path, &sb) == -1) {
+				/* Display error? */
 				continue;
 			}
 
@@ -327,7 +320,7 @@ scan_dir( const char *dirname )
 			}
 		}
 	   
-		// check file extension
+		/* Check file extension. */
 		p = strrchr( filename, '.' );
 		if( !p )
 			continue;
@@ -349,7 +342,7 @@ scan_dir( const char *dirname )
 		memset( entry, 0, sizeof( SRomEntry ) );
 		strcpy( entry->cFilename, filename );
 	   
-		// search cache
+		/* Search cache. */
 		found = 0;
 		for( i = 0; i < g_list_length( g_RomListCache ); i++ )
 		{
@@ -361,18 +354,16 @@ scan_dir( const char *dirname )
 				break;
 			}
 		}
-	   
-		if( !found )
-		{
-			// load rom header
-			rom_size = fill_header( entry->cFilename );
-			if( !rom_size )
-			{
-				free( entry );
+
+		if (!found) {
+			/* Load ROM header. */
+			rom_size = fill_header(entry -> cFilename);
+			if (!rom_size) {
+				free(entry);
 				continue;
 			}
 
-			// fill entry info struct
+			/* Fill entry info struct. */
 			entry->info.iSize = rom_size;
 			entry->info.iManufacturer = ROM_HEADER->Manufacturer_ID;
 			entry->info.sCartID = ROM_HEADER->Cartridge_ID;
@@ -413,16 +404,15 @@ scan_dir( const char *dirname )
 	closedir( dir );
 }
 
-// list roms
+/* List ROMs. */
 void
 rombrowser_refresh( void )
 {
 	int i;
 	SRomEntry *entry;
 
-	// clear list
-	for( i = g_iNumRoms - 1; i >= 0; i-- )
-	{
+	/* Clear list. */
+	for (i = g_iNumRoms - 1; i >= 0; i--) {
 		entry = (SRomEntry *)gtk_clist_get_row_data( GTK_CLIST(g_MainWindow.romCList), i );
 		free( entry );
 		gtk_clist_remove( GTK_CLIST(g_MainWindow.romCList), i );
@@ -432,9 +422,8 @@ rombrowser_refresh( void )
 	g_list_free( g_RomList );
 	g_RomList = NULL;
 
-	// browse rom dirs
-	for( i = 0; i < config_get_number( "NumRomDirs", 0 ); i++ )
-	{
+	/* Browse ROM directories. */
+	for (i = 0; i < config_get_number("NumRomDirs", 0); i++) {
 		char buf[30];
 		const char *dir;
 		sprintf( buf, "RomDirectory[%d]", i );
@@ -444,20 +433,20 @@ rombrowser_refresh( void )
 	}
 	statusbar_message( "status", tr("%d Rom Directories scanned, %d Roms found"), i, g_iNumRoms );
 
-	// save cache
+	/* Save cache. */
 	rombrowser_writeCache();
 
-	// update status bar
+	/* Update status bar. */
 	statusbar_message( "num_roms", tr("Total Roms: %d"), g_iNumRoms );
 
-	// sort list
+	/* Sort list. */
 	gtk_clist_sort( GTK_CLIST(g_MainWindow.romCList) );
 }
 
 /*********************************************************************************************************
  * callbacks
  */
-// column clicked (title) -> sort
+/* column clicked (title) -> sort */
 static void
 callback_columnClicked( GtkCList *clist, gint column, gpointer user_data )
 {
@@ -466,11 +455,11 @@ callback_columnClicked( GtkCList *clist, gint column, gpointer user_data )
 	else
 		g_iSortColumn = column;
 
-	// sort list
-	gtk_clist_sort( GTK_CLIST(g_MainWindow.romCList) );
+	/* Sort list. */
+	gtk_clist_sort(GTK_CLIST(g_MainWindow.romCList));
 }
 
-// row double clicked -> play rom
+/* row double clicked -> play ROM */
 static gboolean
 callback_rowSelected( GtkWidget *widget, gint row, gint col, GdkEventButton *event, gpointer data )
 {
@@ -495,14 +484,12 @@ callback_rowSelected( GtkWidget *widget, gint row, gint col, GdkEventButton *eve
 	return FALSE;
 }
 
-// right click -> show menu
+/* right click -> show menu */
 gboolean
 callback_buttonPressed( GtkWidget *widget, GdkEventButton *event, gpointer data )
 {
-	if( event->type == GDK_BUTTON_PRESS )
-	{
-		if( event->button == 3 ) // right click
-		{
+	if (event->type == GDK_BUTTON_PRESS) {
+		if (event->button == 3) { /* right click */
 			gint row, col;
 			int active;
 
@@ -527,7 +514,7 @@ callback_buttonPressed( GtkWidget *widget, GdkEventButton *event, gpointer data 
 	return FALSE;
 }
 
-// play rom menu item
+/* "Play ROM" menu item */
 static void
 callback_playRom( GtkWidget *widget, gpointer data )
 {
@@ -536,7 +523,7 @@ callback_playRom( GtkWidget *widget, gpointer data )
 
 	list = GTK_CLIST(g_MainWindow.romCList)->selection;
 
-	if( !list ) // should never happen since the item is only active when a row is selected
+	if( !list ) /* should never happen since the item is only active when a row is selected */
 		return;
 
 	entry = (SRomEntry *)gtk_clist_get_row_data( GTK_CLIST(g_MainWindow.romCList), (int)list->data );
@@ -545,7 +532,7 @@ callback_playRom( GtkWidget *widget, gpointer data )
 	run_rom();
 }
 
-// rom properties
+/* ROM properties */
 static void
 callback_romProperties( GtkWidget *widget, gpointer data )
 {
@@ -554,14 +541,14 @@ callback_romProperties( GtkWidget *widget, gpointer data )
 
 	list = GTK_CLIST(g_MainWindow.romCList)->selection;
 
-	if( !list ) // should never happen since the item is only active when a row is selected
+	if (!list) /* should never happen since the item is only active when a row is selected */
 		return;
 
 	entry = (SRomEntry *)gtk_clist_get_row_data( GTK_CLIST(g_MainWindow.romCList), (int)list->data );
 	show_romPropDialog( entry );
 }
 
-// refresh rom browser
+/* Refresh ROM browser. */
 static void
 callback_refreshRomBrowser( GtkWidget *widget, gpointer data )
 {
@@ -571,7 +558,7 @@ callback_refreshRomBrowser( GtkWidget *widget, gpointer data )
 /*********************************************************************************************************
  * gui functions
  */
-// create rom browser
+/* Create ROM browser. */
 int
 create_romBrowser( void )
 {
@@ -586,7 +573,7 @@ create_romBrowser( void )
 		(gchar *)tr("File Name")
 	};
 
-	// load images
+	/* Load images. */
 	australia = create_pixmap_d( g_MainWindow.window, australia_xpm );
 	europe = create_pixmap_d( g_MainWindow.window, europe_xpm );
 	france = create_pixmap_d( g_MainWindow.window, france_xpm );
@@ -597,7 +584,7 @@ create_romBrowser( void )
 	usa = create_pixmap_d( g_MainWindow.window, usa_xpm );
 	n64cart = create_pixmap_d( g_MainWindow.window, n64cart_xpm );
 
-	// right-click menu
+	/* right-click menu */
 	rightClickMenu = gtk_menu_new();
 	playRomItem = gtk_menu_item_new_with_label( tr("Play Rom") );
 	romPropertiesItem = gtk_menu_item_new_with_label( tr("Rom Properties") );
@@ -622,7 +609,7 @@ create_romBrowser( void )
 	gtk_signal_connect( GTK_OBJECT(refreshRomBrowserItem), "activate",
 				GTK_SIGNAL_FUNC(callback_refreshRomBrowser), (gpointer)NULL );
 
-	// create the rombrowser
+	/* Create the ROM browser. */
 	g_MainWindow.romScrolledWindow = gtk_scrolled_window_new( NULL, NULL );
 	gtk_scrolled_window_set_policy( GTK_SCROLLED_WINDOW (g_MainWindow.romScrolledWindow),
 					GTK_POLICY_AUTOMATIC, GTK_POLICY_ALWAYS );

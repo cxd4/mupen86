@@ -58,7 +58,7 @@
 #define cffs PC->f.cf.fs
 #define cffd PC->f.cf.fd
 
-// 32 bits macros
+/* 32 bits macros */
 #ifndef _BIG_ENDIAN
 #define rrt32 *((s32 *)PC->f.r.rt)
 #define rrd32 *((s32 *)PC->f.r.rd)
@@ -81,7 +81,7 @@ stop=1; \
 }
 
 
-//cop0 macros
+/* COP0 macros */
 #define Index           reg_cop0[ 0]
 #define Random          reg_cop0[ 1]
 #define EntryLo0        reg_cop0[ 2]

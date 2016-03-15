@@ -32,8 +32,7 @@
 
 #include "../main/winlnxdefs.h"
 
-typedef struct _tlb
-{
+typedef struct _tlb {
    s16 mask;
    s32 vpn2;
    char g;
@@ -47,7 +46,9 @@ typedef struct _tlb
    char d_odd;
    char v_odd;
    char r;
-   //s32 check_parity_mask;
+#if 0
+    s32 check_parity_mask;
+#endif
 
    u32 start_even;
    u32 end_even;

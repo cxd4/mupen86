@@ -49,6 +49,6 @@ extern SVcrCompDialog g_VcrCompDialog;
 
 int create_vcrCompDialog( void );
 
-#endif // __VCRCOMP_DIALOG_H__
+#endif /* __VCRCOMP_DIALOG_H__ */
 
-#endif // VCR_SUPPORT
+#endif /* VCR_SUPPORT */

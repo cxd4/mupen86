@@ -35,4 +35,4 @@ void config_put_string( const char *key, const char *value );
 void config_put_number( const char *key, int value );
 void config_put_bool( const char *key, int value );
 
-#endif // __CONFIG_H__
+#endif /* __CONFIG_H__ */

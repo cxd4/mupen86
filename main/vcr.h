@@ -29,6 +29,6 @@ extern int VCR_stopCapture();
 
 extern void VCR_coreStopped();
 
-#endif // VCR_SUPPORT
+#endif /* VCR_SUPPORT */
 
-#endif // __VCR_H__
+#endif /* __VCR_H__ */

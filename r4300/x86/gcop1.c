@@ -112,29 +112,30 @@ void genctc1()
    gencallinterp((u32)CTC1, 0);
 #else
    gencheck_cop1_unusable();
-   
-   if (dst->f.r.nrd != 31) return;
+
+    if (dst->f.r.nrd != 31)
+       return;
    mov_eax_memoffs32((u32*)dst->f.r.rt);
    mov_memoffs32_eax((u32*)&FCR31);
    and_eax_imm32(3);
-   
+
    cmp_eax_imm32(0);
    jne_rj(12);
-   mov_m32_imm32((u32*)&rounding_mode, 0x33F); // 10
-   jmp_imm_short(48); // 2
-   
-   cmp_eax_imm32(1); // 5
-   jne_rj(12); // 2
-   mov_m32_imm32((u32*)&rounding_mode, 0xF3F); // 10
-   jmp_imm_short(29); // 2
-   
-   cmp_eax_imm32(2); // 5
-   jne_rj(12); // 2
-   mov_m32_imm32((u32*)&rounding_mode, 0xB3F); // 10
-   jmp_imm_short(10); // 2
-   
-   mov_m32_imm32((u32*)&rounding_mode, 0x73F); // 10
-   
+   mov_m32_imm32((u32*)&rounding_mode, 0x33F); /* 10 */
+   jmp_imm_short(48); /* 2 */
+
+   cmp_eax_imm32(1); /* 5 */
+   jne_rj(12); /* 2 */
+   mov_m32_imm32((u32*)&rounding_mode, 0xF3F); /* 10 */
+   jmp_imm_short(29); /* 2 */
+
+   cmp_eax_imm32(2); /* 5 */
+   jne_rj(12); /* 2 */
+   mov_m32_imm32((u32*)&rounding_mode, 0xB3F); /* 10 */
+   jmp_imm_short(10); /* 2 */
+
+   mov_m32_imm32((u32*)&rounding_mode, 0x73F); /* 10 */
+
    fldcw_m16((u16*)&rounding_mode);
 #endif
 }

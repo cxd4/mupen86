@@ -1537,8 +1537,8 @@ void init_blocks()
    init_block((i32 *)SP_DMEM, blocks[0xA4000000 >> 12]);
    PC = actual->block + (0x40 / sizeof(i32));
 #ifdef DBG
-   if (debugger_mode) // debugger shows initial state (before 1st instruction).
-     update_debugger();
+    if (debugger_mode) /* Debugger shows initial state (before first instruction). */
+        update_debugger();
 #endif
 }
 
@@ -1563,7 +1563,7 @@ void go()
 	reg_cop1_double[i]=(double *)&reg_cop1_fgr_64[i];
 	reg_cop1_simple[i]=(float *)&reg_cop1_fgr_64[i];
 	
-	// --------------tlb------------------------
+	/* --------------tlb------------------------ */
 	tlb_e[i].mask=0;
 	tlb_e[i].vpn2=0;
 	tlb_e[i].g=0;
@@ -1577,7 +1577,7 @@ void go()
 	tlb_e[i].d_odd=0;
 	tlb_e[i].v_odd=0;
 	tlb_e[i].r=0;
-	//tlb_e[i].check_parity_mask=0x1000;
+	/* tlb_e[i].check_parity_mask=0x1000; */
 	
 	tlb_e[i].start_even=0;
 	tlb_e[i].end_even=0;
@@ -1596,20 +1596,20 @@ void go()
    lo=0;
    FCR0=0x511;
    FCR31=0;
-   
-   //--------
-   /*reg[20]=1;
-   reg[22]=0x3F;
-   reg[29]=0xFFFFFFFFA0400000LL;
-   Random=31;
-   Status=0x70400004;
-   Config=0x66463;
-   PRevID=0xb00;*/
-   //--------
-   
-   // the following values are extracted from the pj64 source code
-   // thanks to Zilmar and Jabo
-   
+
+#if 0
+    reg[20] = 1;
+    reg[22] = 0x000000000000003F;
+    reg[29] = 0xFFFFFFFFA0400000LL;
+    Random  = 31;
+    Status  = 0x70400004;
+    Config  = 0x00066463;
+    PRevID  = 0x00000B00;
+#endif
+    /*
+     * The following values are extracted from the pj64 source code.
+     * thanks to Zilmar and Jabo
+     */
    reg[6] = 0xFFFFFFFFA4001F0CLL;
    reg[7] = 0xFFFFFFFFA4001F08LL;
    reg[8] = 0x00000000000000C0LL;
@@ -1780,11 +1780,11 @@ void go()
 	printf("interpreter\n");
 	init_blocks();
 	last_addr = PC->addr;
-	while (!stop)
-	  {
-	     //if ((debug_count+Count) >= 0x78a8091) break; // obj 0x16aeb8a
-	     //if ((debug_count+Count) >= 0x16b1360)
-	     /*if ((debug_count+Count) >= 0xf203ae0)
+	while (!stop) {
+#if 0
+	     if ((debug_count+Count) >= 0x78a8091) break; /* obj 0x016AEB8A */
+	     if ((debug_count+Count) >= 0x16b1360)
+	     if ((debug_count+Count) >= 0xf203ae0)
 	       {
 		  printf ("PC=%x:%x\n", (unsigned int)(PC->addr), 
 			  (unsigned int)(rdram[(PC->addr&0xFFFFFF)/4]));
@@ -1804,11 +1804,12 @@ void go()
 		  printf("après %d instructions soit %x\n",(unsigned int)(debug_count+Count)
 			 ,(unsigned int)(debug_count+Count));
 		  getchar();
-	       }*/
-	     /*if ((debug_count+Count) >= 0x80000000) 
-	       printf("%x:%x, %x\n", (int)PC->addr, 
+	       }
+	    if ((debug_count+Count) >= 0x80000000) 
+	         printf("%x:%x, %x\n", (int)PC->addr, 
 		      (int)rdram[(PC->addr & 0xFFFFFF)/4],
-		      (int)(debug_count+Count));*/
+		      (int)(debug_count+Count));
+#endif
 #ifdef COMPARE_CORE
 	     if (PC->ops == FIN_BLOCK && 
 		 (PC->addr < 0x80000000 || PC->addr >= 0xc0000000))
@@ -1816,12 +1817,13 @@ void go()
 	     compare_core();
 #endif
 	     PC->ops();
-	     /*if (j!= (Count & 0xFFF00000))
-	       {
-		  j = (Count & 0xFFF00000);
-		  printf("%x\n", j);
-	       }*/
-	     //check_PC;
+#if 0
+            if (j!= (Count & 0xFFF00000)) {
+                j = (Count & 0xFFF00000);
+                printf("%x\n", j);
+            }
+	    check_PC;
+#endif
 #ifdef DBG
 	     if (debugger_mode)
 	       update_debugger();

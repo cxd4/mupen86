@@ -20,9 +20,9 @@
 
 #include <gtk/gtk.h>
 
-void        tr_load_languages( void );						// load languages
-GList      *tr_language_list( void );							// list of languages
-int         tr_set_language( const char *name );	// set language to name
-const char *tr( const char *text );								// translate text
+void        tr_load_languages(void);            /* Load languages. */
+GList      *tr_language_list(void);             /* list of languages */
+int         tr_set_language(const char *name);  /* Set language to name. */
+const char *tr(const char *text);               /* Translate text. */
 
-#endif // __TRANSLATE_H__
+#endif /* __TRANSLATE_H__ */
