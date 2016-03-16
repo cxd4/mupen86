@@ -240,8 +240,6 @@ int main(int argc, char *argv[])
    int true = 1;
    char *buffer, *buffer2;
     static const char help_text[] =
-        "syntax: mupen64_nogui [parameter(s)] rom\n"
-        "\n"
         "Parameters:\n"
         "  --fullscreen       : turn fullscreen mode on\n"
         "  --gfx (plugin)     : set gfx plugin to (plugin)\n"
@@ -527,6 +525,7 @@ int main(int argc, char *argv[])
     if (argc < 2 || p_help || p_error || fileloaded != true) {
         putchar('\n');
         putchar('\n');
+        printf("syntax:  %s [parameter(s)] ROM_path\n", argv[0]);
         puts(help_text);
         return 0;
     }
