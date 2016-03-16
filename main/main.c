@@ -239,7 +239,23 @@ int main(int argc, char *argv[])
    int p_emumode_value=1, fileloaded = 0, p_interactive = 0;
    int true = 1;
    char *buffer, *buffer2;
-   
+    static const char help_text[] =
+        "syntax: mupen64_nogui [parameter(s)] rom\n"
+        "\n"
+        "Parameters:\n"
+        "  --fullscreen       : turn fullscreen mode on\n"
+        "  --gfx (plugin)     : set gfx plugin to (plugin)\n"
+        "  --audio (plugin)   : set audio plugin to (plugin)\n"
+        "  --input (plugin)   : set input plugin to (plugin)\n"
+        "  --rsp (plugin)     : set rsp plugin to (plugin)\n"
+        "  --emumode (number) : set emu mode to: 1=interp./2=recomp./3=pure interp\n"
+        "  --noask            : don't ask to force load on bad dumps\n"
+        "  --interactive      : ask interactively for all plugins\n"
+        "\n"
+        "You can also use the Config-File from the Gui-Version\n"
+        "but there are aditional Parameters for the NO-GUI Version\n"
+    ;
+
 #if defined (__linux__)
    if (signal(SIGTERM, sigterm_handler) == SIG_ERR)
      printf("Warning: Couldn't register SIGTERM signal handler!\n");
@@ -507,28 +523,14 @@ int main(int argc, char *argv[])
      }
    
    printf("\nMupen64 version : %s\n", VERSION);
-   
-   if (argc < 2 || p_help || p_error || fileloaded != true)
-     {
-	printf("\n\n"
-	       "syntax: mupen64_nogui [parameter(s)] rom\n"
-	       "\n"
-	       "Parameters:\n"
-	       "  --fullscreen       : turn fullscreen mode on\n"
-	       "  --gfx (plugin)     : set gfx plugin to (plugin)\n"
-	       "  --audio (plugin)   : set audio plugin to (plugin)\n"
-	       "  --input (plugin)   : set input plugin to (plugin)\n"
-	       "  --rsp (plugin)     : set rsp plugin to (plugin)\n"
-	       "  --emumode (number) : set emu mode to: 1=interp./2=recomp./3=pure interp\n"
-	       "  --noask            : don't ask to force load on bad dumps\n"
-	       "  --interactive      : ask interactively for all plugins\n"
-	       "\n"
-	       "You can also use the Config-File from the Gui-Version\n"
-	       "but there are aditional Parameters for the NO-GUI Version\n"
-	       "\n");
-	return 0;
-     }
-   
+
+    if (argc < 2 || p_help || p_error || fileloaded != true) {
+        putchar('\n');
+        putchar('\n');
+        puts(help_text);
+        return 0;
+    }
+
    if (rom_read(romfile))
      {
 	if(rom) free(rom);
