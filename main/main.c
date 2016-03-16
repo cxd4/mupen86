@@ -241,17 +241,14 @@ int main(int argc, char *argv[])
    char *buffer, *buffer2;
     static const char help_text[] =
         "Parameters:\n"
-        "  --fullscreen       : turn fullscreen mode on\n"
-        "  --gfx (plugin)     : set gfx plugin to (plugin)\n"
-        "  --audio (plugin)   : set audio plugin to (plugin)\n"
-        "  --input (plugin)   : set input plugin to (plugin)\n"
-        "  --rsp (plugin)     : set rsp plugin to (plugin)\n"
-        "  --emumode (number) : set emu mode to: 1=interp./2=recomp./3=pure interp\n"
-        "  --noask            : don't ask to force load on bad dumps\n"
-        "  --interactive      : ask interactively for all plugins\n"
-        "\n"
-        "You can also use the Config-File from the Gui-Version\n"
-        "but there are aditional Parameters for the NO-GUI Version\n"
+        "  --fullscreen      :  turn fullscreen mode on\n"
+        "  --gfx (plugin)    :  set gfx plugin to (plugin)\n"
+        "  --audio (plugin)  :  set audio plugin to (plugin)\n"
+        "  --input (plugin)  :  set input plugin to (plugin)\n"
+        "  --rsp (plugin)    :  set rsp plugin to (plugin)\n"
+        "  --emumode (number):  set emu mode to: 1=interp./2=recomp./3=pure interp\n"
+        "  --noask           :  don't ask to force load on bad dumps\n"
+        "  --interactive     :  ask interactively for all plugins\n"
     ;
 
 #if defined (__linux__)
@@ -524,9 +521,10 @@ int main(int argc, char *argv[])
 
     if (argc < 2 || p_help || p_error || fileloaded != true) {
         putchar('\n');
-        putchar('\n');
         printf("syntax:  %s [parameter(s)] ROM_path\n", argv[0]);
         puts(help_text);
+        puts("You can also use the config file from the GUI version,");
+        puts("but there are additional parameters for the no-GUI version.");
         return 0;
     }
 
