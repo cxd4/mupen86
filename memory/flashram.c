@@ -81,8 +81,7 @@ u32 flashram_status()
 
 void flashram_command(u32 command)
 {
-   switch(command & 0xff000000)
-     {
+    switch (command & 0xFF000000) {
       case 0x4b000000:
 	erase_offset = (command & 0xffff) * 128;
 	break;
@@ -97,9 +96,8 @@ void flashram_command(u32 command)
       case 0xb4000000:
 	mode = WRITE_MODE;
 	break;
-      case 0xd2000000:  /* execute */
-	switch (mode)
-	  {
+    case 0xD2000000:  /* execute */
+        switch (mode) {
 	   case NOPES_MODE:
 	     break;
 	   case ERASE_MODE:
@@ -153,7 +151,8 @@ void flashram_command(u32 command)
 		  free(filename);
 	       }
 	     break;
-	   case STATUS_MODE:
+        case READ_MODE:
+        case STATUS_MODE:
 	     break;
 	   default:
 	     printf("unknown flashram command with mode:%x\n", (int)mode);
