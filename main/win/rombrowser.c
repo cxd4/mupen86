@@ -582,9 +582,9 @@ LRESULT CALLBACK RomPropertiesProc(HWND hwnd, UINT Message, WPARAM wParam, LPARA
     ROM_INFO *pRomInfo;
     char tempname[100];
     HWND hwndPB;    
-    pRomInfo = getSelectedRom();
     DEFAULT_ROM_SETTINGS TempRomSettings;
-    
+
+    pRomInfo = getSelectedRom();
     if (pRomInfo==NULL) { 
        EndDialog(hwnd, IDOK);
        return FALSE; 
