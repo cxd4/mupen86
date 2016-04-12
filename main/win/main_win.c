@@ -454,12 +454,13 @@ void exec_config(char *name)
 {
    HMODULE handle;
    PLUGIN_INFO PluginInfo;
-   handle = get_handle(liste_plugins, name);
    int i ;
-   if (emu_launched&&!emu_paused) {
-                  pauseEmu();
-     };
-     
+
+    handle = get_handle(liste_plugins, name);
+    if (emu_launched && !emu_paused) {
+        pauseEmu();
+    };
+
    if (handle) {
       
       getDllInfo = (void(__cdecl*)(PLUGIN_INFO *PluginInfo))GetProcAddress(handle, "GetDllInfo");
