@@ -63,6 +63,8 @@ void  plugin_exec_about(const char *name);
 #define SYSTEM_PAL					1
 #define SYSTEM_MPAL					2
 
+#include "../memory/memory.h"
+
 /***** Structures *****/
 typedef struct {
 	u16 Version;

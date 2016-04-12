@@ -104,7 +104,7 @@ typedef s64                     i64;
 
 #include "tlb.h"
 
-#ifdef __WIN32__
+#ifdef _WIN32
 #define byte __byte_
 #endif
 

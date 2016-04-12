@@ -59,27 +59,32 @@ static PAVISTREAM sound_stream;
 
 void win_readScreen(void **dest, long *width, long *height)
 {
+    HDC copy;
+    BITMAPINFO bmpinfos;
+    HBITMAP bitmap, oldbitmap;
+    unsigned char* buffer;
    HDC dc = GetDC(mainHWND);
    RECT rect, rectS, rectT;
-   
+    int heightS, heightT;
+
    // retrieve the dimension of the picture
    GetClientRect(mainHWND, &rect);
    *width = rect.right - rect.left;
    *height = rect.bottom - rect.top;
    
    GetClientRect(hTool, &rectT);
-   int heightT = rectT.bottom - rectT.top;
+   heightT = rectT.bottom - rectT.top;
    GetClientRect(hStatus, &rectS);
-   int heightS = rectS.bottom - rectS.top;
+   heightS = rectS.bottom - rectS.top;
    *height -= (heightT + heightS);
    
    *width = (*width + 3) & ~3;
    *height =(*height+ 3) & ~3;
    
    // copy to a context in memory to speed up process
-   HDC copy = CreateCompatibleDC(dc);
-   HBITMAP bitmap = CreateCompatibleBitmap(dc, *width, *height);
-   HBITMAP oldbitmap = SelectObject(copy, bitmap);
+   copy = CreateCompatibleDC(dc);
+   bitmap = CreateCompatibleBitmap(dc, *width, *height);
+   oldbitmap = SelectObject(copy, bitmap);
    BitBlt(copy, 0, 0, *width, *height, dc, 0, heightT, SRCCOPY);
    
    if (!avi_opened)
@@ -91,9 +96,8 @@ void win_readScreen(void **dest, long *width, long *height)
    }
    
    // read the context
-   unsigned char *buffer = (unsigned char*)malloc(*width * *height * 3 +1);
+   buffer = (unsigned char *)malloc(*width * *height * 3 + 1);
    SelectObject(copy, oldbitmap);
-   BITMAPINFO bmpinfos;
    memcpy(&bmpinfos.bmiHeader, &infoHeader, sizeof(BITMAPINFOHEADER));
    GetDIBits(copy, bitmap, 0, *height, buffer, &bmpinfos, DIB_RGB_COLORS);
       
@@ -177,6 +181,8 @@ void VCRComp_startFile( const char *filename, long width, long height, int fps )
 
 void VCRComp_finishFile()
 {
+    HMENU hMenu;
+
    SetWindowPos(mainHWND, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
    AVIStreamClose(compressed_video_stream);
    AVIStreamClose(video_stream);
@@ -184,7 +190,7 @@ void VCRComp_finishFile()
    AVIStreamClose(sound_stream);
    AVIFileClose(avi_file);
    AVIFileExit();
-   HMENU hMenu;
+
    hMenu = GetMenu(mainHWND);
    EnableMenuItem(hMenu,ID_END_CAPTURE,MF_GRAYED);
    EnableMenuItem(hMenu,ID_START_CAPTURE,MF_ENABLED);

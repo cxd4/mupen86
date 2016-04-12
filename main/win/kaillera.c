@@ -235,8 +235,9 @@ void buildRomList() {
     ROM_INFO *pRomInfo;
     int itemsNum;
     LV_ITEM lvItem;
-    memset(&lvItem, 0, sizeof(LV_ITEM));
     char *pszKailleraNamedRoms = szKailleraNamedRoms;
+
+    memset(&lvItem, 0, sizeof(LV_ITEM));
     *pszKailleraNamedRoms = '\0';
     
     sprintf( sort_method, Config.RomBrowserSortMethod) ;

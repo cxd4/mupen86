@@ -42,6 +42,8 @@ typedef s64 ssize_t;
 typedef signed long ssize_t;
 #endif
 
+#ifndef _WIN32
+
 typedef void* HINSTANCE;
 typedef void* HWND;
 typedef size_t WPARAM;
@@ -60,6 +62,13 @@ typedef ssize_t LPARAM;
 #define TRUE 1
 #endif
 
+#endif
+
 typedef int Boolean;
+
+/* for compatibility with MSVC */
+#if defined(_MSC_VER)
+#define inline __inline
+#endif
 
 #endif

@@ -123,6 +123,7 @@ int before_event(u32 evt1, u32 evt2, int type2)
 
 void add_interupt_event(int type, u32 delay)
 {
+    interupt_queue* aux;
    u32 count = Count + delay/**2*/;
    int special = 0;
    
@@ -132,7 +133,7 @@ void add_interupt_event(int type, u32 delay)
    if (get_event(type)) {
       printf("two events of type %x in queue\n", type);
    }
-   interupt_queue *aux = q;
+   aux = q;
 
 #if 0
     if (type == PI_INT) {
