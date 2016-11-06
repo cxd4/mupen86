@@ -62,7 +62,7 @@ RI_register ri_register;
 AI_register ai_register;
 DPC_register dpc_register;
 DPS_register dps_register;
-u32 rdram[0x800000 / sizeof(u32)];
+u32 rdram[(0x00FFFFFFul + 1ul) / sizeof(u32)];
 u8 *rdramb = (u8 *)(rdram);
 u32 SP_DMEM[2 * 0x1000/sizeof(u32)];
 u32 *SP_IMEM = SP_DMEM + 0x1000/sizeof(u32);

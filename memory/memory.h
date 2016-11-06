@@ -125,7 +125,7 @@ extern u8 *SP_DMEMb;
 extern u32 *SP_IMEM;
 extern u32 PIF_RAM[0x40 / sizeof(u32)];
 extern u8 *PIF_RAMb;
-extern u32 rdram[0x800000 / sizeof(u32)];
+extern u32 rdram[];
 extern u32 address, word;
 extern u8 byte;
 extern u16 hword;
