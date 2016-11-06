@@ -71,10 +71,13 @@ extern int branch_taken;
 
 void debug();
 
-
-inline void put8(unsigned char octet);
-inline void put32(u32 dword);
-inline void put16(unsigned short word);
+/*
+ * 2016.11.05 cxd4
+ * in-line functions declared but, without HAVE_RECOMPILER, never defined
+ */
+extern void put8(unsigned char octet);
+extern void put32(u32 dword);
+extern void put16(unsigned short word);
 
 void push_reg32(int reg32);
 void mov_eax_memoffs32(u32 *memoffs32);
