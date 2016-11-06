@@ -94,6 +94,8 @@ typedef signed long long        s64;
 typedef unsigned long long      u64; /* fallback to require C99 support */
 #endif
 
+typedef u32                     MIPS_size_t; /* size_t precision on N64 RCP */
+
 /*
  * just in case signedness does not matter at some point, for readability
  */
@@ -129,14 +131,14 @@ extern u8 byte;
 extern u16 hword;
 extern u64 dword, *rdword;
 
-extern void (*readmem[0xFFFF])();
-extern void (*readmemb[0xFFFF])();
-extern void (*readmemh[0xFFFF])();
-extern void (*readmemd[0xFFFF])();
-extern void (*writemem[0xFFFF])();
-extern void (*writememb[0xFFFF])();
-extern void (*writememh[0xFFFF])();
-extern void (*writememd[0xFFFF])();
+extern void (*readmem[])();
+extern void (*readmemb[])();
+extern void (*readmemh[])();
+extern void (*readmemd[])();
+extern void (*writemem[])();
+extern void (*writememb[])();
+extern void (*writememh[])();
+extern void (*writememd[])();
 
 typedef struct _RDRAM_register
 {
