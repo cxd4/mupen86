@@ -248,6 +248,7 @@ extern void (*showCFB)();
 extern void (*updateScreen)();
 extern void (*viStatusChanged)();
 extern void (*viWidthChanged)();
+extern void (*capture_screen)(char* path);
 extern void (*readScreen)(void **dest, long *width, long *height);
 
 extern void (*aiDacrateChanged)(int SystemType);

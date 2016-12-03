@@ -62,7 +62,7 @@ static char cwd[1024];
 
 char *get_currentpath()
 {
-   return cwd;
+    return &(cwd[0]);
 }
 
 char *get_savespath()
@@ -191,6 +191,9 @@ static int filter(const SDL_Event *event)
 	     break;
 	   case SDLK_F1:
 	     changeWindow();
+	     break;
+	   case SDLK_F3:
+	     capture_screen(get_screenspath());
 	     break;
 	   default:
 	     keyDown(0, event->key.keysym.sym);

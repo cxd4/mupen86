@@ -29,6 +29,8 @@
 
 char *get_currentpath();
 char *get_savespath();
+char *get_screenspath();
+
 void display_loading_progress(int p);
 void display_MD5calculating_progress(int p);
 

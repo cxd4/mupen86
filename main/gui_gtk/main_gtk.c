@@ -126,6 +126,17 @@ char *get_savespath()
    return path;
 }
 
+char *get_screenspath()
+{
+    static char real_dir[] = "";
+
+    if (real_dir[0] != '\0')
+        return &(real_dir[0]);
+    strcpy(&real_dir[0], get_currentpath());
+    strcpy(&real_dir[0], "captures/");
+    return &(real_dir[0]);
+}
+
 void
 display_loading_progress( int p )
 {
@@ -803,6 +814,16 @@ callback_fullScreen( GtkWidget *widget, gpointer data )
 	}
 }
 
+/* screen shot */
+static void
+callback_captureScreen(GtkWidget *widget, gpointer data)
+{
+	if (g_EmulationThread)
+	{
+		capture_screen(get_screenspath());
+	}
+}
+
 
 /** VCR **/
 #ifdef VCR_SUPPORT
@@ -1165,6 +1186,7 @@ create_menuBar( void )
 	GtkWidget	*optionsRSPItem;
 	GtkWidget	*optionsSeparator2;
 	GtkWidget	*optionsFullScreenItem;
+	GtkWidget	*optionsScreenCaptureItem;
 
 #ifdef VCR_SUPPORT
 	GtkWidget	*vcrStartRecordItem;
@@ -1347,6 +1369,7 @@ create_menuBar( void )
 	optionsRSPItem = menu_item_new_with_accelerator( optionsAccelGroup, tr("_RSP Settings...") );
 	optionsSeparator2 = gtk_menu_item_new();
 	optionsFullScreenItem = menu_item_new_with_accelerator( optionsAccelGroup, tr("_Full Screen") );
+	optionsScreenCaptureItem = menu_item_new_with_accelerator(optionsAccelGroup, tr("_Capture Screen"));
 	gtk_menu_append( GTK_MENU(optionsMenu), optionsConfigureItem );
 	gtk_menu_append( GTK_MENU(optionsMenu), optionsSeparator1 );
 	gtk_menu_append( GTK_MENU(optionsMenu), optionsVideoItem );
@@ -1355,6 +1378,7 @@ create_menuBar( void )
 	gtk_menu_append( GTK_MENU(optionsMenu), optionsRSPItem );
 	gtk_menu_append( GTK_MENU(optionsMenu), optionsSeparator2 );
 	gtk_menu_append( GTK_MENU(optionsMenu), optionsFullScreenItem );
+	gtk_menu_append(GTK_MENU(optionsMenu), optionsScreenCaptureItem);
 
 	gtk_signal_connect_object( GTK_OBJECT(optionsConfigureItem), "activate",
 			GTK_SIGNAL_FUNC(callback_configure), (gpointer)NULL );
@@ -1368,6 +1392,12 @@ create_menuBar( void )
 			GTK_SIGNAL_FUNC(callback_configureRSP), (gpointer)NULL );
 	gtk_signal_connect_object( GTK_OBJECT(optionsFullScreenItem), "activate",
 			GTK_SIGNAL_FUNC(callback_fullScreen), (gpointer)NULL );
+	gtk_signal_connect_object(
+		GTK_OBJECT(optionsScreenCaptureItem),
+		"activate",
+		GTK_SIGNAL_FUNC(callback_captureScreen),
+		(gpointer)NULL
+	);
 
 	/* VCR menu */
 #ifdef VCR_SUPPORT
@@ -1637,7 +1667,9 @@ sdl_event_filter( const SDL_Event *event )
 		case SDLK_F1:
 			changeWindow();
 			break;
-
+		case SDLK_F3:
+			capture_screen(get_screenspath());
+			break;
 		default:
 			switch (event->key.keysym.unicode)
 			{

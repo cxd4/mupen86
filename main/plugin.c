@@ -75,6 +75,7 @@ static void dummy_initiateRSP(RSP_INFO Rsp_Info, u32 * CycleCount) {};
 static void dummy_fBRead(u32 addr) {};
 static void dummy_fBWrite(u32 addr, u32 size) {};
 static void dummy_fBGetFrameBufferInfo(void *p) {};
+static void dummy_capture_screen(char* p) { return; };
 
 void (*changeWindow)() = dummy_void;
 void (*closeDLL_gfx)() = dummy_void;
@@ -87,6 +88,7 @@ void (*showCFB)() = dummy_void;
 void (*updateScreen)() = dummy_void;
 void (*viStatusChanged)() = dummy_void;
 void (*viWidthChanged)() = dummy_void;
+void (*capture_screen)(char* path) = dummy_capture_screen;
 void (*readScreen)(void **dest, long *width, long *height) = 0;
 
 void (*aiDacrateChanged)(int SystemType) = dummy_aiDacrateChanged;
@@ -329,6 +331,7 @@ void plugin_load_plugins(const char *gfx_name,
 	updateScreen = dlsym(handle_gfx, "UpdateScreen");
 	viStatusChanged = dlsym(handle_gfx, "ViStatusChanged");
 	viWidthChanged = dlsym(handle_gfx, "ViWidthChanged");
+	capture_screen = dlsym(handle_gfx, "CaptureScreen");
 	readScreen = dlsym(handle_gfx, "ReadScreen");
 	
 	fBRead = dlsym(handle_gfx, "FBRead");
@@ -346,6 +349,7 @@ void plugin_load_plugins(const char *gfx_name,
 	if (updateScreen == NULL) updateScreen = dummy_void;
 	if (viStatusChanged == NULL) viStatusChanged = dummy_void;
 	if (viWidthChanged == NULL) viWidthChanged = dummy_void;
+	if (capture_screen == NULL) capture_screen = dummy_capture_screen;
 
 	gfx_info.MemoryBswaped = TRUE;
 	gfx_info.HEADER = &(rom[0]);
@@ -391,6 +395,7 @@ void plugin_load_plugins(const char *gfx_name,
 	updateScreen = dummy_void;
 	viStatusChanged = dummy_void;
 	viWidthChanged = dummy_void;
+	capture_screen = dummy_capture_screen;
 	readScreen = 0;
      }
    handle_audio = get_handle(liste_plugins, audio_name);
