@@ -38,8 +38,10 @@
 
 #ifdef _WIN64
 typedef s64 ssize_t;
-#else
+#elif defined(_WIN32)
 typedef signed long ssize_t;
+#else
+#include <stdio.h>
 #endif
 
 #ifndef _WIN32
