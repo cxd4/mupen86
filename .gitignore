@@ -7,6 +7,10 @@
 /rombrowser.cache
 /spconfig*
 
+# Since I haven't found out how to disable Mupen64 from compressing the INI,
+# this is temporarily blacklisted to prevent the file from needing staging.
+mupen64.ini
+
 # compiled C sources
 *.asm
 *.s
