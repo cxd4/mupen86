@@ -54,6 +54,7 @@ void gennotcompiled()
    
    if (dst->addr == 0xa4000040)
      {
+	sub_reg32_imm32(ESP, 0xC);
 	mov_m32_reg32((u32*)(&return_address), ESP);
 	sub_m32_imm32((u32*)(&return_address), 4);
      }
