@@ -12,6 +12,11 @@ CFLAGS		=-DX86 -O3 -fexpensive-optimizations -fomit-frame-pointer -funroll-loops
 #CFLAGS		=-DX86 -Wall -pipe -g -DEMU64_DEBUG -DCOMPARE_CORE
 #CFLAGS		=-DX86 -Wall -pipe -g
 
+LBITS := $(shell getconf LONG_BIT)
+ifeq ($(LBITS),32)
+CFLAGS += -DHAVE_RECOMPILER
+endif
+
 CXXFLAGS	=$(CFLAGS)
 
 GL_PATH		=-I/usr/X11R6/include
