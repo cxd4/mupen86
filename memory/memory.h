@@ -120,6 +120,9 @@ void free_memory();
 #define write_byte_in_memory() writememb[address >>16]()
 #define write_hword_in_memory() writememh[address >>16]()
 #define write_dword_in_memory() writememd[address >>16]()
+
+extern int SP_task_yield;
+
 extern u32 SP_DMEM[2 * 0x1000/sizeof(u32)];
 extern u8 *SP_DMEMb;
 extern u32 *SP_IMEM;

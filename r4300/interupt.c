@@ -503,14 +503,16 @@ void gen_interupt()
 	  }
 	break;
 	
-      case SP_INT:
-	remove_interupt_event();
-	sp_register.sp_status_reg |= 0x303;
-     /* sp_register.signal1 = 1; */
-	sp_register.signal2 = 1;
-	sp_register.broke = 1;
-	sp_register.halt = 1;
-	
+    case SP_INT:
+        remove_interupt_event();
+        if (!SP_task_yield) {
+         /* sp_register.signal1 = 1; */
+            sp_register.signal2 = 1;
+            sp_register.broke = 1;
+            sp_register.halt = 1;
+            sp_register.sp_status_reg |= 0x00000303;
+        }
+
 	if (!sp_register.intr_break) return;
 	MI_register.mi_intr_reg |= 0x01;
 	if (MI_register.mi_intr_reg & MI_register.mi_intr_mask_reg)

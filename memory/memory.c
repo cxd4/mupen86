@@ -1137,11 +1137,10 @@ static void FB_protect_new(void)
     }
 }
 
+Boolean SP_task_yield = FALSE;
 void update_SP()
 {
     int section_type;
-    unsigned long divisor;
-    unsigned int task_resume_hack;
     const u32 SP_STATUS = sp_register.w_sp_status_reg;
     const u32 task_type = SP_DMEM[0xFC0 / sizeof(i32)];
     const u32 save_pc = rsp_register.rsp_pc & 0xFFFFF000ul;
@@ -1197,14 +1196,15 @@ void update_SP()
     if (SP_STATUS & 0x00000018)
         check_interupt();
 
-#if 0
-     if (get_event(SP_INT))
-         return;
-#endif
-    if (!(SP_STATUS & 0x00000001) && !(SP_STATUS & 0x00000004))
+
+    if (get_event(SP_INT) && SP_task_yield)
         return;
+    if (!(SP_STATUS & 0x0001) && !(SP_STATUS & 0x0004) && !SP_task_yield)
+        return;
+
     if (sp_register.halt || sp_register.broke)
         return;
+
     switch (task_type) {
     case 1:  /* M_GFXTASK */
         section_type = GFX_SECTION;
@@ -1229,40 +1229,44 @@ void update_SP()
     doRspCycles(100);
     if (section_type > 0)
         end_section(section_type);
-    task_resume_hack = (sp_register.sp_status_reg & 0x00000001) ? 0 : 1;
     rsp_register.rsp_pc |= save_pc;
 
-    if (task_resume_hack) {
-        fprintf(
-            stderr,
-            "Experimental task resume support:  SP_STATUS_REG = 0x%08X\n",
-            SP_STATUS
-        );
-        divisor = 2;
-    } else {
-        if (section_type == GFX_SECTION)
-            new_frame();
-        divisor = 1;
-    }
-    MI_register.mi_intr_reg   &= ~0x00000001ul;
-    sp_register.sp_status_reg &= ~0x00000203ul;
+    if (section_type == GFX_SECTION)
+        new_frame();
 
     if (section_type == GFX_SECTION) {
         sp_register.sp_status_reg &= ~0x00000100;
         MI_register.mi_intr_reg   &= ~0x00000020;
 
         update_count();
-        add_interupt_event(SP_INT, 1000 / divisor);
-        add_interupt_event(DP_INT, 1000 / divisor);
+        SP_task_yield = FALSE;
+        if ((sp_register.sp_status_reg & (0x00000002 | 0x00000001)) == 0) {
+            SP_task_yield = TRUE;
+            MI_register.mi_intr_reg |= 0x00000001;
+        }
+        add_interupt_event(SP_INT, 1000 / 1);
+        add_interupt_event(DP_INT, 1000 / 1);
         FB_protect_new();
     } else if (section_type == AUDIO_SECTION) {
         sp_register.sp_status_reg &= ~0x00000100;
         update_count();
-        add_interupt_event(SP_INT, /* 500 */4000 / divisor);
+        SP_task_yield = FALSE;
+        if ((sp_register.sp_status_reg & (0x00000002 | 0x00000001)) == 0) {
+            SP_task_yield = TRUE;
+            MI_register.mi_intr_reg |= 0x00000001;
+        }
+        add_interupt_event(SP_INT, /* 500 */4000 / 1);
     } else {
         update_count();
-        add_interupt_event(SP_INT, 0/* 100 */ / divisor);
+        SP_task_yield = FALSE;
+        if ((sp_register.sp_status_reg & (0x00000002 | 0x00000001)) == 0) {
+            SP_task_yield = TRUE;
+            MI_register.mi_intr_reg |= 0x00000001;
+        }
+        add_interupt_event(SP_INT, 0/* 100 */ / 1);
     }
+    sp_register.sp_status_reg &= ~0x00000203ul;
+    MI_register.mi_intr_reg   &= ~0x00000001ul;
 #if 0
     printf("unknown task type\n");
     if (hle)
