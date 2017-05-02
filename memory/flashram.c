@@ -100,57 +100,76 @@ void flashram_command(u32 command)
         switch (mode) {
 	   case NOPES_MODE:
 	     break;
-	   case ERASE_MODE:
-	       {
-		  char *filename;
-		  FILE *f;
-		  int i;
-		  filename = malloc(strlen(get_savespath())+
-				    strlen(ROM_SETTINGS.goodname)+4+1);
-		  strcpy(filename, get_savespath());
-		  strcat(filename, ROM_SETTINGS.goodname);
-		  strcat(filename, ".fla");
-		  f = fopen(filename, "rb");
-		  if (f)
-		    {
-		       fread(flashram, 1, 0x20000, f);
-		       fclose(f);
-		    }
-		  else for (i=0; i<0x20000; i++) flashram[i] = 0xff;
-		  for (i=erase_offset; i<(erase_offset+128); i++)
-		    flashram[i^S8] = 0xff;
-		  f = fopen(filename, "wb");
-		  fwrite(flashram, 1, 0x20000, f);
-		  fclose(f);
-		  free(filename);
-	       }
-	     break;
-	   case WRITE_MODE:
-	       {
-		  char *filename;
-		  FILE *f;
-		  int i;
-		  filename = malloc(strlen(get_savespath())+
-				    strlen(ROM_SETTINGS.goodname)+4+1);
-		  strcpy(filename, get_savespath());
-		  strcat(filename, ROM_SETTINGS.goodname);
-		  strcat(filename, ".fla");
-		  f = fopen(filename, "rb");
-		  if (f)
-		    {
-		       fread(flashram, 1, 0x20000, f);
-		       fclose(f);
-		    }
-		  else for (i=0; i<0x20000; i++) flashram[i] = 0xff;
-		  for (i=0; i<128; i++)
-		    flashram[(erase_offset+i)^S8]=
-		    ((u8*)rdram)[(write_pointer + i) ^ S8];
-		  f = fopen(filename, "wb");
-		  fwrite(flashram, 1, 0x20000, f);
-		  fclose(f);
-		  free(filename);
-	       }
-	     break;
+        case ERASE_MODE:
+            {
+            char* filename;
+            FILE* f;
+            int i;
+
+            filename = malloc(
+                strlen(get_savespath())
+              + strlen(ROM_SETTINGS.goodname)
+              + sizeof(".fla")
+            );
+            if (filename == NULL)
+                fprintf(stderr, "flashram_command:  can't allocate filename\n");
+
+            strcpy(filename, get_savespath());
+            strcat(filename, ROM_SETTINGS.goodname);
+            strcat(filename, ".fla");
+            f = fopen(filename, "rb");
+            if (f == NULL) {
+                for (i = 0; i < 0x20000; i++)
+                    flashram[i] = 0xFF;
+            } else {
+                fread(flashram, 1, 0x20000, f);
+                fclose(f);
+            }
+            for (i = erase_offset; i < erase_offset + 128; i++)
+                flashram[i ^ S8] = 0xFF;
+
+            f = fopen(filename, "wb");
+            if (f != NULL) {
+                fwrite(flashram, 1, 0x20000, f);
+                fclose(f);
+            }
+            free(filename);
+            }
+            break;
+        case WRITE_MODE:
+            {
+            char* filename;
+            FILE* f;
+            int i;
+
+            filename = malloc(
+                strlen(get_savespath()) +
+                strlen(ROM_SETTINGS.goodname) +
+                sizeof(".fla")
+            );
+            strcpy(filename, get_savespath());
+            strcat(filename, ROM_SETTINGS.goodname);
+            strcat(filename, ".fla");
+            f = fopen(filename, "rb");
+            if (f) {
+                fread(flashram, 1, 0x20000, f);
+                fclose(f);
+            } else {
+                for (i = 0; i < 0x20000; i++)
+                    flashram[i] = 0xFF;
+            }
+            for (i = 0; i < 128; i++)
+                flashram[(erase_offset + i) ^ S8]
+              = ((u8*)rdram)[(write_pointer + i) ^ S8];
+
+            f = fopen(filename, "wb");
+            if (f != NULL) {
+                fwrite(flashram, 1, 0x20000, f);
+                fclose(f);
+            }
+            free(filename);
+            }
+            break;
         case READ_MODE:
         case STATUS_MODE:
 	     break;
