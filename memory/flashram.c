@@ -129,7 +129,9 @@ void flashram_command(u32 command)
                 flashram[i ^ S8] = 0xFF;
 
             f = fopen(filename, "wb");
-            if (f != NULL) {
+            if (f == NULL) { /* can happen if save file moved by root */
+                fprintf(stderr, "Flash ERROR:  write to file %s\n", filename);
+            } else {
                 fwrite(flashram, 1, 0x20000, f);
                 fclose(f);
             }
@@ -151,19 +153,21 @@ void flashram_command(u32 command)
             strcat(filename, ROM_SETTINGS.goodname);
             strcat(filename, ".fla");
             f = fopen(filename, "rb");
-            if (f) {
-                fread(flashram, 1, 0x20000, f);
-                fclose(f);
-            } else {
+            if (f == NULL) {
                 for (i = 0; i < 0x20000; i++)
                     flashram[i] = 0xFF;
+            } else {
+                fread(flashram, 1, 0x20000, f);
+                fclose(f);
             }
             for (i = 0; i < 128; i++)
                 flashram[(erase_offset + i) ^ S8]
               = ((u8*)rdram)[(write_pointer + i) ^ S8];
 
             f = fopen(filename, "wb");
-            if (f != NULL) {
+            if (f == NULL) { /* can happen if save file moved by root */
+                fprintf(stderr, "Flash ERROR:  write to file %s\n", filename);
+            } else {
                 fwrite(flashram, 1, 0x20000, f);
                 fclose(f);
             }
