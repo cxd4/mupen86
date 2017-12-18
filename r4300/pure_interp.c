@@ -3098,8 +3098,7 @@ void prefetch()
     }
     printf("addr:%x\n", interp_addr);
 #endif
-   if ((interp_addr >= 0x80000000) && (interp_addr < 0xc0000000))
-     {
+    if ((interp_addr >= 0x80000000ul) && (interp_addr < 0xC0000000ul)) {
 	if ((interp_addr >= 0x80000000) && (interp_addr < 0x80800000))
 	  {
 	     op = rdram[(interp_addr&0xFFFFFF)/4];
@@ -3117,15 +3116,11 @@ void prefetch()
 	  {
 	     op = ((u32*)rom)[(interp_addr & 0xFFFFFFF) / sizeof(u32)];
 	     prefetch_opcode(op);
-	  }
-	else
-	  {
-	     printf("execution à l'addresse :%x\n", (s32)interp_addr);
-	     stop=1;
-	  }
-     }
-   else
-     {
+        } else {
+            printf("Execution at the address:  0x%08X\n", interp_addr);
+            stop = 1;
+        }
+    } else {
 	u32 addr = interp_addr, phys;
 
 	phys = virtual_to_physical_address(interp_addr, 2);
