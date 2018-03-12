@@ -689,7 +689,7 @@ int main(int argc, char *argv[])
 	i4 = old_i + atoi(s) - 1;
      }
    
-   printf("\n\nSelected Plugins: %s, %s, %s, %s\n", plugins[i1], plugins[i2], plugins[3], plugins[i4]);
+   printf("\n\nSelected Plugins: %s, %s, %s, %s\n", plugins[i1], plugins[i2], plugins[i3], plugins[i4]);
    
    plugin_load_plugins(plugins[i1], plugins[i2], plugins[i3], plugins[i4]);
    romOpen_gfx();
