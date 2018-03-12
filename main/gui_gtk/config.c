@@ -58,21 +58,49 @@ SConfigSection *m_configSection = 0; /* selected section */
 /** helper funcs **/
 
 static void
-trim( char *str )
+trim(char* str)
 {
-	char *p = str;
-	while (isspace(*p))
-		p++;
-	if (str != p)
-		strcpy( str, p );
+    char* string_prebuffer, *source_address;
+    char character;
+    int encountered_data; /* encountered at least one non-space char */
+    register size_t i;
+    const size_t limit = strlen(str) + 1;
 
-	p = str + strlen( str ) - 1;
-	if (p > str)
-	{
-		while (isspace(*p))
-			p--;
-		*(++p) = '\0';
-	}
+    string_prebuffer = malloc(limit);
+    if (string_prebuffer == NULL) {
+        fprintf(stderr, "Failed to prebuffer \"%s\".\n", str);
+        return;
+    }
+
+    source_address = str;
+    encountered_data = 0;
+    i = 0;
+
+    /* Copy &str[first_non_whitespace_character] to &string_prebuffer[0]. */
+    while (i < limit) {
+        character = *(source_address + i);
+        if (character == '\0')
+            break;
+        if (isspace(character) && !encountered_data) {
+            source_address += 1;
+            continue;
+        }
+        encountered_data = 1;
+        *(string_prebuffer + i) = character;
+        ++i;
+    }
+    string_prebuffer[i] = '\0';
+
+    /* Starting from the final byte of string_prebuffer[], delete whitespace. */
+    while (i-- > 0) {
+        character = *(string_prebuffer + i);
+        if (!isspace(character))
+            break; /* Don't delete ALL whitespace, just trailing after data. */
+        *(string_prebuffer + i) = '\0';
+    }
+    strcpy(str, string_prebuffer);
+    free(string_prebuffer);
+    return;
 }
 
 static SConfigValue *
