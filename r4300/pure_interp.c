@@ -68,7 +68,9 @@ my_round(double x)
 #ifdef C99_EVER_NEEDED_TO_HAPPEN
     return round(x);
 #else
-    return ((x - floor(x) >= 0.5) ? ceil(x) : floor(x));
+    if (-0.5 < frac_part && frac_part < +0.5)
+        return (int_part);
+    return (int_part + ((int_part < 0) ? -1 : +1));
 #endif
 }
 
