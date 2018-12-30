@@ -112,12 +112,10 @@ stop=1; \
 #define set_rounding() __asm__ __volatile__("fldcw %0" : : "m" (rounding_mode))
 #define set_trunc() __asm__ __volatile__("fldcw %0" : : "m" (trunc_mode))
 #define set_round() __asm__ __volatile__("fldcw %0" : : "m" (round_mode))
-#define set_floor() __asm__ __volatile__("fldcw %0" : : "m" (floor_mode))
 #else
 #define set_rounding() ((void) 0)
 #define set_trunc() ((void) 0)
 #define set_round() ((void) 0)
-#define set_floor() ((void) 0)
 #endif
 
 #endif

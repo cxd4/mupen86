@@ -1372,8 +1372,7 @@ static void CEIL_L_S()
 
 static void FLOOR_L_S()
 {
-   set_floor();
-   *((s64*)(reg_cop1_double[cffd])) = *reg_cop1_simple[cffs];
+   *((s64 *)(reg_cop1_double[cffd])) = (s64)floor(*reg_cop1_simple[cffs]);
    interp_addr+=4;
 }
 
@@ -1399,8 +1398,7 @@ static void CEIL_W_S()
 
 static void FLOOR_W_S()
 {
-   set_floor();
-   *((s32*)reg_cop1_simple[cffd]) = *reg_cop1_simple[cffs];
+   *((s32 *)reg_cop1_simple[cffd]) = (s32)floor(*reg_cop1_simple[cffs]);
    interp_addr+=4;
 }
 
@@ -1697,8 +1695,7 @@ static void CEIL_L_D()
 
 static void FLOOR_L_D()
 {
-   set_floor();
-   *((s64*)(reg_cop1_double[cffd])) = *reg_cop1_double[cffs];
+   *((s64 *)(reg_cop1_double[cffd])) = (s64)floor(*reg_cop1_double[cffs]);
    interp_addr+=4;
 }
 
@@ -1724,8 +1721,7 @@ static void CEIL_W_D()
 
 static void FLOOR_W_D()
 {
-   set_floor();
-   *((s32*)reg_cop1_simple[cffd]) = *reg_cop1_double[cffs];
+   *((s32 *)reg_cop1_simple[cffd]) = (s32)floor(*reg_cop1_double[cffs]);
    interp_addr+=4;
 }
 

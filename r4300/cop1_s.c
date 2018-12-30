@@ -126,8 +126,7 @@ void CEIL_L_S()
 void FLOOR_L_S()
 {
    if (check_cop1_unusable()) return;
-   set_floor();
-   *((s64*)(reg_cop1_double[cffd])) = *reg_cop1_simple[cffs];
+   *((s64 *)(reg_cop1_double[cffd])) = (s64)floor(*reg_cop1_simple[cffs]);
    PC++;
 }
 
@@ -157,8 +156,7 @@ void CEIL_W_S()
 void FLOOR_W_S()
 {
    if (check_cop1_unusable()) return;
-   set_floor();
-   *((s32*)reg_cop1_simple[cffd]) = *reg_cop1_simple[cffs];
+   *((s32 *)reg_cop1_simple[cffd]) = (s32)floor(*reg_cop1_simple[cffs]);
    PC++;
 }
 
