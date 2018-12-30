@@ -1366,8 +1366,7 @@ static void TRUNC_L_S()
 
 static void CEIL_L_S()
 {
-   set_ceil();
-   *((s64*)(reg_cop1_double[cffd])) = *reg_cop1_simple[cffs];
+   *((s64 *)(reg_cop1_double[cffd])) = (s64)ceil(*reg_cop1_simple[cffs]);
    interp_addr+=4;
 }
 
@@ -1394,8 +1393,7 @@ static void TRUNC_W_S()
 
 static void CEIL_W_S()
 {
-   set_ceil();
-   *((s32*)reg_cop1_simple[cffd]) = *reg_cop1_simple[cffs];
+   *((s32 *)reg_cop1_simple[cffd]) = (s32)ceil(*reg_cop1_simple[cffs]);
    interp_addr+=4;
 }
 
@@ -1693,8 +1691,7 @@ static void TRUNC_L_D()
 
 static void CEIL_L_D()
 {
-   set_ceil();
-   *((s64*)(reg_cop1_double[cffd])) = *reg_cop1_double[cffs];
+   *((s64 *)(reg_cop1_double[cffd])) = (s64)ceil(*reg_cop1_double[cffs]);
    interp_addr+=4;
 }
 
@@ -1721,8 +1718,7 @@ static void TRUNC_W_D()
 
 static void CEIL_W_D()
 {
-   set_ceil();
-   *((s32*)reg_cop1_simple[cffd]) = *reg_cop1_double[cffs];
+   *((s32 *)reg_cop1_simple[cffd]) = (s32)ceil(*reg_cop1_double[cffs]);
    interp_addr+=4;
 }
 

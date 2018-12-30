@@ -119,8 +119,7 @@ void TRUNC_L_S()
 void CEIL_L_S()
 {
    if (check_cop1_unusable()) return;
-   set_ceil();
-   *((s64*)(reg_cop1_double[cffd])) = *reg_cop1_simple[cffs];
+   *((s64 *)(reg_cop1_double[cffd])) = (s64)ceil(*reg_cop1_simple[cffs]);
    PC++;
 }
 
@@ -151,8 +150,7 @@ void TRUNC_W_S()
 void CEIL_W_S()
 {
    if (check_cop1_unusable()) return;
-   set_ceil();
-   *((s32*)reg_cop1_simple[cffd]) = *reg_cop1_simple[cffs];
+   *((s32 *)reg_cop1_simple[cffd]) = (s32)ceil(*reg_cop1_simple[cffs]);
    PC++;
 }
 
