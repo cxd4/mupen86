@@ -103,8 +103,7 @@ void NEG_S()
 void ROUND_L_S()
 {
    if (check_cop1_unusable()) return;
-   set_round();
-   *((s64*)(reg_cop1_double[cffd])) = *reg_cop1_simple[cffs];
+   *((s64 *)(reg_cop1_double[cffd])) = (s64)my_round(*reg_cop1_simple[cffs]);
    PC++;
 }
 
@@ -133,8 +132,7 @@ void FLOOR_L_S()
 void ROUND_W_S()
 {
    if (check_cop1_unusable()) return;
-   set_round();
-   *((s32*)reg_cop1_simple[cffd]) = *reg_cop1_simple[cffs];
+   *((s32 *)reg_cop1_simple[cffd]) = (s32)my_round(*reg_cop1_simple[cffs]);
    PC++;
 }
 

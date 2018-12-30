@@ -51,6 +51,27 @@ static void (*interp_ops[64])(void);
 
 extern u32 next_vi;
 
+double
+my_round(double x)
+{
+    double frac_part, int_part;
+
+    frac_part = modf(x, &int_part);
+
+    /* Round to the nearest even-numbered integer, away from 0. */
+    if (frac_part == -0.5)
+        return (int_part - fmod(int_part, 2));
+    if (frac_part == +0.5)
+        return (int_part + fmod(int_part, 2));
+
+    /* Round to the nearest integer conventionally, away from 0. */
+#ifdef C99_EVER_NEEDED_TO_HAPPEN
+    return round(x);
+#else
+    return ((x - floor(x) >= 0.5) ? ceil(x) : floor(x));
+#endif
+}
+
 static void NI()
 {
    printf("NI:%x\n", op);
@@ -1352,8 +1373,7 @@ static void NEG_S()
 
 static void ROUND_L_S()
 {
-   set_round();
-   *((s64*)(reg_cop1_double[cffd])) = *reg_cop1_simple[cffs];
+   *((s64 *)(reg_cop1_double[cffd])) = (s64)my_round(*reg_cop1_simple[cffs]);
    interp_addr+=4;
 }
 
@@ -1378,8 +1398,7 @@ static void FLOOR_L_S()
 
 static void ROUND_W_S()
 {
-   set_round();
-   *((s32*)reg_cop1_simple[cffd]) = *reg_cop1_simple[cffs];
+   *((s32 *)reg_cop1_simple[cffd]) = (s32)my_round(*reg_cop1_simple[cffs]);
    interp_addr+=4;
 }
 
@@ -1675,8 +1694,7 @@ static void NEG_D()
 
 static void ROUND_L_D()
 {
-   set_round();
-   *((s64*)(reg_cop1_double[cffd])) = *reg_cop1_double[cffs];
+   *((s64 *)(reg_cop1_double[cffd])) = (s64)my_round(*reg_cop1_double[cffs]);
    interp_addr+=4;
 }
 
@@ -1701,8 +1719,7 @@ static void FLOOR_L_D()
 
 static void ROUND_W_D()
 {
-   set_round();
-   *((s32*)reg_cop1_simple[cffd]) = *reg_cop1_double[cffs];
+   *((s32 *)reg_cop1_simple[cffd]) = (s32)my_round(*reg_cop1_double[cffs]);
    interp_addr+=4;
 }
 

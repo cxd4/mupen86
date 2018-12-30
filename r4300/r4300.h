@@ -66,6 +66,12 @@ extern u32 jump_to_address;
 extern int no_audio_delay;
 extern int no_compiled_jump;
 
+/*
+ * 2018.12.30 cxd4
+ * ROUND on MIPS is different from round() in C99.
+ */
+extern double my_round(double x);
+
 void go();
 void pure_interpreter();
 void compare_core();
