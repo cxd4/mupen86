@@ -173,6 +173,17 @@ static GtkWidget *combo_RSP;
 static GtkWidget *button_debug;
 #endif
 
+char *get_screenspath()
+{
+    static char real_dir[] = "";
+
+    if (real_dir[0] != '\0')
+        return &(real_dir[0]);
+    strcpy(&real_dir[0], get_currentpath());
+    strcpy(&real_dir[0], "captures/");
+    return &(real_dir[0]);
+}
+
 static int filter(const SDL_Event *event)
 {
    switch (event->type)

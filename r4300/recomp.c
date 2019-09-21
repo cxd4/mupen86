@@ -3130,7 +3130,7 @@ void init_block(s32 *source, precomp_block *block)
             dst->addr = block->start + i*4;
             dst->reg_cache_infos.need_map = 0;
             dst->local_addr = code_length;
-#ifdef EMU64_DEBUG
+#if defined(HAVE_RECOMPILER) && defined(EMU64_DEBUG)
             if (dynacore)
                 gendebug();
 #endif

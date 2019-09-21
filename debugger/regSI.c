@@ -135,11 +135,9 @@ void update_regSI()
 		gtk_clist_set_background( GTK_CLIST(clRegSI), 2, &color_ident);
 	}
 
-
-	if( gui_fantom_reg_SI[3] != si_register.si_status )
-	{
-		gui_fantom_reg_SI[3] = si_register.si_status;
-		sprintf( txt, "%.16lX", si_register.si_status );
+	if (gui_fantom_reg_SI[3] != si_register.si_status_mask) {
+		gui_fantom_reg_SI[3] = si_register.si_status_mask;
+		sprintf(txt, "%.16lX", si_register.si_status_mask);
 		gtk_clist_set_text( GTK_CLIST(clRegSI), 3, 0, txt );
 		gtk_clist_set_background( GTK_CLIST(clRegSI), 3, &color_modif);
 	} else {
